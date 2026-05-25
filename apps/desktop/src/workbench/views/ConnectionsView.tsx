@@ -1,8 +1,8 @@
 import { useSyncExternalStore } from 'react';
 import { Database, Plus } from 'lucide-react';
 
-import { executeCommand } from '@/services/command/execute-command';
 import { connectionService } from '@/services/connection/connection-service';
+import { executeCommand } from '@/services/command/execute-command';
 import { getWorkbenchContext } from '@/services/context/workbench-context';
 import { evaluateWhenClause } from '@/services/menu/evaluate-when-clause';
 import { menuService } from '@/services/menu/menu-service';
@@ -80,7 +80,7 @@ export function ConnectionsView() {
                         void executeCommand('connection.connectActive', profile.id);
                       }}
                     >
-                      Connect
+                      {isConnected ? 'Disconnect' : 'Connect'}
                     </button>
                     <button
                       type="button"

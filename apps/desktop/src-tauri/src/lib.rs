@@ -10,6 +10,14 @@ pub fn run() {
         .manage(state::AppState::new())
         .invoke_handler(tauri::generate_handler![
             commands::system::system_health_check,
+            commands::db::db_test_connection,
+            commands::db::db_open_connection,
+            commands::db::db_close_connection,
+            commands::db::db_execute_query,
+            commands::db::db_list_databases,
+            commands::db::db_list_schemas,
+            commands::db::db_list_tables,
+            commands::db::db_list_columns,
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

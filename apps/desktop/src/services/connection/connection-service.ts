@@ -1,13 +1,14 @@
 import { Emitter } from '@/lib/event';
 import { appStorage } from '../storage/storage-service';
 import { createSubscription } from '../common/subscription';
+import { dbService } from '../db/dbService';
 import { notificationService } from '../notification/notification-service';
+import { logService } from '../log/log-service';
 import type {
   ConnectionDialogState,
   ConnectionProfile,
   ConnectionSnapshot,
   ConnectionStatus,
-  CreateConnectionInput,
 } from './types';
 
 const CONNECTIONS_KEY = 'connections';
@@ -76,6 +77,18 @@ export class ConnectionService {
     this._subscription.emit();
   }
 
+  updateConnection(profile: ConnectionProfile) {
+    this._profiles = this._profiles.map((item) => {
+      if (item.id === profile.id) {
+        return profile;
+      }
+      return item;
+    });
+    this._persist();
+    this._refreshSnapshot();
+    this._subscription.emit();
+  }
+
   setActiveConnection(connection: ConnectionProfile | null) {
     this._activeConnectionId = connection?.id ?? null;
     this._status = connection ? 'connected' : 'disconnected';
@@ -122,49 +135,38 @@ export class ConnectionService {
     this._subscription.emit();
   }
 
-  addConnection(input: CreateConnectionInput) {
-    const profile: ConnectionProfile = {
-      id: `conn-${Date.now()}`,
-      name: input.name,
-      kind: input.kind,
-      host: input.host,
-      port: input.port,
-      username: input.username,
-      database: input.database,
-      filePath: input.filePath,
-    };
+  async testConnection(config: {
+    name: string;
+    kind: string;
+    filePath?: string;
+    host?: string;
+    port?: number;
+    username?: string;
+    password?: string;
+    database?: string;
+  }) {
+    logService.info('connection', `Testing connection: ${config.name}`);
 
-    this._profiles = this._profiles.concat(profile);
-    this._persist();
-    this._refreshSnapshot();
-    this._subscription.emit();
+    try {
+      await dbService.testConnection({
+        name: config.name,
+        kind: config.kind as 'SQLite' | 'PostgreSQL' | 'MySQL',
+        filePath: config.filePath,
+        host: config.host,
+        port: config.port,
+        username: config.username,
+        password: config.password,
+        database: config.database,
+      });
 
-    return profile;
-  }
-
-  updateConnection(profile: ConnectionProfile) {
-    this._profiles = this._profiles.map((item) => {
-      if (item.id === profile.id) {
-        return profile;
-      }
-
-      return item;
-    });
-    this._persist();
-    this._refreshSnapshot();
-    this._subscription.emit();
-  }
-
-  removeConnection(id: string) {
-    this._profiles = this._profiles.filter((profile) => profile.id !== id);
-
-    if (this._activeConnectionId === id) {
-      this.disconnect();
+      notificationService.success('Connection successful.');
+      logService.info('connection', `Connection test succeeded: ${config.name}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      notificationService.error(`Connection failed: ${message}`);
+      logService.error('connection', `Connection test failed: ${config.name}`, error);
+      throw error;
     }
-
-    this._persist();
-    this._refreshSnapshot();
-    this._subscription.emit();
   }
 
   async connect(id: string) {
@@ -178,20 +180,52 @@ export class ConnectionService {
     this._refreshSnapshot();
     this._subscription.emit();
 
-    await new Promise<void>((resolve) => {
-      window.setTimeout(resolve, 250);
-    });
+    try {
+      logService.info('connection', `Opening connection: ${profile.name}`);
 
-    this._activeConnectionId = id;
-    this._status = 'connected';
-    this._refreshSnapshot();
-    this._subscription.emit();
-    this._onDidChangeActiveConnectionEmitter.fire(profile);
-    notificationService.info(`Connected to ${profile.name} (mock).`);
+      await dbService.openConnection({
+        id: profile.id,
+        name: profile.name,
+        kind: profile.kind,
+        filePath: profile.filePath,
+        host: profile.host,
+        port: profile.port,
+        username: profile.username,
+        password: profile.password,
+        database: profile.database,
+      });
+
+      this._activeConnectionId = id;
+      this._status = 'connected';
+      this._refreshSnapshot();
+      this._subscription.emit();
+      this._onDidChangeActiveConnectionEmitter.fire(profile);
+
+      notificationService.success(`Connected to ${profile.name}.`);
+      logService.info('connection', `Connection opened: ${profile.name}`);
+    } catch (error) {
+      this._status = 'disconnected';
+      this._refreshSnapshot();
+      this._subscription.emit();
+
+      const message = error instanceof Error ? error.message : String(error);
+      notificationService.error(`Connection failed: ${message}`);
+      logService.error('connection', `Connection failed: ${profile.name}`, error);
+      throw error;
+    }
   }
 
-  disconnect() {
+  async disconnect() {
     const previous = this.getActiveConnection();
+
+    if (this._activeConnectionId) {
+      try {
+        await dbService.closeConnection(this._activeConnectionId);
+      } catch {
+        // ignore close errors
+      }
+    }
+
     this._activeConnectionId = null;
     this._status = 'disconnected';
     this._refreshSnapshot();
@@ -200,21 +234,27 @@ export class ConnectionService {
 
     if (previous) {
       notificationService.info(`Disconnected from ${previous.name}.`);
+      logService.info('connection', `Connection closed: ${previous.name}`);
     }
   }
 
-  async testConnection(id: string) {
+  async testConnectionById(id: string) {
     const profile = this.getProfile(id);
 
     if (!profile) {
       throw new Error(`Connection not found: ${id}`);
     }
 
-    await new Promise<void>((resolve) => {
-      window.setTimeout(resolve, 200);
+    await this.testConnection({
+      name: profile.name,
+      kind: profile.kind,
+      filePath: profile.filePath,
+      host: profile.host,
+      port: profile.port,
+      username: profile.username,
+      password: profile.password,
+      database: profile.database,
     });
-
-    notificationService.info(`Connection "${profile.name}" test succeeded (mock).`);
   }
 
   private _persist() {

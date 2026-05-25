@@ -126,7 +126,7 @@ export function registerCoreCommands() {
         return;
       }
 
-      await connectionService.testConnection(targetId);
+      await connectionService.testConnectionById(targetId);
     },
   });
 

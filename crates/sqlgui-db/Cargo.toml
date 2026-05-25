@@ -10,10 +10,12 @@ sqlgui-common = { path = "../sqlgui-common" }
 
 anyhow.workspace = true
 async-trait.workspace = true
+base64.workspace = true
 dashmap.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sqlx.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
+urlencoding.workspace = true
 uuid.workspace = true

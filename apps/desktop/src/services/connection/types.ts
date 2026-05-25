@@ -1,4 +1,4 @@
-export type DbKind = 'sqlite' | 'postgresql' | 'mysql';
+export type DbKind = 'SQLite' | 'PostgreSQL' | 'MySQL';
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -9,6 +9,7 @@ export interface ConnectionProfile {
   host?: string;
   port?: number;
   username?: string;
+  password?: string;
   database?: string;
   filePath?: string;
 }
@@ -17,16 +18,6 @@ export interface ConnectionDialogState {
   open: boolean;
   mode: 'new' | 'edit';
   editingId: string | null;
-}
-
-export interface CreateConnectionInput {
-  name: string;
-  kind: DbKind;
-  host?: string;
-  port?: number;
-  username?: string;
-  database?: string;
-  filePath?: string;
 }
 
 export interface ConnectionSnapshot {
