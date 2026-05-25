@@ -5,21 +5,17 @@ export function evaluateWhenClause(expression: string, context: Record<string, u
     return true;
   }
 
-  const parts = trimmed.split(/\s+/);
+  if (trimmed.includes('==')) {
+    const [key, value] = trimmed.split('==').map((item) => item.trim());
 
-  if (parts.length !== 3) {
-    return false;
-  }
-
-  const [key, operator, value] = parts;
-
-  if (operator === '==') {
     return String(context[key]) === value;
   }
 
-  if (operator === '!=') {
+  if (trimmed.includes('!=')) {
+    const [key, value] = trimmed.split('!=').map((item) => item.trim());
+
     return String(context[key]) !== value;
   }
 
-  return false;
+  return Boolean(context[trimmed]);
 }

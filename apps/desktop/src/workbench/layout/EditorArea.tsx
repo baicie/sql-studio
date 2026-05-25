@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 
 import { executeCommand } from '@/services/command/execute-command';
 import { commandService } from '@/services/command/command-service';
@@ -34,10 +34,12 @@ export function EditorArea() {
 }
 
 function WelcomeEditor() {
-  const actions = useMemo(
-    () => menuService.getMenu('welcome/actions', getWorkbenchContext(), evaluateWhenClause),
-    [],
+  useSyncExternalStore(
+    menuService.subscribe.bind(menuService),
+    menuService.getVersion.bind(menuService),
   );
+
+  const actions = menuService.getMenu('welcome/actions', getWorkbenchContext(), evaluateWhenClause);
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -69,6 +71,10 @@ function WelcomeEditor() {
 function QueryEditorPlaceholder() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  useSyncExternalStore(
+    menuService.subscribe.bind(menuService),
+    menuService.getVersion.bind(menuService),
+  );
 
   const contextItems = menuService.getMenu(
     'editor/context',

@@ -1,61 +1,47 @@
 import { registerCoreCommands } from './command/register-core-commands';
+import { commandService } from './command/command-service';
 import { connectionService } from './connection/connection-service';
+import { editorService } from './editor/editor-service';
 import { extensionService } from './extension/extension-service';
+import { keybindingService } from './keybinding/keybinding-service';
 import { registerCoreKeybindings } from './keybinding/register-core-keybindings';
+import { logService } from './log/log-service';
 import { menuService } from './menu/menu-service';
+import { registerCoreMenus } from './menu/register-core-menus';
+import { notificationService } from './notification/notification-service';
+import { storageService } from './storage/storage-service';
+import { workbenchService } from './workbench/workbench-service';
 
-function registerCoreMenus() {
-  menuService.contribute('welcome/actions', [
-    {
-      command: 'connection.new',
-      title: 'New Connection',
-      source: 'core',
-    },
-    {
-      command: 'editor.newQuery',
-      title: 'New Query',
-      source: 'core',
-    },
-    {
-      command: 'extensions.openMarketplace',
-      title: 'Open Extensions',
-      source: 'core',
-    },
-  ]);
+export const services = {
+  command: commandService,
+  connection: connectionService,
+  editor: editorService,
+  extension: extensionService,
+  keybinding: keybindingService,
+  log: logService,
+  menu: menuService,
+  notification: notificationService,
+  storage: storageService,
+  workbench: workbenchService,
+};
 
-  menuService.contribute('connections/toolbar', [
-    {
-      command: 'connection.new',
-      title: 'New Connection',
-      source: 'core',
-    },
-  ]);
-
-  menuService.contribute('connections/item', [
-    {
-      command: 'connection.connectActive',
-      title: 'Connect',
-      source: 'core',
-    },
-    {
-      command: 'connection.test',
-      title: 'Test',
-      source: 'core',
-      when: 'connectionActive == false',
-    },
-    {
-      command: 'connection.disconnect',
-      title: 'Disconnect',
-      source: 'core',
-      when: 'connectionActive == true',
-    },
-  ]);
-}
+let bootstrapped = false;
 
 export function bootstrapServices() {
+  if (bootstrapped) {
+    return services;
+  }
+
+  bootstrapped = true;
+
   registerCoreCommands();
   registerCoreKeybindings();
   registerCoreMenus();
   connectionService.initialize();
   extensionService.initialize();
+  logService.info('app', 'Application bootstrapped.');
+
+  return services;
 }
+
+export const bootstrapApp = bootstrapServices;

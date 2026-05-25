@@ -1,3 +1,4 @@
+import { Emitter } from '@/lib/event';
 import { appStorage } from '../storage/storage-service';
 import { createSubscription } from '../common/subscription';
 import { notificationService } from '../notification/notification-service';
@@ -11,7 +12,7 @@ import type {
 
 const CONNECTIONS_KEY = 'connections';
 
-class ConnectionService {
+export class ConnectionService {
   private _profiles: ConnectionProfile[] = [];
   private _activeConnectionId: string | null = null;
   private _status: ConnectionStatus = 'disconnected';
@@ -28,6 +29,11 @@ class ConnectionService {
   };
 
   private _subscription = createSubscription();
+  private _onDidChangeActiveConnectionEmitter = new Emitter<ConnectionProfile | null>();
+
+  readonly onDidChangeActiveConnection = this._onDidChangeActiveConnectionEmitter.event.bind(
+    this._onDidChangeActiveConnectionEmitter,
+  );
 
   subscribe(listener: () => void) {
     return this._subscription.subscribe(listener);
@@ -61,6 +67,21 @@ class ConnectionService {
     }
 
     return this.getProfile(this._activeConnectionId);
+  }
+
+  addProfile(profile: ConnectionProfile) {
+    this._profiles = this._profiles.concat(profile);
+    this._persist();
+    this._refreshSnapshot();
+    this._subscription.emit();
+  }
+
+  setActiveConnection(connection: ConnectionProfile | null) {
+    this._activeConnectionId = connection?.id ?? null;
+    this._status = connection ? 'connected' : 'disconnected';
+    this._refreshSnapshot();
+    this._subscription.emit();
+    this._onDidChangeActiveConnectionEmitter.fire(connection);
   }
 
   isConnected() {
@@ -165,6 +186,7 @@ class ConnectionService {
     this._status = 'connected';
     this._refreshSnapshot();
     this._subscription.emit();
+    this._onDidChangeActiveConnectionEmitter.fire(profile);
     notificationService.info(`Connected to ${profile.name} (mock).`);
   }
 
@@ -174,6 +196,7 @@ class ConnectionService {
     this._status = 'disconnected';
     this._refreshSnapshot();
     this._subscription.emit();
+    this._onDidChangeActiveConnectionEmitter.fire(null);
 
     if (previous) {
       notificationService.info(`Disconnected from ${previous.name}.`);

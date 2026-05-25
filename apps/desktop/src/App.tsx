@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { bootstrapServices } from './services/bootstrap';
+import { bootstrapApp } from './app/bootstrap';
 import { callNative } from './services/native/invoke';
 import { Workbench } from './workbench/Workbench';
 
@@ -9,16 +9,11 @@ interface HealthCheckResponse {
   rustCoreReady: boolean;
 }
 
-let bootstrapped = false;
-
 export default function App() {
   const [health, setHealth] = useState<HealthCheckResponse | null>(null);
 
   useEffect(() => {
-    if (!bootstrapped) {
-      bootstrapServices();
-      bootstrapped = true;
-    }
+    bootstrapApp();
 
     callNative<HealthCheckResponse>('system_health_check').then(setHealth).catch(console.error);
   }, []);

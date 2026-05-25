@@ -16,9 +16,19 @@ export interface ExtensionManifest {
       string,
       Array<{
         command: string;
+        title?: string;
         when?: string;
         group?: string;
+        order?: number;
       }>
     >;
+    keybindings?: Array<{
+      command: string;
+      key: string;
+      when?: string;
+    }>;
+    storage?: {
+      scoped?: boolean;
+    };
   };
 }

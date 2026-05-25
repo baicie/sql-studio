@@ -1,34 +1,64 @@
-const STORAGE_PREFIX = 'sqlgui';
+import { LocalStorageProvider } from './local-storage-provider';
+import type { ScopedStorage, StorageProvider } from './types';
 
-class StorageService {
+export class StorageService {
+  constructor(private readonly _provider: StorageProvider = new LocalStorageProvider()) {}
+
   getItem(key: string): string | null {
-    return localStorage.getItem(this._namespacedKey(key));
-  }
+    const raw = localStorage.getItem(this._namespacedKey(key));
 
-  setItem(key: string, value: string) {
-    localStorage.setItem(this._namespacedKey(key), value);
-  }
-
-  removeItem(key: string) {
-    localStorage.removeItem(this._namespacedKey(key));
-  }
-
-  getJSON<T>(key: string): T | null {
-    const value = this.getItem(key);
-
-    if (!value) {
+    if (raw === null) {
       return null;
     }
 
     try {
-      return JSON.parse(value) as T;
+      return JSON.parse(raw) as string;
+    } catch {
+      return raw;
+    }
+  }
+
+  setItem(key: string, value: string) {
+    void this._provider.set(key, value);
+  }
+
+  removeItem(key: string) {
+    void this._provider.delete(key);
+  }
+
+  async get<T>(key: string, defaultValue?: T): Promise<T | undefined> {
+    const value = await this._provider.get<T>(key);
+    return value === undefined ? defaultValue : value;
+  }
+
+  async set<T>(key: string, value: T): Promise<void> {
+    await this._provider.set(key, value);
+  }
+
+  async delete(key: string): Promise<void> {
+    await this._provider.delete(key);
+  }
+
+  async keys(prefix?: string): Promise<string[]> {
+    return this._provider.keys(prefix);
+  }
+
+  getJSON<T>(key: string): T | null {
+    const raw = localStorage.getItem(this._namespacedKey(key));
+
+    if (!raw) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(raw) as T;
     } catch {
       return null;
     }
   }
 
   setJSON<T>(key: string, value: T) {
-    this.setItem(key, JSON.stringify(value));
+    void this._provider.set(key, value);
   }
 
   scope(namespace: string) {
@@ -41,12 +71,22 @@ class StorageService {
     };
   }
 
+  scoped(namespace: string): ScopedStorage {
+    return {
+      get: <T>(key: string, defaultValue?: T) => this.get<T>(`${namespace}/${key}`, defaultValue),
+      set: <T>(key: string, value: T) => this.set(`${namespace}/${key}`, value),
+      delete: (key: string) => this.delete(`${namespace}/${key}`),
+    };
+  }
+
   private _namespacedKey(key: string) {
-    if (key.startsWith(`${STORAGE_PREFIX}:`)) {
+    const prefix = 'sqlgui';
+
+    if (key.startsWith(`${prefix}:`)) {
       return key;
     }
 
-    return `${STORAGE_PREFIX}:${key}`;
+    return `${prefix}:${key}`;
   }
 }
 

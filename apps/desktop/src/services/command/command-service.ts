@@ -1,14 +1,32 @@
 import type { Command, CommandHandler, CommandRegistration } from './types';
+import { createSubscription } from '../common/subscription';
+import { logService } from '../log/log-service';
 
-class CommandService {
+export class CommandService {
   private _commands = new Map<string, Command>();
+  private _subscription = createSubscription();
+  private _version = 0;
+
+  subscribe(listener: () => void) {
+    return this._subscription.subscribe(listener);
+  }
+
+  getVersion() {
+    return this._version;
+  }
 
   register(command: Command): CommandRegistration {
+    return this.registerCommand(command);
+  }
+
+  registerCommand(command: Command): CommandRegistration {
     if (this._commands.has(command.id)) {
       throw new Error(`Command already registered: ${command.id}`);
     }
 
     this._commands.set(command.id, command);
+    this._emitChange();
+    logService.info('command', `Registered command: ${command.id}`);
 
     return {
       dispose: () => {
@@ -19,6 +37,8 @@ class CommandService {
 
   registerOrReplace(command: Command): CommandRegistration {
     this._commands.set(command.id, command);
+    this._emitChange();
+    logService.info('command', `Registered command: ${command.id}`);
 
     return {
       dispose: () => {
@@ -28,17 +48,31 @@ class CommandService {
   }
 
   unregister(id: string) {
-    this._commands.delete(id);
+    if (this._commands.delete(id)) {
+      this._emitChange();
+      logService.info('command', `Disposed command: ${id}`);
+    }
   }
 
   async execute<T = unknown>(id: string, ...args: unknown[]): Promise<T> {
+    return this.executeCommand<T>(id, ...args);
+  }
+
+  async executeCommand<T = unknown>(id: string, ...args: unknown[]): Promise<T> {
     const command = this._commands.get(id);
 
     if (!command) {
       throw new Error(`Command not found: ${id}`);
     }
 
-    return (await command.handler(...args)) as T;
+    logService.debug('command', `Execute command: ${id}`);
+
+    try {
+      return (await command.handler(...args)) as T;
+    } catch (error) {
+      logService.error('command', `Command failed: ${id}`, error);
+      throw error;
+    }
   }
 
   has(id: string) {
@@ -46,11 +80,21 @@ class CommandService {
   }
 
   get(id: string) {
+    return this.getCommand(id);
+  }
+
+  getCommand(id: string) {
     return this._commands.get(id);
   }
 
   getAll() {
-    return Array.from(this._commands.values());
+    return this.getCommands();
+  }
+
+  getCommands() {
+    return Array.from(this._commands.values()).sort((left, right) => {
+      return left.title.localeCompare(right.title);
+    });
   }
 
   registerPluginCommand(
@@ -64,6 +108,11 @@ class CommandService {
       extensionId,
       handler: raw.handler,
     });
+  }
+
+  private _emitChange() {
+    this._version += 1;
+    this._subscription.emit();
   }
 }
 

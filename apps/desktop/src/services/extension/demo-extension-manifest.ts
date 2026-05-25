@@ -20,9 +20,18 @@ export const demoExtensionManifest: ExtensionManifest = {
       'editor/context': [
         {
           command: 'sql.format',
+          title: 'Format SQL',
           when: 'editorLang == sql',
+          order: 5,
         },
       ],
     },
+    keybindings: [
+      {
+        command: 'sql.format',
+        key: 'mod+shift+f',
+        when: 'activeEditorKind == query',
+      },
+    ],
   },
 };

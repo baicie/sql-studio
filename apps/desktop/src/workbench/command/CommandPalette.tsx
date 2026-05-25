@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import { executeCommand } from '@/services/command/execute-command';
 import { commandService } from '@/services/command/command-service';
@@ -10,6 +10,10 @@ export function CommandPalette() {
   const open = useWorkbenchStore((state) => state.commandPaletteOpen);
   const closeCommandPalette = useWorkbenchStore((state) => state.closeCommandPalette);
   const [keyword, setKeyword] = useState('');
+  const commandVersion = useSyncExternalStore(
+    commandService.subscribe.bind(commandService),
+    commandService.getVersion.bind(commandService),
+  );
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -29,17 +33,18 @@ export function CommandPalette() {
     };
   }, [closeCommandPalette, open]);
 
-  const commands = useMemo(() => {
-    const lowerKeyword = keyword.toLowerCase();
+  const commands =
+    commandVersion >= 0 && open
+      ? commandService.getAll().filter((command) => {
+          const lowerKeyword = keyword.toLowerCase();
 
-    return commandService.getAll().filter((command) => {
-      return (
-        command.title.toLowerCase().includes(lowerKeyword) ||
-        command.id.toLowerCase().includes(lowerKeyword) ||
-        command.category?.toLowerCase().includes(lowerKeyword)
-      );
-    });
-  }, [keyword]);
+          return (
+            command.title.toLowerCase().includes(lowerKeyword) ||
+            command.id.toLowerCase().includes(lowerKeyword) ||
+            command.category?.toLowerCase().includes(lowerKeyword)
+          );
+        })
+      : [];
 
   if (!open) return null;
 

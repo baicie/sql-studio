@@ -1,4 +1,3 @@
-import { NotificationHost } from '@/services/notification/notification-host';
 import { useKeybindingListener } from '@/services/keybinding/use-keybinding-listener';
 import { ConnectionDialog } from './connections/ConnectionDialog';
 import { CommandPalette } from './command/CommandPalette';
@@ -6,6 +5,7 @@ import { ActivityBar } from './layout/ActivityBar';
 import { MainArea } from './layout/MainArea';
 import { SideBar } from './layout/SideBar';
 import { StatusBar } from './layout/StatusBar';
+import { NotificationCenter } from './notification/NotificationCenter';
 import { useWorkbenchStore } from './store/workbenchStore';
 import { useApplyTheme } from './theme/useApplyTheme';
 
@@ -41,7 +41,7 @@ export function Workbench({ health }: WorkbenchProps) {
 
       <CommandPalette />
       <ConnectionDialog />
-      <NotificationHost />
+      <NotificationCenter />
     </div>
   );
 }

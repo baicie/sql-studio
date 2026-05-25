@@ -1,3 +1,5 @@
+import { executeCommand } from '@/services/command/execute-command';
+import { workbenchService } from '@/services/workbench/workbench-service';
 import { ACTIVITY_ITEMS } from '../constants';
 import { useWorkbenchStore } from '../store/workbenchStore';
 import type { ActivityId } from '../types';
@@ -5,16 +7,14 @@ import { cn } from '@/lib/cn';
 
 export function ActivityBar() {
   const activeActivity = useWorkbenchStore((state) => state.activeActivity);
-  const setActiveActivity = useWorkbenchStore((state) => state.setActiveActivity);
-  const toggleSideBar = useWorkbenchStore((state) => state.toggleSideBar);
 
   function handleClick(id: ActivityId) {
     if (id === activeActivity) {
-      toggleSideBar();
+      workbenchService.toggleSideBar();
       return;
     }
 
-    setActiveActivity(id);
+    void executeCommand(getShowActivityCommand(id));
   }
 
   return (
@@ -64,4 +64,20 @@ export function ActivityBar() {
       })}
     </aside>
   );
+}
+
+function getShowActivityCommand(id: ActivityId) {
+  if (id === 'connections') {
+    return 'workbench.showConnections';
+  }
+
+  if (id === 'extensions') {
+    return 'workbench.showExtensions';
+  }
+
+  if (id === 'history') {
+    return 'workbench.showHistory';
+  }
+
+  return 'workbench.showSettings';
 }

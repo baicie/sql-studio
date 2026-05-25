@@ -3,16 +3,16 @@ import { connectionService } from '../connection/connection-service';
 import { editorService } from '../editor/editor-service';
 import { extensionService } from '../extension/extension-service';
 import { notificationService } from '../notification/notification-service';
-import { useWorkbenchStore } from '../../workbench/store/workbenchStore';
+import { workbenchService } from '../workbench/workbench-service';
 
 export function registerCoreCommands() {
   commandService.register({
-    id: 'workbench.showCommandPalette',
-    title: 'Show Command Palette',
+    id: 'workbench.openCommandPalette',
+    title: 'Open Command Palette',
     category: 'Workbench',
     source: 'core',
     handler: () => {
-      useWorkbenchStore.getState().openCommandPalette();
+      workbenchService.openCommandPalette();
     },
   });
 
@@ -22,7 +22,7 @@ export function registerCoreCommands() {
     category: 'Workbench',
     source: 'core',
     handler: () => {
-      useWorkbenchStore.getState().toggleSideBar();
+      workbenchService.toggleSideBar();
     },
   });
 
@@ -32,7 +32,7 @@ export function registerCoreCommands() {
     category: 'Workbench',
     source: 'core',
     handler: () => {
-      useWorkbenchStore.getState().toggleBottomPanel();
+      workbenchService.toggleBottomPanel();
     },
   });
 
@@ -42,7 +42,7 @@ export function registerCoreCommands() {
     category: 'Workbench',
     source: 'core',
     handler: () => {
-      useWorkbenchStore.getState().setActiveActivity('connections');
+      workbenchService.showActivity('connections');
     },
   });
 
@@ -52,7 +52,27 @@ export function registerCoreCommands() {
     category: 'Workbench',
     source: 'core',
     handler: () => {
-      useWorkbenchStore.getState().setActiveActivity('extensions');
+      workbenchService.showActivity('extensions');
+    },
+  });
+
+  commandService.register({
+    id: 'workbench.showHistory',
+    title: 'Show History',
+    category: 'Workbench',
+    source: 'core',
+    handler: () => {
+      workbenchService.showActivity('history');
+    },
+  });
+
+  commandService.register({
+    id: 'workbench.showSettings',
+    title: 'Show Settings',
+    category: 'Workbench',
+    source: 'core',
+    handler: () => {
+      workbenchService.showActivity('settings');
     },
   });
 
@@ -73,7 +93,7 @@ export function registerCoreCommands() {
     source: 'core',
     handler: () => {
       if (!connectionService.isConnected()) {
-        notificationService.warn('Connect to a database before executing SQL.');
+        notificationService.warning('Connect to a database before executing SQL.');
         return;
       }
 
@@ -87,7 +107,7 @@ export function registerCoreCommands() {
     category: 'Connection',
     source: 'core',
     handler: () => {
-      useWorkbenchStore.getState().setActiveActivity('connections');
+      workbenchService.showActivity('connections');
       connectionService.openNewDialog();
     },
   });
@@ -102,7 +122,7 @@ export function registerCoreCommands() {
       const targetId = activeId ?? connectionService.getProfiles()[0]?.id;
 
       if (!targetId) {
-        notificationService.warn('No connection profile available to test.');
+        notificationService.warning('No connection profile available to test.');
         return;
       }
 
@@ -117,7 +137,7 @@ export function registerCoreCommands() {
     source: 'core',
     handler: () => {
       if (!connectionService.isConnected()) {
-        notificationService.warn('No active connection.');
+        notificationService.warning('No active connection.');
         return;
       }
 
@@ -135,7 +155,7 @@ export function registerCoreCommands() {
         typeof _profileId === 'string' ? _profileId : connectionService.getProfiles()[0]?.id;
 
       if (!profileId) {
-        notificationService.warn('Create a connection profile first.');
+        notificationService.warning('Create a connection profile first.');
         return;
       }
 
@@ -149,7 +169,7 @@ export function registerCoreCommands() {
     category: 'Extensions',
     source: 'core',
     handler: () => {
-      useWorkbenchStore.getState().setActiveActivity('extensions');
+      workbenchService.showActivity('extensions');
     },
   });
 

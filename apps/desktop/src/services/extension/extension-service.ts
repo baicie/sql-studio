@@ -1,5 +1,7 @@
 import type { CommandRegistration } from '../command/types';
 import { commandService } from '../command/command-service';
+import { keybindingService } from '../keybinding/keybinding-service';
+import type { KeybindingRegistration } from '../keybinding/types';
 import { menuService } from '../menu/menu-service';
 import { notificationService } from '../notification/notification-service';
 import { appStorage } from '../storage/storage-service';
@@ -13,10 +15,11 @@ function buildExtensionId(manifest: InstalledExtension['manifest']) {
   return `${manifest.publisher}.${manifest.name}`;
 }
 
-class ExtensionService {
+export class ExtensionService {
   private _extensions: InstalledExtension[] = [];
   private _hostState: ExtensionHostState = 'idle';
   private _commandDisposables: CommandRegistration[] = [];
+  private _keybindingDisposables: KeybindingRegistration[] = [];
   private _snapshot: ExtensionSnapshot = {
     extensions: this._extensions,
     hostState: this._hostState,
@@ -103,6 +106,11 @@ class ExtensionService {
     });
     this._commandDisposables = [];
 
+    this._keybindingDisposables.forEach((disposable) => {
+      disposable.dispose();
+    });
+    this._keybindingDisposables = [];
+
     for (const extension of this._extensions) {
       menuService.removeByExtension(extension.id);
     }
@@ -137,12 +145,28 @@ class ExtensionService {
         location,
         items.map((item) => ({
           command: item.command,
+          title: item.title,
           when: item.when,
           group: item.group,
+          order: item.order,
           source: 'plugin' as const,
           extensionId: extension.id,
         })),
       );
+    }
+
+    const keybindings = extension.manifest.contributes?.keybindings ?? [];
+
+    for (const keybinding of keybindings) {
+      const registration = keybindingService.register({
+        command: keybinding.command,
+        key: keybinding.key,
+        when: keybinding.when,
+        source: 'plugin',
+        extensionId: extension.id,
+      });
+
+      this._keybindingDisposables.push(registration);
     }
   }
 

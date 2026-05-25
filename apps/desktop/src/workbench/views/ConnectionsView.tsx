@@ -13,6 +13,10 @@ export function ConnectionsView() {
     connectionService.subscribe.bind(connectionService),
     connectionService.getSnapshot.bind(connectionService),
   );
+  useSyncExternalStore(
+    menuService.subscribe.bind(menuService),
+    menuService.getVersion.bind(menuService),
+  );
 
   const toolbarItems = menuService.getMenu(
     'connections/toolbar',
@@ -73,7 +77,7 @@ export function ConnectionsView() {
                       type="button"
                       className="rounded px-2 py-0.5 text-xs hover:bg-accent"
                       onClick={() => {
-                        void connectionService.connect(profile.id);
+                        void executeCommand('connection.connectActive', profile.id);
                       }}
                     >
                       Connect

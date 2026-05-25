@@ -1,15 +1,9 @@
-export type NotificationType = 'info' | 'warn' | 'error';
-
-export interface Notification {
-  id: string;
-  message: string;
-  type: NotificationType;
-}
+import { useNotificationStore } from './notification-store';
+import type { NotificationItem, NotificationType } from './types';
 
 type NotificationListener = () => void;
 
-class NotificationService {
-  private _notifications: Notification[] = [];
+export class NotificationService {
   private _listeners = new Set<NotificationListener>();
   private _nextId = 1;
 
@@ -21,18 +15,20 @@ class NotificationService {
     };
   }
 
-  getSnapshot(): Notification[] {
-    return this._notifications;
+  getSnapshot(): NotificationItem[] {
+    return useNotificationStore.getState().items;
   }
 
   show(message: string, type: NotificationType = 'info') {
-    const notification: Notification = {
+    const notification: NotificationItem = {
       id: String(this._nextId++),
       message,
       type,
+      createdAt: Date.now(),
+      timeoutMs: 4000,
     };
 
-    this._notifications = this._notifications.concat(notification);
+    useNotificationStore.getState().push(notification);
     this._emit();
 
     window.setTimeout(() => {
@@ -45,7 +41,15 @@ class NotificationService {
   }
 
   warn(message: string) {
-    this.show(message, 'warn');
+    this.show(message, 'warning');
+  }
+
+  warning(message: string) {
+    this.show(message, 'warning');
+  }
+
+  success(message: string) {
+    this.show(message, 'success');
   }
 
   error(message: string) {
@@ -53,12 +57,12 @@ class NotificationService {
   }
 
   dismiss(id: string) {
-    this._notifications = this._notifications.filter((item) => item.id !== id);
+    useNotificationStore.getState().remove(id);
     this._emit();
   }
 
   clear() {
-    this._notifications = [];
+    useNotificationStore.getState().clear();
     this._emit();
   }
 

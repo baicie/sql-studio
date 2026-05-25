@@ -1,4 +1,5 @@
 import { executeCommand } from '../command/execute-command';
+import { logService } from '../log/log-service';
 
 import type { Keybinding, KeybindingContext, KeybindingRegistration } from './types';
 
@@ -17,22 +18,28 @@ function normalizeKey(event: KeyboardEvent): string {
     parts.push('alt');
   }
 
-  parts.push(event.key.toLowerCase());
+  const key = event.key.toLowerCase();
+
+  if (!['control', 'meta', 'shift', 'alt'].includes(key)) {
+    parts.push(key);
+  }
 
   return parts.join('+');
 }
 
-class KeybindingService {
+export class KeybindingService {
   private _bindings: Keybinding[] = [];
 
   register(binding: Keybinding): KeybindingRegistration {
     this._bindings.push(binding);
+    logService.info('keybinding', `Registered keybinding: ${binding.key} -> ${binding.command}`);
 
     return {
       dispose: () => {
         const index = this._bindings.indexOf(binding);
         if (index >= 0) {
           this._bindings.splice(index, 1);
+          logService.info('keybinding', `Disposed keybinding: ${binding.key}`);
         }
       },
     };
@@ -54,7 +61,7 @@ class KeybindingService {
   ) {
     const pressedKey = normalizeKey(event);
 
-    for (const binding of this._bindings) {
+    for (const binding of this._bindings.slice().reverse()) {
       if (binding.key !== pressedKey) {
         continue;
       }
