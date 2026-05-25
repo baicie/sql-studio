@@ -1,11 +1,27 @@
-export function SideBar() {
-  return (
-    <aside className="border-r bg-muted/20">
-      <div className="border-b px-3 py-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        Connections
-      </div>
+import { ConnectionsView } from '../views/ConnectionsView';
+import { ExtensionsView } from '../views/ExtensionsView';
+import { HistoryView } from '../views/HistoryView';
+import { SettingsView } from '../views/SettingsView';
+import { useWorkbenchStore } from '../store/workbenchStore';
 
-      <div className="p-3 text-sm text-muted-foreground">No connections yet.</div>
-    </aside>
-  );
+export function SideBar() {
+  const activeActivity = useWorkbenchStore((state) => state.activeActivity);
+
+  if (activeActivity === 'connections') {
+    return <ConnectionsView />;
+  }
+
+  if (activeActivity === 'extensions') {
+    return <ExtensionsView />;
+  }
+
+  if (activeActivity === 'history') {
+    return <HistoryView />;
+  }
+
+  if (activeActivity === 'settings') {
+    return <SettingsView />;
+  }
+
+  return null;
 }

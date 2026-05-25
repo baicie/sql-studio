@@ -1,8 +1,13 @@
+import { NotificationHost } from '@/services/notification/notification-host';
+import { useKeybindingListener } from '@/services/keybinding/use-keybinding-listener';
+import { ConnectionDialog } from './connections/ConnectionDialog';
+import { CommandPalette } from './command/CommandPalette';
 import { ActivityBar } from './layout/ActivityBar';
-import { BottomPanel } from './layout/BottomPanel';
-import { EditorArea } from './layout/EditorArea';
+import { MainArea } from './layout/MainArea';
 import { SideBar } from './layout/SideBar';
 import { StatusBar } from './layout/StatusBar';
+import { useWorkbenchStore } from './store/workbenchStore';
+import { useApplyTheme } from './theme/useApplyTheme';
 
 interface WorkbenchProps {
   health: {
@@ -12,18 +17,31 @@ interface WorkbenchProps {
 }
 
 export function Workbench({ health }: WorkbenchProps) {
+  useApplyTheme();
+  useKeybindingListener();
+
+  const sideBarVisible = useWorkbenchStore((state) => state.sideBarVisible);
+  const sideBarWidth = useWorkbenchStore((state) => state.sideBarWidth);
+
   return (
-    <div className="grid h-screen grid-rows-[1fr_28px] bg-background text-foreground">
-      <div className="grid min-h-0 grid-cols-[48px_280px_1fr]">
+    <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
+      <div className="flex min-h-0 flex-1">
         <ActivityBar />
-        <SideBar />
-        <div className="grid min-h-0 grid-rows-[1fr_240px]">
-          <EditorArea />
-          <BottomPanel />
-        </div>
+
+        {sideBarVisible ? (
+          <div className="min-h-0 shrink-0 border-r bg-sidebar" style={{ width: sideBarWidth }}>
+            <SideBar />
+          </div>
+        ) : null}
+
+        <MainArea />
       </div>
 
       <StatusBar health={health} />
+
+      <CommandPalette />
+      <ConnectionDialog />
+      <NotificationHost />
     </div>
   );
 }
