@@ -1294,61 +1294,61 @@ pnpm --filter @sqlgui/desktop tauri:dev
 
 ```txt
 项目复制
-[ ] 从 template-repo/full-monorepo 复制出 sqlgui
-[ ] 删除旧 .git
-[ ] 初始化新 git
+[x] 从 template-repo/full-monorepo 复制出 sqlgui（在 sql-studio 仓库内完成改造）
+[-] 删除旧 .git（跳过，保留现有 git 历史）
+[-] 初始化新 git（跳过）
 
 命名修改
-[ ] root package name 改为 sqlgui
-[ ] desktop package name 改为 @sqlgui/desktop
-[ ] @repo/ui 改为 @sqlgui/ui
-[ ] @repo/utils 改为 @sqlgui/utils
-[ ] desktop Rust package 改为 sqlgui-desktop
-[ ] lib name 改为 sqlgui_desktop_lib
+[x] root package name 改为 sqlgui
+[x] desktop package name 改为 @sqlgui/desktop
+[x] @repo/ui 改为 @sqlgui/ui
+[x] @repo/utils 改为 @sqlgui/utils
+[x] desktop Rust package 改为 sqlgui-desktop
+[x] lib name 改为 sqlgui_desktop_lib
 
 workspace 修改
-[ ] pnpm-workspace.yaml 加 extensions/*
-[ ] 新增根 Cargo.toml workspace
-[ ] apps/desktop/src-tauri 加入 workspace
-[ ] 新增 crates/sqlgui-common
-[ ] 新增 crates/sqlgui-db
-[ ] 新增 crates/sqlgui-extension
-[ ] 新增 crates/sqlgui-marketplace
+[x] pnpm-workspace.yaml 加 extensions/*
+[x] 新增根 Cargo.toml workspace
+[x] apps/desktop/src-tauri 加入 workspace
+[x] 新增 crates/sqlgui-common
+[x] 新增 crates/sqlgui-db
+[x] 新增 crates/sqlgui-extension
+[x] 新增 crates/sqlgui-marketplace
 
 前端基础
-[ ] 新增 Workbench
-[ ] 新增 ActivityBar
-[ ] 新增 SideBar
-[ ] 新增 EditorArea
-[ ] 新增 BottomPanel
-[ ] 新增 StatusBar
-[ ] 新增 native invoke 封装
-[ ] App.tsx 调用 system_health_check
+[x] 新增 Workbench
+[x] 新增 ActivityBar
+[x] 新增 SideBar
+[x] 新增 EditorArea
+[x] 新增 BottomPanel
+[x] 新增 StatusBar
+[x] 新增 native invoke 封装
+[x] App.tsx 调用 system_health_check
 
 Rust 基础
-[ ] 新增 AppState
-[ ] 新增 commands/system.rs
-[ ] 注册 system_health_check command
-[ ] 确认 Tauri 启动正常
+[x] 新增 AppState
+[x] 新增 commands/system.rs
+[x] 注册 system_health_check command
+[x] 确认 Tauri 启动正常（rust-toolchain.toml 已修复）
 
 packages
-[ ] 新增 packages/sqlgui-api
-[ ] 新增 packages/sqlgui-sdk
-[ ] 新增 packages/i18n
-[ ] 新增 packages/extension-schema
+[x] 新增 packages/sqlgui-api
+[x] 新增 packages/sqlgui-sdk
+[x] 新增 packages/i18n
+[x] 新增 packages/extension-schema
 
 插件占坑
-[ ] 新增 extensions/sql-formatter-demo
-[ ] 新增 sqlgui.extension.json
-[ ] 新增 extension.ts demo
+[x] 新增 extensions/sql-formatter-demo
+[x] 新增 sqlgui.extension.json
+[x] 新增 extension.ts demo
 
 工程质量
-[ ] 更新 README.md
-[ ] 更新 .gitignore
-[ ] pnpm install 通过
-[ ] pnpm -r check 通过
-[ ] cargo check --workspace 通过
-[ ] pnpm dev 能启动
+[x] 更新 README.md
+[x] 更新 .gitignore
+[x] pnpm install 通过
+[x] pnpm -r check 通过
+[x] cargo check --workspace 通过
+[x] pnpm dev 能启动
 ```
 
 ---
@@ -1358,15 +1358,15 @@ packages
 满足下面条件才进入 Phase 1：
 
 ```txt
-[ ] pnpm install 无错误
-[ ] pnpm dev 能打开桌面窗口
-[ ] 页面显示 Workbench 空布局
-[ ] StatusBar 能显示 Rust Core Ready
-[ ] cargo check --workspace 通过
-[ ] pnpm -r check 通过
-[ ] packages/sqlgui-api 可被 extension 引用
-[ ] crates/sqlgui-db 可被 desktop Rust 引用
-[ ] extensions/sql-formatter-demo 已经有 manifest
+[x] pnpm install 无错误
+[x] pnpm dev 能打开桌面窗口
+[x] 页面显示 Workbench 空布局
+[x] StatusBar 能显示 Rust Core Ready
+[x] cargo check --workspace 通过
+[x] pnpm -r check 通过
+[x] packages/sqlgui-api 可被 extension 引用
+[x] crates/sqlgui-db 可被 desktop Rust 引用
+[x] extensions/sql-formatter-demo 已经有 manifest
 ```
 
 ---

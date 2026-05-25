@@ -55,23 +55,24 @@
 ### Todo
 
 ```txt
-[ ] 使用 full-monorepo 模板初始化项目
-[ ] 重命名项目为 sqlgui
-[ ] 重命名 apps/desktop 为 sqlgui-desktop
-[ ] 重命名 @repo/ui 为 @sqlgui/ui
-[ ] 重命名 @repo/utils 为 @sqlgui/utils
-[ ] 添加 packages/sqlgui-api
-[ ] 添加 packages/sqlgui-sdk
-[ ] 添加 packages/i18n
-[ ] 添加 packages/extension-schema
-[ ] 添加 crates/sqlgui-db
-[ ] 添加 crates/sqlgui-extension
-[ ] 添加 crates/sqlgui-common
-[ ] 添加 extensions/sql-formatter-demo
-[ ] 配置根 Cargo workspace
-[ ] 配置 pnpm workspace 包含 extensions/*
-[ ] 确认 pnpm install 正常
-[ ] 确认 pnpm --filter sqlgui-desktop tauri:dev 正常
+[x] 使用 full-monorepo 模板初始化项目
+[x] 重命名项目为 sqlgui
+[x] 重命名 apps/desktop 为 @sqlgui/desktop（包名；目录仍为 apps/desktop）
+[x] 重命名 @repo/ui 为 @sqlgui/ui
+[x] 重命名 @repo/utils 为 @sqlgui/utils
+[x] 添加 packages/sqlgui-api
+[x] 添加 packages/sqlgui-sdk
+[x] 添加 packages/i18n
+[x] 添加 packages/extension-schema
+[x] 添加 crates/sqlgui-db
+[x] 添加 crates/sqlgui-extension
+[x] 添加 crates/sqlgui-common
+[x] 添加 crates/sqlgui-marketplace
+[x] 添加 extensions/sql-formatter-demo
+[x] 配置根 Cargo workspace
+[x] 配置 pnpm workspace 包含 extensions/*
+[x] 确认 pnpm install 正常
+[x] 确认 pnpm --filter @sqlgui/desktop tauri:dev 正常（已修复 rust-toolchain.toml）
 ```
 
 建议目录：
@@ -90,7 +91,8 @@ sqlgui/
 ├─ crates/
 │  ├─ sqlgui-db/
 │  ├─ sqlgui-extension/
-│  └─ sqlgui-common/
+│  ├─ sqlgui-common/
+│  └─ sqlgui-marketplace/
 ├─ extensions/
 │  └─ sql-formatter-demo/
 ├─ package.json
