@@ -137,7 +137,7 @@ pnpm lint         # 代码检查（所有包和应用）
 
 ### 内部包命名
 
-- 使用 `@repo/*` 命名空间（如 `@repo/ui`, `@repo/utils`）
+- 使用 `@sqlgui/*` 命名空间（如 `@sqlgui/ui`, `@sqlgui/utils`）
 - 使用 `workspace:*` 协议引用内部包
 
 ### 构建和发布
@@ -154,8 +154,8 @@ pnpm lint         # 代码检查（所有包和应用）
 
 项目配置了路径别名以便于包之间的引用：
 
-- `@repo/*` 映射到 `packages/*/src`
-- `@repo/tsconfig` 映射到 `packages/tsconfig`
+- `@sqlgui/*` 映射到 `packages/*/src`
+- `@sqlgui/tsconfig` 映射到 `packages/tsconfig`
 
 ## Git 和 Pull Request 规范
 

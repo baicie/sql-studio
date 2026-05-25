@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { add } from '@repo/utils';
+import { add } from '@sqlgui/utils';
 
 @Injectable()
 export class AppService {

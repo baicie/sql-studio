@@ -1,5 +1,5 @@
 {
-  "name": "@repo/utils",
+  "name": "@sqlgui/utils",
   "version": "0.0.1",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -14,10 +14,11 @@
   "scripts": {
     "build": "rolldown -c",
     "dev": "rolldown -w -c",
+    "check": "tsc --noEmit",
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@repo/tsconfig": "workspace:*",
+    "@sqlgui/tsconfig": "workspace:*",
     "rolldown": "1.0.2",
     "typescript": "^6.0.3"
   }

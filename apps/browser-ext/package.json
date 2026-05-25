@@ -11,8 +11,8 @@
   "dependencies": {
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "@repo/ui": "workspace:*",
-    "@repo/utils": "workspace:*"
+    "@sqlgui/ui": "workspace:*",
+    "@sqlgui/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^19.2.15",
@@ -20,6 +20,6 @@
     "@vitejs/plugin-react": "^6.0.2",
     "typescript": "^6.0.3",
     "vite": "^8.0.14",
-    "@repo/tsconfig": "workspace:*"
+    "@sqlgui/tsconfig": "workspace:*"
   }
 }

@@ -1,5 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    desktop_app_lib::run()
+    sqlgui_desktop_lib::run()
 }

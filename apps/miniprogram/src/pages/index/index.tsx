@@ -1,6 +1,6 @@
 import { Component, type PropsWithChildren } from 'react';
 import { Text, View } from '@tarojs/components';
-import { add } from '@repo/utils';
+import { add } from '@sqlgui/utils';
 import './index.scss';
 
 export default class Index extends Component<PropsWithChildren> {

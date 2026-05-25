@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/tsconfig/nest.json",
+  "extends": "@sqlgui/tsconfig/nest.json",
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": "./"

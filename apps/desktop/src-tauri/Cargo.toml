@@ -1,12 +1,12 @@
 [package]
-name = "desktop-app"
-version = "1.0.0"
-description = "Tauri application with React and TypeScript"
-authors = ["you"]
+name = "sqlgui-desktop"
+version = "0.1.0"
+description = "SQL GUI desktop application"
+authors = ["bai cie"]
 edition = "2021"
 
 [lib]
-name = "desktop_app_lib"
+name = "sqlgui_desktop_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
@@ -15,12 +15,13 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = [] }
 tauri-plugin-shell = "2"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
 
-[profile.release]
-panic = "abort"
-codegen-units = 1
-lto = true
-opt-level = "s"
-strip = true
+sqlgui-common = { path = "../../../crates/sqlgui-common" }
+sqlgui-db = { path = "../../../crates/sqlgui-db" }
+sqlgui-extension = { path = "../../../crates/sqlgui-extension" }
+sqlgui-marketplace = { path = "../../../crates/sqlgui-marketplace" }
+
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+tokio.workspace = true

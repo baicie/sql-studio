@@ -1,5 +1,5 @@
-import { Button } from '@repo/ui';
-import { add } from '@repo/utils';
+import { Button } from '@sqlgui/ui';
+import { add } from '@sqlgui/utils';
 import { useState } from 'react';
 
 function App() {

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Button } from '@repo/ui';
-import { add } from '@repo/utils';
+import { Button } from '@sqlgui/ui';
+import { add } from '@sqlgui/utils';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import { add } from '@repo/utils';
+import { add } from '@sqlgui/utils';
 
 export default function App() {
   return (

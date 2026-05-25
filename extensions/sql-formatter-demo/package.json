@@ -1,0 +1,19 @@
+{
+  "name": "sqlgui-extension-sql-formatter-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "check": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@sqlgui/api": "workspace:*",
+    "@sqlgui/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@sqlgui/tsconfig": "workspace:*",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,32 +1,43 @@
 {
-  "name": "desktop-app",
-  "version": "1.0.0",
+  "name": "@sqlgui/desktop",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Tauri application with React and TypeScript",
+  "description": "SQL GUI desktop application built with Tauri, React and Rust.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "check": "tsc --noEmit",
+    "lint": "eslint .",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"
   },
   "dependencies": {
+    "@sqlgui/api": "workspace:*",
+    "@sqlgui/i18n": "workspace:*",
+    "@sqlgui/ui": "workspace:*",
+    "@sqlgui/utils": "workspace:*",
     "@tauri-apps/api": "^2.11.0",
     "@tauri-apps/plugin-shell": "^2.3.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.468.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "@repo/ui": "workspace:*",
-    "@repo/utils": "workspace:*"
+    "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
+    "@sqlgui/tsconfig": "workspace:*",
     "@tauri-apps/cli": "^2.11.2",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
     "typescript": "^6.0.3",
-    "vite": "^8.0.14",
-    "@repo/tsconfig": "workspace:*"
+    "vite": "^8.0.14"
   }
 }

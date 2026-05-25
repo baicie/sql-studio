@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/tsconfig/react.json",
+  "extends": "@sqlgui/tsconfig/react.json",
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
@@ -14,5 +14,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src", "src-tauri"]
+  "include": ["src"]
 }

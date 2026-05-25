@@ -13,13 +13,13 @@
     "expo-status-bar": "~56.0.4",
     "react": "19.2.6",
     "react-native": "0.85.3",
-    "@repo/utils": "workspace:*"
+    "@sqlgui/utils": "workspace:*"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@types/react": "~19.2.15",
     "typescript": "^6.0.3",
-    "@repo/tsconfig": "workspace:*"
+    "@sqlgui/tsconfig": "workspace:*"
   },
   "private": true
 }

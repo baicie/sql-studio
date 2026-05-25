@@ -1,20 +1,19 @@
-import { Button } from '@repo/ui';
-import { add } from '@repo/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-function App() {
-  const [count, setCount] = useState(0);
+import { callNative } from './services/native/invoke';
+import { Workbench } from './workbench/Workbench';
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Desktop App (Tauri)</h1>
-      <p>Using Shared UI and Utils</p>
-      <p>1 + 4 = {add(1, 4)}</p>
-      <div style={{ marginTop: 20 }}>
-        <Button onClick={() => setCount((count) => count + 1)}>count is {count}</Button>
-      </div>
-    </div>
-  );
+interface HealthCheckResponse {
+  appName: string;
+  rustCoreReady: boolean;
 }
 
-export default App;
+export default function App() {
+  const [health, setHealth] = useState<HealthCheckResponse | null>(null);
+
+  useEffect(() => {
+    callNative<HealthCheckResponse>('system_health_check').then(setHealth).catch(console.error);
+  }, []);
+
+  return <Workbench health={health} />;
+}

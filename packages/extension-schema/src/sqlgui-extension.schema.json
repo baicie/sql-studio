@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SQL GUI Extension Manifest",
+  "type": "object",
+  "required": ["name", "publisher", "version", "main"],
+  "properties": {
+    "name": { "type": "string" },
+    "displayName": { "type": "string" },
+    "publisher": { "type": "string" },
+    "version": { "type": "string" },
+    "main": { "type": "string" },
+    "activationEvents": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "permissions": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

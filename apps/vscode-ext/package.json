@@ -30,9 +30,9 @@
     "@types/vscode": "^1.120.0",
     "@types/node": "25.x",
     "typescript": "^6.0.3",
-    "@repo/tsconfig": "workspace:*"
+    "@sqlgui/tsconfig": "workspace:*"
   },
   "dependencies": {
-    "@repo/utils": "workspace:*"
+    "@sqlgui/utils": "workspace:*"
   }
 }
