@@ -257,6 +257,16 @@ export class ConnectionService {
     });
   }
 
+  async handleMenuCommand(command: string) {
+    switch (command) {
+      case 'connection.new':
+        this.openNewDialog();
+        break;
+      default:
+        break;
+    }
+  }
+
   private _persist() {
     appStorage.setJSON(CONNECTIONS_KEY, this._profiles);
   }

@@ -12,6 +12,31 @@ export interface ConnectionProfile {
   password?: string;
   database?: string;
   filePath?: string;
+  createdAt?: number;
+  updatedAt?: number;
+}
+
+export type ConnectionTreeNodeType =
+  | 'connection'
+  | 'database'
+  | 'schema'
+  | 'tables'
+  | 'table'
+  | 'columns'
+  | 'column';
+
+export interface ConnectionTreeNode {
+  id: string;
+  type: ConnectionTreeNodeType;
+  name: string;
+  connectionId: string;
+  database?: string;
+  schema?: string;
+  table?: string;
+  isLeaf: boolean;
+  isLoading?: boolean;
+  children?: ConnectionTreeNode[];
+  meta?: Record<string, unknown>;
 }
 
 export interface ConnectionDialogState {

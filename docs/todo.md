@@ -123,18 +123,18 @@ CommandPalette
 ### Todo
 
 ```txt
-[ ] 创建 Workbench 根组件
-[ ] 实现左侧 ActivityBar
-[ ] 实现 SideBar 容器
-[ ] 实现 EditorArea 容器
-[ ] 实现 BottomPanel 容器
-[ ] 实现 StatusBar
-[ ] 接入 shadcn/ui
-[ ] 接入 Tailwind
-[ ] 接入 lucide-react 图标
-[ ] 实现基础主题变量
-[ ] 实现暗色模式
-[ ] 实现布局状态持久化
+[x] 创建 Workbench 根组件
+[x] 实现左侧 ActivityBar
+[x] 实现 SideBar 容器
+[x] 实现 EditorArea 容器
+[x] 实现 BottomPanel 容器
+[x] 实现 StatusBar
+[x] 接入 shadcn/ui
+[x] 接入 Tailwind
+[x] 接入 lucide-react 图标
+[x] 实现基础主题变量
+[x] 实现暗色模式
+[x] 实现布局状态持久化
 ```
 
 ### 推荐文件
@@ -178,22 +178,22 @@ ExtensionService
 ### Todo
 
 ```txt
-[ ] 实现 CommandService
-[ ] 支持 registerCommand
-[ ] 支持 executeCommand
-[ ] 支持 unregisterCommand
-[ ] 实现 MenuService
-[ ] 支持菜单贡献点
-[ ] 支持 when 条件表达式 MVP
-[ ] 实现 KeybindingService
-[ ] 支持快捷键绑定
-[ ] 实现 NotificationService
-[ ] 实现 LocalStorage/文件级 StorageService
-[ ] 实现 Command Palette
-[ ] Command Palette 能搜索和执行命令
-[ ] 注册核心命令 sql.execute
-[ ] 注册核心命令 connection.new
-[ ] 注册核心命令 extensions.open
+[x] 实现 CommandService
+[x] 支持 registerCommand
+[x] 支持 executeCommand
+[x] 支持 unregisterCommand
+[x] 实现 MenuService
+[x] 支持菜单贡献点
+[x] 支持 when 条件表达式 MVP
+[x] 实现 KeybindingService
+[x] 支持快捷键绑定
+[x] 实现 NotificationService
+[x] 实现 LocalStorage/文件级 StorageService
+[x] 实现 Command Palette
+[x] Command Palette 能搜索和执行命令
+[x] 注册核心命令 sql.execute
+[x] 注册核心命令 connection.new
+[x] 注册核心命令 extensions.open
 ```
 
 ### MVP 命令示例
@@ -234,28 +234,28 @@ SQLite + PostgreSQL
 ### Todo
 
 ```txt
-[ ] crates/sqlgui-db 定义 ConnectionConfig
-[ ] 定义 QueryRequest
-[ ] 定义 QueryResult
-[ ] 定义 ColumnMeta
-[ ] 定义 CellValue
-[ ] 实现 PoolManager
-[ ] 实现 SQLite connector
-[ ] 实现 PostgreSQL connector
-[ ] 实现 MySQL connector，可放后面
-[ ] 实现 test_connection
-[ ] 实现 open_connection
-[ ] 实现 close_connection
-[ ] 实现 execute_query
-[ ] 实现 list_databases
-[ ] 实现 list_schemas
-[ ] 实现 list_tables
-[ ] 实现 list_columns
-[ ] 统一错误类型 DbError
-[ ] Tauri command 暴露 db_test_connection
-[ ] Tauri command 暴露 db_open_connection
-[ ] Tauri command 暴露 db_execute_query
-[ ] Tauri command 暴露 db_list_tables
+[x] crates/sqlgui-db 定义 ConnectionConfig
+[x] 定义 QueryRequest
+[x] 定义 QueryResult
+[x] 定义 ColumnMeta
+[x] 定义 CellValue
+[x] 实现 PoolManager
+[x] 实现 SQLite connector
+[x] 实现 PostgreSQL connector
+[x] 实现 MySQL connector
+[x] 实现 test_connection
+[x] 实现 open_connection
+[x] 实现 close_connection
+[x] 实现 execute_query
+[x] 实现 list_databases
+[x] 实现 list_schemas
+[x] 实现 list_tables
+[x] 实现 list_columns
+[x] 统一错误类型 DbError
+[x] Tauri command 暴露 db_test_connection
+[x] Tauri command 暴露 db_open_connection
+[x] Tauri command 暴露 db_execute_query
+[x] Tauri command 暴露 db_list_tables
 ```
 
 ### 关键要求
@@ -280,21 +280,21 @@ SQLite + PostgreSQL
 ### Todo
 
 ```txt
-[ ] 实现 ConnectionDialog
-[ ] 支持 SQLite 文件路径
-[ ] 支持 PostgreSQL host/port/user/password/database
-[ ] 支持 MySQL host/port/user/password/database
-[ ] 实现 Test Connection 按钮
-[ ] 实现 Save Connection
-[ ] 实现 ConnectionTree
-[ ] 展示连接列表
-[ ] 展示数据库
-[ ] 展示 schema
-[ ] 展示 table
-[ ] 右键表：生成 SELECT 语句
-[ ] 右键表：查看结构
-[ ] 保存连接到本地配置
-[ ] 密码暂时不展示，不复制，不日志输出
+[x] 实现 ConnectionDialog
+[x] 支持 SQLite 文件路径
+[x] 支持 PostgreSQL host/port/user/password/database
+[x] 支持 MySQL host/port/user/password/database
+[x] 实现 Test Connection 按钮
+[x] 实现 Save Connection
+[x] 实现 ConnectionTree
+[x] 展示连接列表
+[x] 展示数据库
+[x] 展示 schema
+[x] 展示 table
+[x] 右键表：生成 SELECT 语句
+[x] 右键表：查看结构
+[x] 保存连接到本地配置
+[x] 密码暂时不展示，不复制，不日志输出
 ```
 
 ### 连接树 MVP
