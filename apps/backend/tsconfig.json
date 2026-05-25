@@ -1,8 +1,0 @@
-{
-  "extends": "@sqlgui/tsconfig/nest.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "baseUrl": "./"
-  },
-  "include": ["src/**/*"]
-}
