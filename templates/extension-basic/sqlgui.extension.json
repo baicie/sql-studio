@@ -1,0 +1,19 @@
+{
+  "name": "hello-world",
+  "displayName": "Hello World",
+  "publisher": "example",
+  "version": "0.1.0",
+  "description": "A basic SQL GUI extension.",
+  "main": "dist/extension.js",
+  "activationEvents": ["onCommand:example.hello"],
+  "permissions": ["ui.notification"],
+  "contributes": {
+    "commands": [
+      {
+        "command": "example.hello",
+        "title": "Hello World",
+        "category": "Example"
+      }
+    ]
+  }
+}

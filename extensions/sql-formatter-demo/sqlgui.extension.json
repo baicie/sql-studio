@@ -23,9 +23,17 @@
       "editor/context": [
         {
           "command": "sql.format",
-          "when": "editorLang == sql"
+          "when": "editorLang == sql",
+          "group": "navigation"
         }
       ]
-    }
+    },
+    "keybindings": [
+      {
+        "command": "sql.format",
+        "key": "mod+shift+f",
+        "when": "editorLang == sql"
+      }
+    ]
   }
 }

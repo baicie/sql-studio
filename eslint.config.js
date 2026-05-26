@@ -131,6 +131,9 @@ export default defineConfig(
       'scripts/**',
       './*.{js,ts}',
       'packages/*/*.js',
+      'packages/sqlgui-sdk/**/*.ts',
+      'packages/sqlgui-api/**/*.ts',
+      'packages/extension-schema/**/*.ts',
     ],
     rules: {
       'no-restricted-globals': 'off',
