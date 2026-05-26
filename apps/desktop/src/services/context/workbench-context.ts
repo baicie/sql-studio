@@ -1,18 +1,18 @@
 import { connectionService } from '../connection/connection-service';
 import { extensionService } from '../extension/extension-service';
-import { useWorkbenchStore } from '../../workbench/store/workbenchStore';
+import { useEditorStore } from '../../workbench/editor/store/editorStore';
 
 export function getWorkbenchContext(): Record<string, unknown> {
-  const state = useWorkbenchStore.getState();
-  const activeTab = state.editorTabs.find((tab) => tab.id === state.activeEditorTabId);
+  const tabs = useEditorStore.getState().tabs;
+  const activeEditorId = useEditorStore.getState().activeEditorId;
+  const activeTab = tabs.find((tab) => tab.id === activeEditorId);
   const activeConnection = connectionService.getActiveConnection();
 
   return {
     activeEditorKind: activeTab?.kind ?? '',
     editorLang: activeTab?.kind === 'query' ? 'sql' : '',
-    activeActivity: state.activeActivity,
-    sideBarVisible: state.sideBarVisible,
-    bottomPanelVisible: state.bottomPanelVisible,
+    sideBarVisible: true,
+    bottomPanelVisible: true,
     connectionActive: connectionService.isConnected(),
     activeConnectionId: connectionService.getActiveConnectionId() ?? '',
     dbKind: activeConnection?.kind ?? '',

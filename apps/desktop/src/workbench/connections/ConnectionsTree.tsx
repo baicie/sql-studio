@@ -7,7 +7,7 @@ import {
   createRootNode,
   loadNodeChildren,
 } from '@/services/connection/connectionTreeService';
-import { editorService } from '@/services/editor/editor-service';
+import { editorService } from '@/workbench/editor/services/editorService';
 import { logService } from '@/services/log/log-service';
 import { notificationService } from '@/services/notification/notification-service';
 import { generateSelectTopSql, getTableDisplayName } from '@/services/connection/sqlGenerator';
@@ -92,8 +92,17 @@ export function ConnectionsTree() {
     const sql = generateSelectTopSql(node);
     const title = getTableDisplayName(node);
 
-    editorService.newQuery(sql);
-    editorService.renameActiveTab(`${title}.sql`);
+    editorService.openSql({
+      title: `${title}.sql`,
+      content: sql,
+      connectionId: node.connectionId,
+      database: node.database,
+      schema: node.schema,
+      source: {
+        type: 'connection-tree',
+        nodeId: node.id,
+      },
+    });
 
     logService.info('editor', `Opened query for table: ${title}`);
   }, [contextMenu]);

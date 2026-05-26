@@ -15,7 +15,6 @@
     "tauri:build": "tauri build"
   },
   "dependencies": {
-    "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-select": "^2.2.6",
     "@sqlgui/api": "workspace:*",
     "@sqlgui/extension-schema": "workspace:*",
@@ -35,6 +34,7 @@
   },
   "devDependencies": {
     "@sqlgui/tsconfig": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.0",
     "@tauri-apps/cli": "^2.11.2",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",

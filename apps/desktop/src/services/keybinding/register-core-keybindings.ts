@@ -26,8 +26,22 @@ export function registerCoreKeybindings() {
   });
 
   keybindingService.register({
-    command: 'sql.execute',
+    command: 'editor.run',
     key: 'mod+enter',
+    when: 'activeEditorKind == query',
+    source: 'core',
+  });
+
+  keybindingService.register({
+    command: 'editor.close',
+    key: 'mod+w',
+    when: 'activeEditorKind == query',
+    source: 'core',
+  });
+
+  keybindingService.register({
+    command: 'editor.save',
+    key: 'mod+s',
     when: 'activeEditorKind == query',
     source: 'core',
   });

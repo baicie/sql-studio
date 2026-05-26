@@ -1,9 +1,10 @@
 import { commandService } from './command-service';
 import { connectionService } from '../connection/connection-service';
-import { editorService } from '../editor/editor-service';
+import { editorService } from '../../workbench/editor/services/editorService';
 import { extensionService } from '../extension/extension-service';
 import { notificationService } from '../notification/notification-service';
 import { workbenchService } from '../workbench/workbench-service';
+import { sqlExecutionService } from '../../workbench/editor/services/sqlExecutionService';
 
 export function registerCoreCommands() {
   commandService.register({
@@ -82,7 +83,54 @@ export function registerCoreCommands() {
     category: 'Editor',
     source: 'core',
     handler: () => {
-      editorService.newQuery();
+      const activeConnectionId = connectionService.getActiveConnectionId();
+      editorService.newQuery(activeConnectionId ?? undefined);
+    },
+  });
+
+  commandService.register({
+    id: 'editor.run',
+    title: 'Run SQL',
+    category: 'SQL',
+    source: 'core',
+    handler: async () => {
+      const active = editorService.getActiveEditor();
+      if (!active) return;
+
+      try {
+        await sqlExecutionService.executeEditor(active.id);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        notificationService.error(`Execute failed: ${message}`);
+      }
+    },
+  });
+
+  commandService.register({
+    id: 'editor.save',
+    title: 'Save SQL Draft',
+    category: 'Editor',
+    source: 'core',
+    handler: () => {
+      const active = editorService.getActiveEditor();
+      if (!active) return;
+
+      editorService.updateEditor(active.id, {
+        dirty: false,
+      });
+    },
+  });
+
+  commandService.register({
+    id: 'editor.close',
+    title: 'Close Editor',
+    category: 'Editor',
+    source: 'core',
+    handler: () => {
+      const active = editorService.getActiveEditor();
+      if (!active) return;
+
+      editorService.closeEditor(active.id);
     },
   });
 
@@ -91,13 +139,24 @@ export function registerCoreCommands() {
     title: 'Execute SQL',
     category: 'SQL',
     source: 'core',
-    handler: () => {
+    handler: async () => {
       if (!connectionService.isConnected()) {
         notificationService.warning('Connect to a database before executing SQL.');
         return;
       }
 
-      notificationService.info('SQL execution will be available in Phase 3.');
+      const active = editorService.getActiveEditor();
+      if (!active) {
+        notificationService.warning('No active editor.');
+        return;
+      }
+
+      try {
+        await sqlExecutionService.executeEditor(active.id);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        notificationService.error(`Execute failed: ${message}`);
+      }
     },
   });
 
