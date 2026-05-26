@@ -6,8 +6,11 @@ import { activationRegistry } from './activation-registry';
 import { contributionRegistry } from './contribution-registry';
 import { notificationService } from '../notification/notification-service';
 import { appStorage } from '../storage/storage-service';
+import { permissionStorage } from '@/plugins/permissions/PermissionStorage';
 import type { ExtensionHostState, ExtensionSnapshot, InstalledExtension } from './types';
 import { pluginHostManager } from '@/plugins/host/PluginHostManager';
+import { extensionInstallerService } from '@/plugins/services/extensionInstallerService';
+import { normalizeExtensionInstallError } from '@/plugins/services/extensionInstallError';
 
 const EXTENSIONS_KEY = 'extensions';
 const SCANNED_EXTENSIONS_KEY = 'scanned_extensions';
@@ -40,7 +43,7 @@ export class ExtensionService {
 
     await this._scanAndLoadExtensions();
     this._loadStoredExtensions();
-    this.activateAll();
+    this._activateAll();
     this._hostState = 'ready';
     this._refreshSnapshot();
     this._subscription.emit();
@@ -123,12 +126,18 @@ export class ExtensionService {
     return this._hostState;
   }
 
-  reload() {
-    this.deactivateAll();
+  reloadExtensions() {
+    this._deactivateAll();
     activationRegistry.clear();
-    this.activateAll();
+    this._scanAndLoadExtensions();
+    this._loadStoredExtensions();
+    this._activateAll();
     notificationService.info('Extensions reloaded.');
     this._subscription.emit();
+  }
+
+  reload() {
+    this.reloadExtensions();
   }
 
   setEnabled(id: string, enabled: boolean) {
@@ -142,18 +151,75 @@ export class ExtensionService {
     this._persist();
     pluginHostManager.deactivateExtension(id);
     contributionRegistry.unregisterExtension(id);
-    this.deactivateAll();
-    this.activateAll();
+    this._deactivateAll();
+    this._activateAll();
     this._refreshSnapshot();
     this._subscription.emit();
   }
 
-  uninstall(id: string) {
-    pluginHostManager.deactivateExtension(id);
-    this.deactivateAll();
-    this._extensions = this._extensions.filter((extension) => extension.id !== id);
+  async installFromPackage(packagePath: string) {
+    try {
+      await extensionInstallerService.installFromPackage({
+        packagePath,
+        overwrite: true,
+      });
+
+      this.reloadExtensions();
+    } catch (error) {
+      const msg = normalizeExtensionInstallError(error);
+      notificationService.error(`Install failed: ${msg}`);
+      throw error;
+    }
+  }
+
+  async installFromFolderCopy(folderPath: string) {
+    try {
+      await extensionInstallerService.installFromFolder({
+        folderPath,
+        mode: 'copy',
+        overwrite: true,
+      });
+
+      this.reloadExtensions();
+    } catch (error) {
+      const msg = normalizeExtensionInstallError(error);
+      notificationService.error(`Install failed: ${msg}`);
+      throw error;
+    }
+  }
+
+  async installFromFolderLink(folderPath: string) {
+    try {
+      await extensionInstallerService.installFromFolder({
+        folderPath,
+        mode: 'link',
+        overwrite: true,
+      });
+
+      this.reloadExtensions();
+    } catch (error) {
+      const msg = normalizeExtensionInstallError(error);
+      notificationService.error(`Install failed: ${msg}`);
+      throw error;
+    }
+  }
+
+  async uninstall(extensionId: string, removeData = false) {
+    contributionRegistry.unregisterExtension(extensionId);
+    await pluginHostManager.deactivateExtension(extensionId);
+
+    try {
+      await extensionInstallerService.uninstall({
+        extensionId,
+        removeData,
+      });
+    } catch (error) {
+      console.warn(`[ExtensionService] uninstall failed: ${error}`);
+    }
+
+    permissionStorage.revoke(extensionId);
+    this._extensions = this._extensions.filter((extension) => extension.id !== extensionId);
     this._persist();
-    this.activateAll();
     this._refreshSnapshot();
     this._subscription.emit();
   }
@@ -166,7 +232,7 @@ export class ExtensionService {
     await pluginHostManager.reloadAll();
   }
 
-  private activateAll() {
+  private _activateAll() {
     for (const extension of this._extensions) {
       if (extension.enabled) {
         this._activateExtension(extension);
@@ -174,7 +240,7 @@ export class ExtensionService {
     }
   }
 
-  private deactivateAll() {
+  private _deactivateAll() {
     pluginHostManager.terminateAll();
     for (const extension of this._extensions) {
       contributionRegistry.unregisterExtension(extension.id);

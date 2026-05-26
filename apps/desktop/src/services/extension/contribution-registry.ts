@@ -49,6 +49,12 @@ export class ContributionRegistry {
     this._disposables.delete(extensionId);
   }
 
+  clear() {
+    for (const extensionId of this._disposables.keys()) {
+      this.unregisterExtension(extensionId);
+    }
+  }
+
   private _registerCommands(extension: InstalledExtension): ContributionDisposable[] {
     const commands = extension.manifest.contributes?.commands ?? [];
 

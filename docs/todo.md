@@ -12,23 +12,23 @@
 
 # 当前进度总览
 
-| Phase    | 名称                | 进度        | 说明                 |
-| -------- | ------------------- | ----------- | -------------------- |
-| Phase 0  | 项目初始化          | ✅ 完成     |                      |
-| Phase 1  | Workbench 基础布局  | ✅ 完成     |                      |
-| Phase 2  | 核心服务系统        | ✅ 完成     |                      |
-| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                      |
-| Phase 4  | 连接管理 UI         | ✅ 完成     |                      |
-| Phase 5  | SQL 编辑器          | ✅ 完成     |                      |
-| Phase 6  | 查询结果表格        | ✅ 完成     |                      |
-| Phase 7  | i18n                | ✅ 完成     |                      |
-| Phase 8  | 插件 Manifest       | ✅ 完成     |                      |
-| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义       |
-| Phase 10 | Web Worker 插件宿主 | ✅ 完成     |                      |
-| Phase 11 | 插件权限系统        | ✅ 完成     |                      |
-| Phase 12 | 插件本地安装        | 🔶 部分完成 | 基础加载完成，缺卸载 |
-| Phase 13 | Mock Marketplace    | ❌ 未开始   |                      |
-| Phase 14 | 插件管理 UI         | 🔶 部分完成 | Installed 页面完成   |
+| Phase    | 名称                | 进度        | 说明                |
+| -------- | ------------------- | ----------- | ------------------- |
+| Phase 0  | 项目初始化          | ✅ 完成     |                     |
+| Phase 1  | Workbench 基础布局  | ✅ 完成     |                     |
+| Phase 2  | 核心服务系统        | ✅ 完成     |                     |
+| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                     |
+| Phase 4  | 连接管理 UI         | ✅ 完成     |                     |
+| Phase 5  | SQL 编辑器          | ✅ 完成     |                     |
+| Phase 6  | 查询结果表格        | ✅ 完成     |                     |
+| Phase 7  | i18n                | ✅ 完成     |                     |
+| Phase 8  | 插件 Manifest       | ✅ 完成     |                     |
+| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义      |
+| Phase 10 | Web Worker 插件宿主 | ✅ 完成     |                     |
+| Phase 11 | 插件权限系统        | ✅ 完成     |                     |
+| Phase 12 | 插件本地安装        | ✅ 完成     | .sgx 安装/卸载/打包 |
+| Phase 13 | Mock Marketplace    | ❌ 未开始   |                     |
+| Phase 14 | 插件管理 UI         | 🔶 部分完成 | Installed 页面完成  |
 
 ---
 
@@ -661,25 +661,29 @@ secret
 ### Todo
 
 ```txt
-[ ] 定义本地插件目录 ~/.sqlgui/extensions
-[ ] 支持 Load Extension From Folder
-[ ] 支持安装 .sgx 包，MVP 可以先不压缩
-[x] 读取插件 manifest
-[ ] 复制插件到本地目录
-[x] 写入 installed-extensions.json
-[x] 支持 enable/disable
-[ ] 支持 uninstall
-[x] 支持 reload
-[ ] 插件错误展示
+[x] 定义 .sgx 插件包格式
+[x] 支持从本地文件夹加载插件
+[x] 支持从 .sgx 文件安装插件
+[x] 支持复制模式 copy install
+[x] 支持开发模式 linked install
+[x] 支持卸载插件
+[x] 支持 installed-extensions.json
+[x] 支持插件安装目录规范
+[x] 支持 manifest 校验
+[x] 支持入口文件存在性校验
+[x] 支持路径穿越防护
+[x] 支持安装后重新扫描/注册贡献点
+[x] 支持权限变更触发重新授权 (PermissionBroker)
+[x] 支持插件包打包命令 (pnpm sqlgui:pack)
+[x] 支持 Installed Extensions UI 完整管理
+[x] ExtensionDevelopmentView UI
+[x] ExtensionListItem 支持 uninstall
+[x] extensionInstallerService 前端服务
+[x] dialogService 文件选择
+[x] Rust ExtensionInstaller 安装管理器
+[x] Rust RegistryStore 持久化
+[x] Rust fs_utils 文件操作
 ```
-
-第一版可以先直接加载：
-
-```txt
-extensions/sql-formatter-demo
-```
-
-不要急着做 zip 包。
 
 ---
 

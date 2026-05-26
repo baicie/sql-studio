@@ -15,6 +15,16 @@ export function ExtensionDetailView({ extension, onBack }: ExtensionDetailViewPr
   const contributes = manifest.contributes;
   const { grantedPermissions } = useExtensionPermissions(extension.id);
 
+  const handleUninstall = async () => {
+    const confirmed = window.confirm(
+      t('message.uninstallConfirm', { name: manifest.displayName ?? manifest.name }),
+    );
+    if (!confirmed) return;
+
+    await extensionService.uninstall(extension.id);
+    onBack();
+  };
+
   return (
     <section className="flex h-full flex-col">
       <header className="flex h-9 items-center justify-between border-b px-3">
@@ -195,6 +205,23 @@ export function ExtensionDetailView({ extension, onBack }: ExtensionDetailViewPr
                 </div>
               )}
             </dl>
+          </div>
+
+          <div className="flex gap-2 border-t pt-4">
+            <button
+              type="button"
+              onClick={() => extensionService.reloadExtensions()}
+              className="flex-1 rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
+            >
+              {t('reloadExtensions')}
+            </button>
+            <button
+              type="button"
+              onClick={handleUninstall}
+              className="flex-1 rounded-md border border-destructive bg-destructive/10 px-3 py-1.5 text-sm text-destructive hover:bg-destructive/20"
+            >
+              {t('uninstall')}
+            </button>
           </div>
         </div>
       </div>

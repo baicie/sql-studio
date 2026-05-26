@@ -21,7 +21,11 @@ pub fn run() {
             commands::db::db_list_tables,
             commands::db::db_list_columns,
             commands::extension::extension_scan,
-        commands::extension::extension_read_entry,
+            commands::extension::extension_read_entry,
+            commands::extension::extension_list_installed,
+            commands::extension::extension_install_from_folder,
+            commands::extension::extension_install_from_package,
+            commands::extension::extension_uninstall,
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]
