@@ -16,7 +16,7 @@
     "@sqlgui/utils": "workspace:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
+    "@babel/core": "^7.29.7",
     "@types/react": "~19.2.15",
     "typescript": "^6.0.3",
     "@sqlgui/tsconfig": "workspace:*"
