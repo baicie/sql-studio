@@ -2,6 +2,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Copy, Download } from 'lucide-react';
+import { useAppTranslation } from '@/i18n';
 import type { QueryResult } from '../../editor/types';
 
 export interface ResultGridProps {
@@ -10,6 +11,8 @@ export interface ResultGridProps {
 }
 
 export function ResultGrid({ result }: ResultGridProps) {
+  const { t } = useAppTranslation('result');
+
   const [selectedCell, setSelectedCell] = useState<{
     rowIndex: number;
     columnIndex: number;
@@ -26,7 +29,7 @@ export function ResultGrid({ result }: ResultGridProps) {
   const { columns, rows } = result;
 
   const formatCell = (cell: unknown): string => {
-    if (cell === null) return 'NULL';
+    if (cell === null) return t('cell.null');
     if (typeof cell === 'object') return JSON.stringify(cell);
     return String(cell);
   };
@@ -42,22 +45,6 @@ export function ResultGrid({ result }: ResultGridProps) {
     void navigator.clipboard.writeText(value);
   }, [selectedCell, rows]);
 
-  const handleCopyRow = useCallback(
-    (rowIndex: number) => {
-      const row = rows[rowIndex];
-      if (!row) return;
-      const values = row.map((cell) => formatCell(cell)).join('\t');
-      void navigator.clipboard.writeText(values);
-    },
-    [rows],
-  );
-
-  const handleCopyAll = useCallback(() => {
-    const header = columns.map((c) => c.name).join('\t');
-    const body = rows.map((row) => row.map((cell) => formatCell(cell)).join('\t')).join('\n');
-    void navigator.clipboard.writeText(`${header}\n${body}`);
-  }, [columns, rows]);
-
   const toCSV = useCallback(() => {
     const escape = (v: string) => {
       if (v.includes('"') || v.includes(',') || v.includes('\n')) {
@@ -70,7 +57,7 @@ export function ResultGrid({ result }: ResultGridProps) {
       .map((row) => row.map((cell) => escape(formatCell(cell))).join(','))
       .join('\n');
     return `${header}\n${body}`;
-  }, [columns, rows]);
+  }, [columns, rows, t]);
 
   const toJSON = useCallback(() => {
     const data = rows.map((row) => {
@@ -90,14 +77,9 @@ export function ResultGrid({ result }: ResultGridProps) {
     <div className="flex h-full flex-col">
       <ResultToolbar
         onCopyCell={handleCopyCell}
-        onCopyRow={handleCopyRow}
-        onCopyAll={handleCopyAll}
         onExportCSV={() => downloadFile(csvContent, 'result.csv', 'text/csv')}
         onExportJSON={() => downloadFile(jsonContent, 'result.json', 'application/json')}
         selectedCell={selectedCell}
-        rows={rows}
-        csvContent={csvContent}
-        jsonContent={jsonContent}
       />
 
       <div className="min-h-0 flex-1 overflow-auto" ref={tableRef}>
@@ -156,7 +138,9 @@ export function ResultGrid({ result }: ResultGridProps) {
                         title={formatCell(cell)}
                       >
                         {cell === null ? (
-                          <span className="truncate italic text-muted-foreground">NULL</span>
+                          <span className="truncate italic text-muted-foreground">
+                            {t('cell.null')}
+                          </span>
                         ) : (
                           <span className="truncate">{formatCell(cell)}</span>
                         )}
@@ -175,14 +159,9 @@ export function ResultGrid({ result }: ResultGridProps) {
 
 interface ResultToolbarProps {
   onCopyCell: () => void;
-  onCopyRow: (rowIndex: number) => void;
-  onCopyAll: () => void;
   onExportCSV: () => void;
   onExportJSON: () => void;
   selectedCell: { rowIndex: number; columnIndex: number } | null;
-  rows: unknown[][];
-  csvContent: string;
-  jsonContent: string;
 }
 
 function ResultToolbar({
@@ -191,6 +170,8 @@ function ResultToolbar({
   onExportJSON,
   selectedCell,
 }: ResultToolbarProps) {
+  const { t } = useAppTranslation('result');
+
   return (
     <div className="flex shrink-0 items-center gap-1 border-b px-2 py-1">
       <button
@@ -198,10 +179,10 @@ function ResultToolbar({
         className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40"
         onClick={onCopyCell}
         disabled={!selectedCell}
-        title="Copy selected cell"
+        title={t('toolbar.copyCell')}
       >
         <Copy className="h-3 w-3" />
-        Copy Cell
+        {t('toolbar.copyCell')}
       </button>
 
       <div className="mx-1 h-3 w-px bg-border" />
@@ -210,19 +191,19 @@ function ResultToolbar({
         type="button"
         className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
         onClick={onExportCSV}
-        title="Export as CSV"
+        title={t('toolbar.exportCsv')}
       >
         <Download className="h-3 w-3" />
-        CSV
+        {t('toolbar.exportCsv')}
       </button>
       <button
         type="button"
         className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
         onClick={onExportJSON}
-        title="Export as JSON"
+        title={t('toolbar.exportJson')}
       >
         <Download className="h-3 w-3" />
-        JSON
+        {t('toolbar.exportJson')}
       </button>
     </div>
   );

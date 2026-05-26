@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
+import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
 import { extensionService } from '@/services/extension/extension-service';
 
@@ -11,6 +12,8 @@ interface StatusBarProps {
 }
 
 export function StatusBar({ health }: StatusBarProps) {
+  const { t } = useAppTranslation('workbench');
+
   const connectionSnapshot = useSyncExternalStore(
     connectionService.subscribe.bind(connectionService),
     connectionService.getSnapshot.bind(connectionService),
@@ -24,7 +27,7 @@ export function StatusBar({ health }: StatusBarProps) {
   const activeConnection = connectionService.getActiveConnection();
   const connectionLabel = activeConnection
     ? `${activeConnection.name} (${connectionSnapshot.status})`
-    : 'No Connection';
+    : t('statusBar.noConnection');
   const dialectLabel = activeConnection ? activeConnection.kind.toUpperCase() : 'SQL';
   const pluginLabel =
     extensionSnapshot.hostState === 'ready'
@@ -34,14 +37,18 @@ export function StatusBar({ health }: StatusBarProps) {
   return (
     <footer className="flex h-7 shrink-0 items-center justify-between border-t bg-primary px-3 text-xs text-primary-foreground">
       <div className="flex items-center gap-4">
-        <span>SQL GUI</span>
+        <span>{t('appName')}</span>
         <span>{connectionLabel}</span>
-        <span>Dialect: {dialectLabel}</span>
+        <span>{t('statusBar.dialect', { dialect: dialectLabel })}</span>
       </div>
 
       <div className="flex items-center gap-4">
-        <span>Plugins: {pluginLabel}</span>
-        <span>Rust Core: {health?.rustCoreReady ? 'Ready' : 'Checking'}</span>
+        <span>{t('statusBar.plugins', { count: pluginLabel })}</span>
+        <span>
+          {t('statusBar.rustCore', {
+            status: health?.rustCoreReady ? t('statusBar.ready') : t('statusBar.checking'),
+          })}
+        </span>
       </div>
     </footer>
   );

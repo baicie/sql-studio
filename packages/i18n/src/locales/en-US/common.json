@@ -1,6 +1,33 @@
 {
-  "app.name": "SQL GUI",
-  "connections.title": "Connections",
-  "results.title": "Results",
-  "extensions.title": "Extensions"
+  "appName": "SQL GUI",
+  "actions": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "refresh": "Refresh",
+    "copy": "Copy",
+    "clear": "Clear",
+    "run": "Run",
+    "stop": "Stop",
+    "search": "Search",
+    "install": "Install",
+    "uninstall": "Uninstall",
+    "enable": "Enable",
+    "disable": "Disable",
+    "retry": "Retry"
+  },
+  "status": {
+    "loading": "Loading...",
+    "success": "Success",
+    "failed": "Failed",
+    "empty": "No data",
+    "unknown": "Unknown"
+  },
+  "time": {
+    "milliseconds": "{{value}} ms",
+    "seconds": "{{value}} s"
+  }
 }

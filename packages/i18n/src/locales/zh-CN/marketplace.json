@@ -1,0 +1,26 @@
+{
+  "title": "插件市场",
+  "searchPlaceholder": "搜索插件...",
+  "empty": "暂无插件",
+  "tabs": {
+    "featured": "精选",
+    "popular": "热门",
+    "new": "最新"
+  },
+  "detail": {
+    "install": "安装",
+    "installed": "已安装",
+    "uninstall": "卸载",
+    "version": "版本",
+    "publisher": "发布者",
+    "description": "描述",
+    "readme": "自述文件",
+    "changelog": "更新日志"
+  },
+  "filter": {
+    "all": "全部",
+    "formatter": "格式化",
+    "snippets": "代码片段",
+    "theme": "主题"
+  }
+}

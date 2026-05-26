@@ -1,0 +1,20 @@
+{
+  "connection": {
+    "refused": "连接被拒绝，请检查主机和端口。",
+    "timeout": "连接超时，请检查网络或数据库状态。",
+    "authFailed": "认证失败，请检查用户名或密码。",
+    "databaseNotFound": "数据库不存在。",
+    "fileNotFound": "数据库文件不存在。",
+    "notOpened": "连接尚未打开。"
+  },
+  "query": {
+    "syntaxError": "SQL 语法错误。",
+    "timeout": "查询超时。",
+    "cancelled": "查询已取消。",
+    "permissionDenied": "没有执行此查询的权限。"
+  },
+  "db": {
+    "unsupported": "暂不支持该数据库类型。"
+  },
+  "unknown": "未知错误：{{message}}"
+}

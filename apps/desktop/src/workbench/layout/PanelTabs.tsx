@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 
+import { useAppTranslation } from '@/i18n';
 import { BOTTOM_PANEL_ITEMS } from '../constants';
 import { useWorkbenchStore } from '../store/workbenchStore';
 import { cn } from '@/lib/cn';
@@ -8,6 +9,7 @@ export function PanelTabs() {
   const activeBottomPanel = useWorkbenchStore((state) => state.activeBottomPanel);
   const setActiveBottomPanel = useWorkbenchStore((state) => state.setActiveBottomPanel);
   const toggleBottomPanel = useWorkbenchStore((state) => state.toggleBottomPanel);
+  const { t } = useAppTranslation('workbench');
 
   return (
     <div className="flex h-9 shrink-0 items-center border-b bg-muted/20">
@@ -27,7 +29,7 @@ export function PanelTabs() {
               )}
               onClick={() => setActiveBottomPanel(item.id)}
             >
-              {item.title}
+              {item.titleKey ? t(item.titleKey) : item.title}
             </button>
           );
         })}

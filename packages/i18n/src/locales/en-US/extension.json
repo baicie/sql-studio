@@ -1,0 +1,31 @@
+{
+  "title": "Extensions",
+  "installed": "Installed",
+  "marketplace": "Marketplace",
+  "development": "Development",
+  "reloadHost": "Reload Extension Host",
+  "loadFromFolder": "Load from Folder",
+  "enable": "Enable Extension",
+  "disable": "Disable Extension",
+  "uninstall": "Uninstall Extension",
+  "permissions": "Permissions",
+  "contributions": "Contributions",
+  "activationEvents": "Activation Events",
+  "logs": "Extension Logs",
+  "message": {
+    "installSuccess": "Extension installed",
+    "uninstallConfirm": "Uninstall extension \"{{name}}\"?",
+    "permissionRequired": "This extension requires the following permissions:",
+    "hostReloaded": "Extension host reloaded"
+  },
+  "permission": {
+    "editor.read": "Read editor content",
+    "editor.write": "Modify editor content",
+    "storage.local": "Use local extension storage",
+    "ui.notification": "Show notifications",
+    "db.connection.read": "Read database connection info",
+    "db.schema.read": "Read database schema",
+    "db.query.read": "Execute read-only queries",
+    "db.query.write": "Execute write queries"
+  }
+}

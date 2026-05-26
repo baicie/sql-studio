@@ -1,4 +1,5 @@
 import type * as monaco from 'monaco-editor';
+import i18n from 'i18next';
 import { dbService } from '@/services/db/dbService';
 import { editorService } from './editorService';
 import { resultService } from '@/workbench/results/services/resultService';
@@ -27,7 +28,7 @@ export const sqlExecutionService = {
     }
 
     if (isDangerousSql(sql)) {
-      const confirmed = window.confirm('This SQL may modify data. Continue?');
+      const confirmed = window.confirm(i18n.t('editor.message.dangerousSqlConfirm'));
       if (!confirmed) return;
     }
 
@@ -78,7 +79,7 @@ export const sqlExecutionService = {
 
   async executeSql(connectionId: string, sql: string, editorId?: string) {
     if (isDangerousSql(sql)) {
-      const confirmed = window.confirm('This SQL may modify data. Continue?');
+      const confirmed = window.confirm(i18n.t('editor.message.dangerousSqlConfirm'));
       if (!confirmed) return;
     }
 

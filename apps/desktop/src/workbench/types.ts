@@ -15,7 +15,8 @@ export interface EditorTab {
 
 export interface ActivityItem {
   id: ActivityId;
-  title: string;
+  title?: string;
+  titleKey?: string;
   icon: ComponentType<{
     className?: string;
   }>;
@@ -23,5 +24,6 @@ export interface ActivityItem {
 
 export interface BottomPanelItem {
   id: BottomPanelId;
-  title: string;
+  title?: string;
+  titleKey?: string;
 }

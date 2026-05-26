@@ -1,9 +1,8 @@
-import enUS from './locales/en-US/common.json';
-import zhCN from './locales/zh-CN/common.json';
+import { formatDateTime, formatNumber } from './utils/format';
 
-export const resources = {
-  'en-US': { common: enUS },
-  'zh-CN': { common: zhCN },
-} as const;
-
-export type Locale = keyof typeof resources;
+export { resources } from './resources';
+export { namespaces } from './namespaces';
+export type { I18nNamespace } from './namespaces';
+export { supportedLanguages, languageOptions } from './types';
+export type { SupportedLanguage, LanguageOption } from './types';
+export { formatDateTime, formatNumber };

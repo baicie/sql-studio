@@ -1,0 +1,33 @@
+{
+  "activityBar": {
+    "connections": "Connections",
+    "extensions": "Extensions",
+    "history": "History",
+    "settings": "Settings"
+  },
+  "panel": {
+    "results": "Results",
+    "messages": "Messages",
+    "problems": "Problems",
+    "history": "Query History"
+  },
+  "commandPalette": {
+    "open": "Open Command Palette",
+    "placeholder": "Type a command...",
+    "noCommands": "No matching commands"
+  },
+  "sideBar": {
+    "toggle": "Toggle Side Bar"
+  },
+  "bottomPanel": {
+    "toggle": "Toggle Bottom Panel"
+  },
+  "statusBar": {
+    "ready": "Ready",
+    "checking": "Checking",
+    "noConnection": "No connection selected",
+    "dialect": "Dialect: {{dialect}}",
+    "plugins": "Plugins: {{count}}",
+    "rustCore": "Rust Core: {{status}}"
+  }
+}

@@ -12,23 +12,23 @@
 
 # 当前进度总览
 
-| Phase    | 名称                | 进度        | 说明                     |
-| -------- | ------------------- | ----------- | ------------------------ |
-| Phase 0  | 项目初始化          | ✅ 完成     |                          |
-| Phase 1  | Workbench 基础布局  | ✅ 完成     |                          |
-| Phase 2  | 核心服务系统        | ✅ 完成     |                          |
-| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                          |
-| Phase 4  | 连接管理 UI         | ✅ 完成     |                          |
-| Phase 5  | SQL 编辑器          | ✅ 完成     |                          |
-| Phase 6  | 查询结果表格        | ✅ 完成     |                          |
-| Phase 7  | i18n                | 🔶 部分完成 | 基础框架已搭，需扩展词条 |
-| Phase 8  | 插件 Manifest       | ✅ 完成     |                          |
-| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义           |
-| Phase 10 | Web Worker 插件宿主 | ❌ 未开始   | ⚠️ 插件当前运行在主线程  |
-| Phase 11 | 插件权限系统        | ❌ 未开始   |                          |
-| Phase 12 | 插件本地安装        | 🔶 部分完成 | 基础加载完成，缺卸载     |
-| Phase 13 | Mock Marketplace    | ❌ 未开始   |                          |
-| Phase 14 | 插件管理 UI         | 🔶 部分完成 | Installed 页面完成       |
+| Phase    | 名称                | 进度        | 说明                    |
+| -------- | ------------------- | ----------- | ----------------------- |
+| Phase 0  | 项目初始化          | ✅ 完成     |                         |
+| Phase 1  | Workbench 基础布局  | ✅ 完成     |                         |
+| Phase 2  | 核心服务系统        | ✅ 完成     |                         |
+| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                         |
+| Phase 4  | 连接管理 UI         | ✅ 完成     |                         |
+| Phase 5  | SQL 编辑器          | ✅ 完成     |                         |
+| Phase 6  | 查询结果表格        | ✅ 完成     |                         |
+| Phase 7  | i18n                | ✅ 完成     |                         |
+| Phase 8  | 插件 Manifest       | ✅ 完成     |                         |
+| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义          |
+| Phase 10 | Web Worker 插件宿主 | ❌ 未开始   | ⚠️ 插件当前运行在主线程 |
+| Phase 11 | 插件权限系统        | ❌ 未开始   |                         |
+| Phase 12 | 插件本地安装        | 🔶 部分完成 | 基础加载完成，缺卸载    |
+| Phase 13 | Mock Marketplace    | ❌ 未开始   |                         |
+| Phase 14 | 插件管理 UI         | 🔶 部分完成 | Installed 页面完成      |
 
 ---
 
@@ -446,11 +446,11 @@ Tabs:
 [x] 支持 zh-CN
 [x] 支持 en-US
 [x] 抽离 common.json
-[ ] 抽离 connection.json
-[ ] 抽离 editor.json
-[ ] 抽离 extension.json
-[ ] 设置语言切换入口
-[ ] 语言配置持久化
+[x] 抽离 connection.json
+[x] 抽离 editor.json
+[x] 抽离 extension.json
+[x] 设置语言切换入口
+[x] 语言配置持久化
 ```
 
 ### 目录

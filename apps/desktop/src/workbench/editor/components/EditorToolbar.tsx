@@ -1,6 +1,7 @@
 import { Play, Save } from 'lucide-react';
 import type { SqlEditorTab } from '../types';
 import { ConnectionSelector } from './ConnectionSelector';
+import { useAppTranslation } from '@/i18n';
 import { sqlExecutionService } from '../services/sqlExecutionService';
 import { editorService } from '../services/editorService';
 
@@ -9,6 +10,8 @@ interface EditorToolbarProps {
 }
 
 export function EditorToolbar(props: EditorToolbarProps) {
+  const { t } = useAppTranslation('editor');
+
   const { tab } = props;
 
   return (
@@ -28,7 +31,7 @@ export function EditorToolbar(props: EditorToolbarProps) {
         }}
       >
         <Play className="h-3 w-3" />
-        Run
+        {t('run')}
       </button>
 
       <button
@@ -39,11 +42,11 @@ export function EditorToolbar(props: EditorToolbarProps) {
         }}
       >
         <Save className="h-3 w-3" />
-        Save
+        {t('saveDraft')}
       </button>
 
       <div className="ml-auto text-xs text-muted-foreground">
-        {tab.connectionId ? 'Connected query' : 'No connection'}
+        {tab.connectionId ? t('selectConnection') : t('noConnection')}
       </div>
     </div>
   );

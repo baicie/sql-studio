@@ -93,7 +93,9 @@ export class CommandService {
 
   getCommands() {
     return Array.from(this._commands.values()).sort((left, right) => {
-      return left.title.localeCompare(right.title);
+      const leftTitle = left.title ?? left.id;
+      const rightTitle = right.title ?? right.id;
+      return leftTitle.localeCompare(rightTitle);
     });
   }
 

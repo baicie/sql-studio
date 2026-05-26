@@ -1,8 +1,11 @@
 import { Play } from 'lucide-react';
+import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
 import { editorService } from '../services/editorService';
 
 export function EmptyEditorState() {
+  const { t } = useAppTranslation('editor');
+
   const handleNewQuery = () => {
     const activeConnectionId = connectionService.getActiveConnectionId();
     editorService.newQuery(activeConnectionId ?? undefined);
@@ -11,8 +14,8 @@ export function EmptyEditorState() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4">
       <div className="text-center">
-        <h3 className="text-lg font-medium">No SQL Editor Open</h3>
-        <p className="mt-1 text-sm text-muted-foreground">Create a new query to get started.</p>
+        <h3 className="text-lg font-medium">{t('empty.title')}</h3>
+        <p className="mt-1 text-sm text-muted-foreground">{t('empty.description')}</p>
       </div>
 
       <button
@@ -21,7 +24,7 @@ export function EmptyEditorState() {
         onClick={handleNewQuery}
       >
         <Play className="h-3 w-3" />
-        New Query
+        {t('newQuery')}
       </button>
 
       <div className="mt-4 text-xs text-muted-foreground">

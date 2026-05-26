@@ -1,0 +1,16 @@
+{
+  "title": "设置",
+  "language": {
+    "title": "语言",
+    "description": "选择应用显示语言",
+    "system": "跟随系统",
+    "restartHint": "语言切换会立即生效。"
+  },
+  "appearance": {
+    "title": "外观",
+    "theme": "主题",
+    "dark": "深色",
+    "light": "浅色",
+    "system": "跟随系统"
+  }
+}

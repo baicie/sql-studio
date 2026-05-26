@@ -1,0 +1,50 @@
+{
+  "title": "连接",
+  "newConnection": "新建连接",
+  "editConnection": "编辑连接",
+  "deleteConnection": "删除连接",
+  "testConnection": "测试连接",
+  "openConnection": "打开连接",
+  "closeConnection": "关闭连接",
+  "empty": "暂无连接",
+  "fields": {
+    "name": "名称",
+    "type": "数据库类型",
+    "host": "主机",
+    "port": "端口",
+    "username": "用户名",
+    "password": "密码",
+    "database": "数据库",
+    "filePath": "数据库文件",
+    "ssl": "使用 SSL"
+  },
+  "dbKind": {
+    "sqlite": "SQLite",
+    "postgres": "PostgreSQL",
+    "mysql": "MySQL"
+  },
+  "tree": {
+    "tables": "表",
+    "columns": "字段",
+    "views": "视图"
+  },
+  "contextMenu": {
+    "selectTop1000": "查询前 1000 行",
+    "showColumns": "查看字段",
+    "copyTableName": "复制表名",
+    "copyFullName": "复制完整名称",
+    "refresh": "刷新"
+  },
+  "status": {
+    "connected": "已连接",
+    "connecting": "连接中",
+    "disconnected": "未连接",
+    "error": "连接错误"
+  },
+  "message": {
+    "testSuccess": "连接测试成功",
+    "saveSuccess": "连接已保存",
+    "deleteConfirm": "确定要删除连接「{{name}}」吗？",
+    "passwordInsecure": "MVP 阶段密码暂时保存在本地，后续会接入系统密钥链。"
+  }
+}

@@ -1,5 +1,6 @@
 import { executeCommand } from '@/services/command/execute-command';
 import { workbenchService } from '@/services/workbench/workbench-service';
+import { useAppTranslation } from '@/i18n';
 import { ACTIVITY_ITEMS } from '../constants';
 import { useWorkbenchStore } from '../store/workbenchStore';
 import type { ActivityId } from '../types';
@@ -7,6 +8,7 @@ import { cn } from '@/lib/cn';
 
 export function ActivityBar() {
   const activeActivity = useWorkbenchStore((state) => state.activeActivity);
+  const { t } = useAppTranslation('workbench');
 
   function handleClick(id: ActivityId) {
     if (id === activeActivity) {
@@ -28,7 +30,7 @@ export function ActivityBar() {
             <button
               key={item.id}
               type="button"
-              title={item.title}
+              title={item.titleKey ? t(item.titleKey) : item.title}
               className={cn(
                 'relative flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground',
                 active && 'bg-accent text-accent-foreground',
@@ -51,7 +53,7 @@ export function ActivityBar() {
           <button
             key={item.id}
             type="button"
-            title={item.title}
+            title={item.titleKey ? t(item.titleKey) : item.title}
             className={cn(
               'flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground',
               active && 'bg-accent text-accent-foreground',

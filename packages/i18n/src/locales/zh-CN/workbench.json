@@ -1,0 +1,33 @@
+{
+  "activityBar": {
+    "connections": "连接",
+    "extensions": "插件",
+    "history": "历史",
+    "settings": "设置"
+  },
+  "panel": {
+    "results": "结果",
+    "messages": "消息",
+    "problems": "问题",
+    "history": "查询历史"
+  },
+  "commandPalette": {
+    "open": "打开命令面板",
+    "placeholder": "输入命令...",
+    "noCommands": "没有匹配的命令"
+  },
+  "sideBar": {
+    "toggle": "切换侧边栏"
+  },
+  "bottomPanel": {
+    "toggle": "切换底部面板"
+  },
+  "statusBar": {
+    "ready": "就绪",
+    "checking": "检查中",
+    "noConnection": "未选择连接",
+    "dialect": "方言：{{dialect}}",
+    "plugins": "插件：{{count}}",
+    "rustCore": "Rust Core：{{status}}"
+  }
+}

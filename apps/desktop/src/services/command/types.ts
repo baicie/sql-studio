@@ -8,8 +8,10 @@ export interface CommandContext {
 
 export interface Command {
   id: string;
-  title: string;
+  title?: string;
+  titleKey?: string;
   category?: string;
+  categoryKey?: string;
   source: CommandSource;
   extensionId?: string;
   handler: CommandHandler;

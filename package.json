@@ -8,6 +8,7 @@
     "build": "pnpm -r build && cargo build --workspace",
     "build:desktop": "pnpm --filter @sqlgui/desktop tauri:build",
     "check": "pnpm -r --if-present check && cargo check --workspace",
+    "check:i18n": "tsx scripts/check-i18n.ts",
     "lint": "pnpm -r --if-present lint",
     "format": "prettier --write .",
     "clean": "rimraf node_modules apps/*/node_modules packages/*/node_modules extensions/*/node_modules target",
@@ -44,6 +45,8 @@
   "dependencies": {
     "@tanstack/react-virtual": "^3.13.25",
     "@tauri-apps/plugin-dialog": "^2.7.1",
-    "@tauri-apps/plugin-fs": "^2.5.1"
+    "@tauri-apps/plugin-fs": "^2.5.1",
+    "i18next": "^26.2.0",
+    "react-i18next": "^17.0.8"
   }
 }

@@ -1,0 +1,50 @@
+{
+  "title": "Connections",
+  "newConnection": "New Connection",
+  "editConnection": "Edit Connection",
+  "deleteConnection": "Delete Connection",
+  "testConnection": "Test Connection",
+  "openConnection": "Open Connection",
+  "closeConnection": "Close Connection",
+  "empty": "No connections",
+  "fields": {
+    "name": "Name",
+    "type": "Database Type",
+    "host": "Host",
+    "port": "Port",
+    "username": "Username",
+    "password": "Password",
+    "database": "Database",
+    "filePath": "Database File",
+    "ssl": "Use SSL"
+  },
+  "dbKind": {
+    "sqlite": "SQLite",
+    "postgres": "PostgreSQL",
+    "mysql": "MySQL"
+  },
+  "tree": {
+    "tables": "Tables",
+    "columns": "Columns",
+    "views": "Views"
+  },
+  "contextMenu": {
+    "selectTop1000": "Select Top 1000",
+    "showColumns": "Show Columns",
+    "copyTableName": "Copy Table Name",
+    "copyFullName": "Copy Full Name",
+    "refresh": "Refresh"
+  },
+  "status": {
+    "connected": "Connected",
+    "connecting": "Connecting",
+    "disconnected": "Disconnected",
+    "error": "Connection Error"
+  },
+  "message": {
+    "testSuccess": "Connection test succeeded",
+    "saveSuccess": "Connection saved",
+    "deleteConfirm": "Delete connection \"{{name}}\"?",
+    "passwordInsecure": "In MVP, passwords are stored locally. System keychain support will be added later."
+  }
+}

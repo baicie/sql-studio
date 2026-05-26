@@ -1,0 +1,24 @@
+{
+  "newQuery": "New Query",
+  "untitled": "Untitled.sql",
+  "run": "Run SQL",
+  "runSelection": "Run Selected SQL",
+  "saveDraft": "Save Draft",
+  "closeEditor": "Close Editor",
+  "selectConnection": "Select Connection",
+  "noConnection": "No connection",
+  "sql": {
+    "execute": "Execute SQL"
+  },
+  "empty": {
+    "title": "No SQL editor open",
+    "description": "Create a query or select a table from the connection tree."
+  },
+  "message": {
+    "emptySql": "SQL is empty",
+    "noActiveEditor": "No active editor",
+    "noConnectionSelected": "No database connection selected",
+    "dangerousSqlConfirm": "This SQL may modify data. Continue?",
+    "unsavedConfirm": "\"{{title}}\" has unsaved changes. Close it?"
+  }
+}

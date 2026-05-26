@@ -1,0 +1,24 @@
+{
+  "newQuery": "新建查询",
+  "untitled": "未命名.sql",
+  "run": "运行 SQL",
+  "runSelection": "运行选中 SQL",
+  "saveDraft": "保存草稿",
+  "closeEditor": "关闭编辑器",
+  "selectConnection": "选择连接",
+  "noConnection": "未选择连接",
+  "sql": {
+    "execute": "执行 SQL"
+  },
+  "empty": {
+    "title": "暂无打开的 SQL 编辑器",
+    "description": "新建查询或从连接树中选择一张表开始。"
+  },
+  "message": {
+    "emptySql": "SQL 为空",
+    "noActiveEditor": "没有活动编辑器",
+    "noConnectionSelected": "未选择数据库连接",
+    "dangerousSqlConfirm": "此 SQL 可能会修改数据，是否继续？",
+    "unsavedConfirm": "「{{title}}」有未保存的修改，确定关闭吗？"
+  }
+}

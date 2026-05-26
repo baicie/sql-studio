@@ -1,9 +1,12 @@
 import { useSyncExternalStore } from 'react';
 
+import { useAppTranslation } from '@/i18n';
 import { executeCommand } from '@/services/command/execute-command';
 import { extensionService } from '@/services/extension/extension-service';
 
 export function ExtensionsView() {
+  const { t } = useAppTranslation('extension');
+
   const snapshot = useSyncExternalStore(
     extensionService.subscribe.bind(extensionService),
     extensionService.getSnapshot.bind(extensionService),
@@ -13,7 +16,7 @@ export function ExtensionsView() {
     <section className="flex h-full flex-col">
       <header className="flex h-9 items-center justify-between border-b px-3">
         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Extensions
+          {t('title')}
         </span>
 
         <button
@@ -23,13 +26,13 @@ export function ExtensionsView() {
             void executeCommand('extensions.reload');
           }}
         >
-          Reload
+          {t('reloadHost')}
         </button>
       </header>
 
       <div className="space-y-2 p-3">
         <div className="rounded-md border p-3">
-          <div className="text-sm font-medium">Marketplace</div>
+          <div className="text-sm font-medium">{t('marketplace')}</div>
           <div className="mt-1 text-xs text-muted-foreground">
             Extension marketplace will be here.
           </div>
@@ -37,7 +40,7 @@ export function ExtensionsView() {
 
         <div className="rounded-md border p-3">
           <div className="flex items-center justify-between">
-            <div className="text-sm font-medium">Installed</div>
+            <div className="text-sm font-medium">{t('installed')}</div>
             <span className="text-xs text-muted-foreground">Host: {snapshot.hostState}</span>
           </div>
 
@@ -67,7 +70,7 @@ export function ExtensionsView() {
                         extensionService.setEnabled(extension.id, event.target.checked);
                       }}
                     />
-                    Enabled
+                    {t('enable')}
                   </label>
                 </div>
               ))}

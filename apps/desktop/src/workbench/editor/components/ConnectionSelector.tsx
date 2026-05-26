@@ -1,3 +1,4 @@
+import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
 
 interface ConnectionSelectorProps {
@@ -6,6 +7,8 @@ interface ConnectionSelectorProps {
 }
 
 export function ConnectionSelector(props: ConnectionSelectorProps) {
+  const { t } = useAppTranslation('connection');
+
   const { value, onChange } = props;
 
   const profiles = connectionService.getProfiles();
@@ -16,7 +19,7 @@ export function ConnectionSelector(props: ConnectionSelectorProps) {
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value || undefined)}
     >
-      <option value="">Select connection</option>
+      <option value="">{t('fields.name')}</option>
       {profiles.map((profile) => (
         <option key={profile.id} value={profile.id}>
           {profile.name}

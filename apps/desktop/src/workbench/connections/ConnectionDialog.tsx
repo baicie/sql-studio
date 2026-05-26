@@ -1,5 +1,6 @@
 import { useState, useSyncExternalStore } from 'react';
 
+import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
 import type { ConnectionProfile, DbKind } from '@/services/connection/types';
 
@@ -16,6 +17,9 @@ interface ConnectionDialogFormProps {
 }
 
 function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormProps) {
+  const { t } = useAppTranslation('connection');
+  const { t: tc } = useAppTranslation('common');
+
   const [name, setName] = useState(profile?.name ?? '');
   const [kind, setKind] = useState<DbKind>(profile?.kind ?? 'SQLite');
   const [host, setHost] = useState(profile?.host ?? 'localhost');
@@ -89,23 +93,23 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
   return (
     <div className="w-full max-w-md rounded-lg border bg-popover p-4 shadow-xl">
       <h2 className="text-lg font-semibold">
-        {mode === 'edit' ? 'Edit Connection' : 'New Connection'}
+        {mode === 'edit' ? t('editConnection') : t('newConnection')}
       </h2>
-      <p className="mt-1 text-sm text-muted-foreground">Create and test a database connection.</p>
+      <p className="mt-1 text-sm text-muted-foreground">{t('message.passwordInsecure')}</p>
 
       <div className="mt-4 space-y-3">
         <label className="block text-sm">
-          <span className="mb-1 block text-xs text-muted-foreground">Name</span>
+          <span className="mb-1 block text-xs text-muted-foreground">{t('fields.name')}</span>
           <input
             className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            placeholder="Local SQLite"
+            placeholder={t('fields.name')}
           />
         </label>
 
         <label className="block text-sm">
-          <span className="mb-1 block text-xs text-muted-foreground">Database Type</span>
+          <span className="mb-1 block text-xs text-muted-foreground">{t('fields.type')}</span>
           <select
             className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
             value={kind}
@@ -115,37 +119,37 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
               setPort(nextKind === 'SQLite' ? '' : String(DEFAULT_PORTS[nextKind] ?? ''));
             }}
           >
-            <option value="SQLite">SQLite</option>
-            <option value="PostgreSQL">PostgreSQL</option>
-            <option value="MySQL">MySQL</option>
+            <option value="SQLite">{t('dbKind.sqlite')}</option>
+            <option value="PostgreSQL">{t('dbKind.postgres')}</option>
+            <option value="MySQL">{t('dbKind.mysql')}</option>
           </select>
         </label>
 
         {kind === 'SQLite' ? (
           <label className="block text-sm">
-            <span className="mb-1 block text-xs text-muted-foreground">File Path</span>
+            <span className="mb-1 block text-xs text-muted-foreground">{t('fields.filePath')}</span>
             <input
               className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
               value={filePath}
               onChange={(event) => setFilePath(event.target.value)}
-              placeholder="/path/to/database.sqlite"
+              placeholder={t('fields.filePath')}
             />
           </label>
         ) : (
           <>
             <div className="grid grid-cols-[1fr_100px] gap-2">
               <label className="block text-sm">
-                <span className="mb-1 block text-xs text-muted-foreground">Host</span>
+                <span className="mb-1 block text-xs text-muted-foreground">{t('fields.host')}</span>
                 <input
                   className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
                   value={host}
                   onChange={(event) => setHost(event.target.value)}
-                  placeholder="localhost"
+                  placeholder={t('fields.host')}
                 />
               </label>
 
               <label className="block text-sm">
-                <span className="mb-1 block text-xs text-muted-foreground">Port</span>
+                <span className="mb-1 block text-xs text-muted-foreground">{t('fields.port')}</span>
                 <input
                   className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
                   value={port}
@@ -156,33 +160,39 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
             </div>
 
             <label className="block text-sm">
-              <span className="mb-1 block text-xs text-muted-foreground">Username</span>
+              <span className="mb-1 block text-xs text-muted-foreground">
+                {t('fields.username')}
+              </span>
               <input
                 className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
-                placeholder="postgres"
+                placeholder={t('fields.username')}
               />
             </label>
 
             <label className="block text-sm">
-              <span className="mb-1 block text-xs text-muted-foreground">Password</span>
+              <span className="mb-1 block text-xs text-muted-foreground">
+                {t('fields.password')}
+              </span>
               <input
                 className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                placeholder="••••••••"
+                placeholder={t('fields.password')}
               />
             </label>
 
             <label className="block text-sm">
-              <span className="mb-1 block text-xs text-muted-foreground">Database</span>
+              <span className="mb-1 block text-xs text-muted-foreground">
+                {t('fields.database')}
+              </span>
               <input
                 className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
                 value={database}
                 onChange={(event) => setDatabase(event.target.value)}
-                placeholder={kind === 'MySQL' ? 'mydb' : 'postgres'}
+                placeholder={t('fields.database')}
               />
             </label>
           </>
@@ -196,7 +206,7 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
           onClick={onClose}
           disabled={loading}
         >
-          Cancel
+          {tc('actions.cancel')}
         </button>
         <button
           type="button"
@@ -204,7 +214,7 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
           onClick={handleTest}
           disabled={loading || !name.trim()}
         >
-          {loading ? 'Testing...' : 'Test'}
+          {loading ? tc('status.loading') : t('testConnection')}
         </button>
         <button
           type="button"
@@ -212,7 +222,7 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
           onClick={handleSaveAndConnect}
           disabled={loading || !name.trim()}
         >
-          {loading ? 'Connecting...' : 'Save & Connect'}
+          {loading ? tc('status.loading') : tc('actions.save')}
         </button>
       </div>
     </div>

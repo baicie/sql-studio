@@ -9,7 +9,7 @@ import { sqlExecutionService } from '../../workbench/editor/services/sqlExecutio
 export function registerCoreCommands() {
   commandService.register({
     id: 'workbench.openCommandPalette',
-    title: 'Open Command Palette',
+    titleKey: 'commandPalette.open',
     category: 'Workbench',
     source: 'core',
     handler: () => {
@@ -19,7 +19,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'workbench.toggleSideBar',
-    title: 'Toggle Side Bar',
+    titleKey: 'sideBar.toggle',
     category: 'Workbench',
     source: 'core',
     handler: () => {
@@ -29,7 +29,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'workbench.toggleBottomPanel',
-    title: 'Toggle Bottom Panel',
+    titleKey: 'bottomPanel.toggle',
     category: 'Workbench',
     source: 'core',
     handler: () => {
@@ -39,7 +39,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'workbench.showConnections',
-    title: 'Show Connections',
+    titleKey: 'activityBar.connections',
     category: 'Workbench',
     source: 'core',
     handler: () => {
@@ -49,7 +49,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'workbench.showExtensions',
-    title: 'Show Extensions',
+    titleKey: 'activityBar.extensions',
     category: 'Workbench',
     source: 'core',
     handler: () => {
@@ -59,7 +59,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'workbench.showHistory',
-    title: 'Show History',
+    titleKey: 'activityBar.history',
     category: 'Workbench',
     source: 'core',
     handler: () => {
@@ -69,7 +69,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'workbench.showSettings',
-    title: 'Show Settings',
+    titleKey: 'activityBar.settings',
     category: 'Workbench',
     source: 'core',
     handler: () => {
@@ -79,7 +79,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'editor.newQuery',
-    title: 'New Query',
+    titleKey: 'editor.newQuery',
     category: 'Editor',
     source: 'core',
     handler: () => {
@@ -90,7 +90,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'editor.run',
-    title: 'Run SQL',
+    titleKey: 'editor.run',
     category: 'SQL',
     source: 'core',
     handler: async () => {
@@ -108,7 +108,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'editor.save',
-    title: 'Save SQL Draft',
+    titleKey: 'editor.saveDraft',
     category: 'Editor',
     source: 'core',
     handler: () => {
@@ -123,7 +123,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'editor.close',
-    title: 'Close Editor',
+    titleKey: 'editor.closeEditor',
     category: 'Editor',
     source: 'core',
     handler: () => {
@@ -136,7 +136,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'sql.execute',
-    title: 'Execute SQL',
+    titleKey: 'sql.execute',
     category: 'SQL',
     source: 'core',
     handler: async () => {
@@ -162,7 +162,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'connection.new',
-    title: 'New Connection',
+    titleKey: 'connection.newConnection',
     category: 'Connection',
     source: 'core',
     handler: () => {
@@ -173,7 +173,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'connection.test',
-    title: 'Test Connection',
+    titleKey: 'connection.testConnection',
     category: 'Connection',
     source: 'core',
     handler: async () => {
@@ -191,7 +191,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'connection.disconnect',
-    title: 'Disconnect',
+    titleKey: 'connection.closeConnection',
     category: 'Connection',
     source: 'core',
     handler: () => {
@@ -206,7 +206,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'connection.connectActive',
-    title: 'Connect Active Profile',
+    titleKey: 'connection.openConnection',
     category: 'Connection',
     source: 'core',
     handler: async (_profileId?: unknown) => {
@@ -224,7 +224,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'extensions.openMarketplace',
-    title: 'Open Extension Marketplace',
+    titleKey: 'extension.title',
     category: 'Extensions',
     source: 'core',
     handler: () => {
@@ -234,7 +234,7 @@ export function registerCoreCommands() {
 
   commandService.register({
     id: 'extensions.reload',
-    title: 'Reload Extensions',
+    titleKey: 'extension.reloadHost',
     category: 'Extensions',
     source: 'core',
     handler: () => {

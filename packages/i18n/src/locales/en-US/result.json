@@ -1,0 +1,46 @@
+{
+  "title": "Results",
+  "tabs": {
+    "results": "Results",
+    "messages": "Messages",
+    "problems": "Problems",
+    "history": "Query History"
+  },
+  "toolbar": {
+    "copyCell": "Copy Cell",
+    "copyRow": "Copy Row",
+    "copyAll": "Copy All",
+    "exportCsv": "Export CSV",
+    "exportJson": "Export JSON",
+    "clear": "Clear"
+  },
+  "status": {
+    "running": "Running query...",
+    "success": "Query succeeded",
+    "error": "Query failed",
+    "cancelled": "Cancelled",
+    "truncated": "Result truncated"
+  },
+  "summary": {
+    "rowsColumns": "{{rows}} rows × {{columns}} columns",
+    "elapsed": "{{elapsed}}ms",
+    "affectedRows": "{{count}} affected"
+  },
+  "cell": {
+    "null": "NULL",
+    "binary": "<binary {{size}} bytes>"
+  },
+  "empty": {
+    "title": "No results",
+    "description": "Query results will appear here."
+  },
+  "error": {
+    "queryFailed": "Query failed",
+    "sql": "SQL",
+    "elapsed": "Elapsed"
+  },
+  "history": {
+    "empty": "No query history",
+    "clear": "Clear History"
+  }
+}

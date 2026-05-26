@@ -1,0 +1,46 @@
+{
+  "title": "结果",
+  "tabs": {
+    "results": "结果",
+    "messages": "消息",
+    "problems": "问题",
+    "history": "查询历史"
+  },
+  "toolbar": {
+    "copyCell": "复制单元格",
+    "copyRow": "复制行",
+    "copyAll": "复制全部",
+    "exportCsv": "导出 CSV",
+    "exportJson": "导出 JSON",
+    "clear": "清空"
+  },
+  "status": {
+    "running": "查询执行中...",
+    "success": "查询成功",
+    "error": "查询失败",
+    "cancelled": "已取消",
+    "truncated": "结果已截断"
+  },
+  "summary": {
+    "rowsColumns": "{{rows}} 行 × {{columns}} 列",
+    "elapsed": "耗时 {{elapsed}}ms",
+    "affectedRows": "影响 {{count}} 行"
+  },
+  "cell": {
+    "null": "NULL",
+    "binary": "<二进制 {{size}} 字节>"
+  },
+  "empty": {
+    "title": "暂无查询结果",
+    "description": "执行 SQL 后结果会显示在这里。"
+  },
+  "error": {
+    "queryFailed": "查询失败",
+    "sql": "SQL",
+    "elapsed": "耗时"
+  },
+  "history": {
+    "empty": "暂无查询历史",
+    "clear": "清空历史"
+  }
+}

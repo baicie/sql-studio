@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 import { logService } from '@/services/log/log-service';
+import { useAppTranslation } from '@/i18n';
 import { PanelTabs } from './PanelTabs';
 import { useWorkbenchStore } from '../store/workbenchStore';
 import { useResultStore } from '../results/store/resultStore';
@@ -24,12 +25,15 @@ export function BottomPanel() {
 }
 
 function ResultsPanel() {
+  const { t } = useAppTranslation('result');
+  const { t: tc } = useAppTranslation('common');
+
   const records = useResultStore((state) => state.records);
 
   if (records.length === 0) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-        Execute a query to see results.
+        {t('empty.description')}
       </div>
     );
   }
@@ -44,7 +48,7 @@ function ResultsPanel() {
     return (
       <div className="flex h-full flex-col p-3">
         <div className="mb-2 flex items-center gap-2 text-sm">
-          <span className="font-medium text-destructive">Query Failed</span>
+          <span className="font-medium text-destructive">{t('error.queryFailed')}</span>
           {latest.elapsedMs !== undefined && (
             <span className="text-muted-foreground">{latest.elapsedMs}ms</span>
           )}
@@ -62,7 +66,7 @@ function ResultsPanel() {
   if (!latest.result) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-        Running query...
+        {t('status.running')}
       </div>
     );
   }
@@ -75,17 +79,17 @@ function ResultsPanel() {
       <div className="flex shrink-0 items-center gap-3 border-b px-3 py-1.5 text-xs text-muted-foreground">
         <span className="text-foreground">
           {result.affectedRows !== undefined
-            ? `${result.affectedRows} row(s) affected`
-            : `${rowCount} row(s) returned`}
+            ? t('summary.affectedRows', { count: result.affectedRows })
+            : t('summary.rowsColumns', { rows: rowCount, columns: result.columns.length })}
         </span>
         <span>{latest.elapsedMs}ms</span>
-        {result.truncated && <span className="text-yellow-600">Truncated</span>}
+        {result.truncated && <span className="text-yellow-600">{t('status.truncated')}</span>}
         <button
           type="button"
           className="ml-auto text-muted-foreground hover:text-foreground"
           onClick={() => resultService.clearResults()}
         >
-          Clear
+          {tc('actions.clear')}
         </button>
       </div>
 
@@ -97,7 +101,9 @@ function ResultsPanel() {
 }
 
 function ProblemsPanel() {
-  return <div className="p-3 text-sm text-muted-foreground">No problems.</div>;
+  const { t } = useAppTranslation('result');
+
+  return <div className="p-3 text-sm text-muted-foreground">{t('tabs.problems')}</div>;
 }
 
 function LogsPanel() {

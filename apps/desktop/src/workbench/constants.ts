@@ -5,22 +5,22 @@ import type { ActivityItem, BottomPanelItem } from './types';
 export const ACTIVITY_ITEMS: ActivityItem[] = [
   {
     id: 'connections',
-    title: 'Connections',
+    titleKey: 'activityBar.connections',
     icon: Database,
   },
   {
     id: 'extensions',
-    title: 'Extensions',
+    titleKey: 'activityBar.extensions',
     icon: Blocks,
   },
   {
     id: 'history',
-    title: 'History',
+    titleKey: 'activityBar.history',
     icon: History,
   },
   {
     id: 'settings',
-    title: 'Settings',
+    titleKey: 'activityBar.settings',
     icon: Settings,
   },
 ];
@@ -28,14 +28,14 @@ export const ACTIVITY_ITEMS: ActivityItem[] = [
 export const BOTTOM_PANEL_ITEMS: BottomPanelItem[] = [
   {
     id: 'results',
-    title: 'Results',
+    titleKey: 'panel.results',
   },
   {
     id: 'problems',
-    title: 'Problems',
+    titleKey: 'panel.problems',
   },
   {
     id: 'logs',
-    title: 'Logs',
+    titleKey: 'panel.logs',
   },
 ];

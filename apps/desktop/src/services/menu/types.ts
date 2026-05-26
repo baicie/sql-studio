@@ -19,6 +19,7 @@ export interface MenuContext {
 export interface MenuItem {
   command: string;
   title?: string;
+  titleKey?: string;
   when?: string;
   group?: string;
   order?: number;

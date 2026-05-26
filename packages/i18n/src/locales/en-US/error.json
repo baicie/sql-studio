@@ -1,0 +1,20 @@
+{
+  "connection": {
+    "refused": "Connection refused. Please check host and port.",
+    "timeout": "Connection timed out. Please check your network or database status.",
+    "authFailed": "Authentication failed. Please check username or password.",
+    "databaseNotFound": "Database not found.",
+    "fileNotFound": "Database file not found.",
+    "notOpened": "Connection is not opened."
+  },
+  "query": {
+    "syntaxError": "SQL syntax error.",
+    "timeout": "Query timed out.",
+    "cancelled": "Query cancelled.",
+    "permissionDenied": "Permission denied for this query."
+  },
+  "db": {
+    "unsupported": "Unsupported database type."
+  },
+  "unknown": "Unknown error: {{message}}"
+}

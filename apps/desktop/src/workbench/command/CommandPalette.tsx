@@ -1,5 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import i18n from 'i18next';
 
+import { useAppTranslation } from '@/i18n';
 import { executeCommand } from '@/services/command/execute-command';
 import { commandService } from '@/services/command/command-service';
 import { formatKeybinding } from '@/services/keybinding/format-keybinding';
@@ -7,6 +9,8 @@ import { keybindingService } from '@/services/keybinding/keybinding-service';
 import { useWorkbenchStore } from '../store/workbenchStore';
 
 export function CommandPalette() {
+  const { t } = useAppTranslation('workbench');
+
   const open = useWorkbenchStore((state) => state.commandPaletteOpen);
   const closeCommandPalette = useWorkbenchStore((state) => state.closeCommandPalette);
   const [keyword, setKeyword] = useState('');
@@ -39,7 +43,7 @@ export function CommandPalette() {
           const lowerKeyword = keyword.toLowerCase();
 
           return (
-            command.title.toLowerCase().includes(lowerKeyword) ||
+            getCommandTitle(command).toLowerCase().includes(lowerKeyword) ||
             command.id.toLowerCase().includes(lowerKeyword) ||
             command.category?.toLowerCase().includes(lowerKeyword)
           );
@@ -55,14 +59,14 @@ export function CommandPalette() {
           autoFocus
           value={keyword}
           onChange={(event) => setKeyword(event.target.value)}
-          placeholder="Type a command..."
+          placeholder={t('commandPalette.placeholder')}
           className="h-12 w-full border-b bg-transparent px-4 text-sm outline-none"
         />
 
         <div className="max-h-80 overflow-auto p-1">
           {commands.length === 0 ? (
             <div className="px-3 py-6 text-center text-sm text-muted-foreground">
-              No commands found.
+              {t('commandPalette.noCommands')}
             </div>
           ) : (
             commands.map((command) => {
@@ -79,7 +83,7 @@ export function CommandPalette() {
                     setKeyword('');
                   }}
                 >
-                  <span>{command.title}</span>
+                  <span>{getCommandTitle(command)}</span>
                   <span className="flex items-center gap-2 text-xs text-muted-foreground">
                     {command.category ? <span>{command.category}</span> : null}
                     {binding ? <span>{formatKeybinding(binding)}</span> : null}
@@ -92,4 +96,17 @@ export function CommandPalette() {
       </div>
     </div>
   );
+}
+
+function getCommandTitle(command: {
+  title?: string;
+  titleKey?: string;
+  id: string;
+  category?: string;
+}) {
+  if (command.titleKey) {
+    return i18n.t(command.titleKey);
+  }
+
+  return command.title ?? command.id;
 }

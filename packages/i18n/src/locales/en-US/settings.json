@@ -1,0 +1,16 @@
+{
+  "title": "Settings",
+  "language": {
+    "title": "Language",
+    "description": "Choose the display language",
+    "system": "System",
+    "restartHint": "Language changes take effect immediately."
+  },
+  "appearance": {
+    "title": "Appearance",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "system": "System"
+  }
+}

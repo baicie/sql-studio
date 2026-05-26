@@ -1,0 +1,26 @@
+{
+  "title": "Marketplace",
+  "searchPlaceholder": "Search extensions...",
+  "empty": "No extensions",
+  "tabs": {
+    "featured": "Featured",
+    "popular": "Popular",
+    "new": "New"
+  },
+  "detail": {
+    "install": "Install",
+    "installed": "Installed",
+    "uninstall": "Uninstall",
+    "version": "Version",
+    "publisher": "Publisher",
+    "description": "Description",
+    "readme": "Readme",
+    "changelog": "Changelog"
+  },
+  "filter": {
+    "all": "All",
+    "formatter": "Formatter",
+    "snippets": "Snippets",
+    "theme": "Theme"
+  }
+}

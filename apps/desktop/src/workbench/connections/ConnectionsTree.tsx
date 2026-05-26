@@ -1,6 +1,8 @@
+import type { UseTranslationResponse } from 'react-i18next';
 import { useCallback, useState } from 'react';
 import { ChevronDown, ChevronRight, Columns3, Database, Loader2, Table } from 'lucide-react';
 
+import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
 import {
   createNodeId,
@@ -15,6 +17,8 @@ import { ContextMenu } from './ContextMenu';
 import type { ConnectionProfile, ConnectionTreeNode } from '@/services/connection/types';
 
 export function ConnectionsTree() {
+  const { t } = useAppTranslation('connection');
+
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [loadedChildren, setLoadedChildren] = useState<Map<string, ConnectionTreeNode[]>>(
     new Map(),
@@ -112,7 +116,7 @@ export function ConnectionsTree() {
 
     const tableName = getTableDisplayName(contextMenu.node);
     void navigator.clipboard.writeText(tableName);
-    notificationService.info(`Copied: ${tableName}`);
+    notificationService.info(`${t('contextMenu.copyTableName')}: ${tableName}`);
   }, [contextMenu]);
 
   const handleCopyFullName = useCallback(() => {
@@ -120,7 +124,7 @@ export function ConnectionsTree() {
 
     const fullName = contextMenu.node.table ?? contextMenu.node.name;
     void navigator.clipboard.writeText(fullName);
-    notificationService.info(`Copied: ${fullName}`);
+    notificationService.info(`${t('contextMenu.copyFullName')}: ${fullName}`);
   }, [contextMenu]);
 
   const handleShowColumns = useCallback(async () => {
@@ -220,7 +224,7 @@ export function ConnectionsTree() {
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
-          items={getContextMenuItems(contextMenu.node, {
+          items={getContextMenuItems(contextMenu.node, t, {
             onSelectTop1000: handleSelectTop1000,
             onShowColumns: handleShowColumns,
             onCopyTableName: handleCopyTableName,
@@ -256,19 +260,22 @@ function NodeIcon({ node }: { node: ConnectionTreeNode }) {
 }
 
 function ConnectionStatusBadge({ profile }: { profile?: ConnectionProfile }) {
+  const { t } = useAppTranslation('connection');
+
   if (!profile) return null;
 
   const isConnected = connectionService.getActiveConnectionId() === profile.id;
 
   return (
     <span className={`ml-auto text-xs ${isConnected ? 'text-green-500' : 'text-muted-foreground'}`}>
-      {isConnected ? 'Connected' : 'Disconnected'}
+      {isConnected ? t('status.connected') : t('status.disconnected')}
     </span>
   );
 }
 
 function getContextMenuItems(
   node: ConnectionTreeNode,
+  t: UseTranslationResponse<'connection', undefined>['t'],
   handlers: {
     onSelectTop1000: () => void;
     onShowColumns: () => void;
@@ -281,19 +288,31 @@ function getContextMenuItems(
 
   if (node.type === 'table') {
     items.push(
-      { id: 'select-top-1000', label: 'Select Top 1000', onClick: handlers.onSelectTop1000 },
-      { id: 'show-columns', label: 'Show Columns', onClick: handlers.onShowColumns },
+      {
+        id: 'select-top-1000',
+        label: t('contextMenu.selectTop1000'),
+        onClick: handlers.onSelectTop1000,
+      },
+      { id: 'show-columns', label: t('contextMenu.showColumns'), onClick: handlers.onShowColumns },
     );
   }
 
   if (node.type === 'table' || node.type === 'column') {
     items.push(
-      { id: 'copy-table-name', label: 'Copy Table Name', onClick: handlers.onCopyTableName },
-      { id: 'copy-full-name', label: 'Copy Full Name', onClick: handlers.onCopyFullName },
+      {
+        id: 'copy-table-name',
+        label: t('contextMenu.copyTableName'),
+        onClick: handlers.onCopyTableName,
+      },
+      {
+        id: 'copy-full-name',
+        label: t('contextMenu.copyFullName'),
+        onClick: handlers.onCopyFullName,
+      },
     );
   }
 
-  items.push({ id: 'refresh', label: 'Refresh', onClick: handlers.onRefresh });
+  items.push({ id: 'refresh', label: t('contextMenu.refresh'), onClick: handlers.onRefresh });
 
   return items;
 }
