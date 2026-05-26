@@ -1,0 +1,71 @@
+[
+  {
+    "id": "baicie.sql-formatter-demo",
+    "name": "sql-formatter-demo",
+    "displayName": "SQL Formatter Demo",
+    "publisher": "baicie",
+    "version": "0.1.0",
+    "description": "Format SQL in the active editor.",
+    "categories": ["Formatter"],
+    "tags": ["sql", "formatter", "editor"],
+    "permissions": ["editor.read", "editor.write", "ui.notification"],
+    "source": {
+      "type": "localPackage",
+      "path": "dist-packages/baicie.sql-formatter-demo-0.1.0.sgx"
+    },
+    "readme": "# SQL Formatter Demo\n\nA demo extension that formats SQL in the active editor.\n\n## Features\n\n- Format selected SQL\n- Format full editor content\n- Works from command palette\n",
+    "verified": true,
+    "builtin": false,
+    "stats": {
+      "downloads": 128,
+      "rating": 4.8
+    },
+    "updatedAt": 1770000000000
+  },
+  {
+    "id": "baicie.explain-viewer-demo",
+    "name": "explain-viewer-demo",
+    "displayName": "Explain Viewer Demo",
+    "publisher": "baicie",
+    "version": "0.1.0",
+    "description": "Run EXPLAIN for the selected SQL and show the result.",
+    "categories": ["Database", "Visualization"],
+    "tags": ["sql", "explain", "query-plan"],
+    "permissions": ["editor.read", "db.connection.read", "db.query.explain", "ui.notification"],
+    "source": {
+      "type": "localPackage",
+      "path": "dist-packages/baicie.explain-viewer-demo-0.1.0.sgx"
+    },
+    "readme": "# Explain Viewer Demo\n\nRun EXPLAIN against the current SQL query.\n",
+    "verified": true,
+    "builtin": false,
+    "stats": {
+      "downloads": 64,
+      "rating": 4.6
+    },
+    "updatedAt": 1770000000000
+  },
+  {
+    "id": "baicie.sql-snippets-demo",
+    "name": "sql-snippets-demo",
+    "displayName": "SQL Snippets Demo",
+    "publisher": "baicie",
+    "version": "0.1.0",
+    "description": "Insert common SQL snippets into the active editor.",
+    "categories": ["Snippets", "Productivity"],
+    "tags": ["sql", "snippets"],
+    "permissions": ["editor.write", "ui.notification"],
+    "source": {
+      "type": "localPackage",
+      "path": "dist-packages/baicie.sql-snippets-demo-0.1.0.sgx"
+    },
+    "readme": "# SQL Snippets Demo\n\nProvides common SQL snippets.\n",
+    "verified": false,
+    "builtin": false,
+    "stats": {
+      "downloads": 32,
+      "rating": 4.2
+    },
+    "updatedAt": 1770000000000
+  }
+]

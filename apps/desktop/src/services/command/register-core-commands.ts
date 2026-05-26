@@ -244,6 +244,33 @@ export function registerCoreCommands() {
   });
 
   commandService.register({
+    id: 'extensions.refreshMarketplace',
+    title: 'Refresh Marketplace',
+    category: 'Extensions',
+    source: 'core',
+    handler: async () => {
+      const { useMarketplaceStore } = await import('@/plugins/marketplace/store/marketplaceStore');
+      await useMarketplaceStore.getState().load();
+    },
+  });
+
+  commandService.register({
+    id: 'extensions.installSelectedMarketplaceExtension',
+    title: 'Install Selected Marketplace Extension',
+    category: 'Extensions',
+    source: 'core',
+    handler: async () => {
+      const { useMarketplaceStore } = await import('@/plugins/marketplace/store/marketplaceStore');
+      const { marketplaceInstallService } =
+        await import('@/plugins/marketplace/services/marketplaceInstallService');
+      const extension = useMarketplaceStore.getState().getSelectedExtension();
+      if (extension) {
+        await marketplaceInstallService.install(extension);
+      }
+    },
+  });
+
+  commandService.register({
     id: 'extensions.activateExtension',
     titleKey: 'extension.activate',
     category: 'Extensions',

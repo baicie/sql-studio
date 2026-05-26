@@ -4,6 +4,7 @@ import { useAppTranslation } from '@/i18n';
 import { extensionService } from '@/services/extension/extension-service';
 import { ExtensionDetailView } from './ExtensionDetailView';
 import { ExtensionDevelopmentView } from './ExtensionDevelopmentView';
+import { MarketplaceView } from '@/plugins/marketplace/components/MarketplaceView';
 import type { InstalledExtension } from '@/services/extension/types';
 
 type Tab = 'installed' | 'marketplace' | 'development';
@@ -64,7 +65,7 @@ export function ExtensionsView() {
             onSelect={setSelectedExtension}
           />
         )}
-        {activeTab === 'marketplace' && <MarketplaceTab />}
+        {activeTab === 'marketplace' && <MarketplaceView />}
         {activeTab === 'development' && <ExtensionDevelopmentView />}
       </div>
     </section>
@@ -134,19 +135,6 @@ function InstalledTab({
           </label>
         </div>
       ))}
-    </div>
-  );
-}
-
-function MarketplaceTab() {
-  const { t } = useAppTranslation('extension');
-
-  return (
-    <div className="flex items-center justify-center p-8">
-      <div className="text-center">
-        <div className="mb-2 text-sm font-medium">{t('marketplace')}</div>
-        <div className="text-xs text-muted-foreground">Extension marketplace coming soon.</div>
-      </div>
     </div>
   );
 }

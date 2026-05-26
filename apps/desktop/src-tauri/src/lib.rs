@@ -26,6 +26,7 @@ pub fn run() {
             commands::extension::extension_install_from_folder,
             commands::extension::extension_install_from_package,
             commands::extension::extension_uninstall,
+            commands::marketplace::marketplace_resolve_local_package,
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

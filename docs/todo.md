@@ -12,23 +12,23 @@
 
 # 当前进度总览
 
-| Phase    | 名称                | 进度        | 说明                |
-| -------- | ------------------- | ----------- | ------------------- |
-| Phase 0  | 项目初始化          | ✅ 完成     |                     |
-| Phase 1  | Workbench 基础布局  | ✅ 完成     |                     |
-| Phase 2  | 核心服务系统        | ✅ 完成     |                     |
-| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                     |
-| Phase 4  | 连接管理 UI         | ✅ 完成     |                     |
-| Phase 5  | SQL 编辑器          | ✅ 完成     |                     |
-| Phase 6  | 查询结果表格        | ✅ 完成     |                     |
-| Phase 7  | i18n                | ✅ 完成     |                     |
-| Phase 8  | 插件 Manifest       | ✅ 完成     |                     |
-| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义      |
-| Phase 10 | Web Worker 插件宿主 | ✅ 完成     |                     |
-| Phase 11 | 插件权限系统        | ✅ 完成     |                     |
-| Phase 12 | 插件本地安装        | ✅ 完成     | .sgx 安装/卸载/打包 |
-| Phase 13 | Mock Marketplace    | ❌ 未开始   |                     |
-| Phase 14 | 插件管理 UI         | 🔶 部分完成 | Installed 页面完成  |
+| Phase    | 名称                | 进度        | 说明                      |
+| -------- | ------------------- | ----------- | ------------------------- |
+| Phase 0  | 项目初始化          | ✅ 完成     |                           |
+| Phase 1  | Workbench 基础布局  | ✅ 完成     |                           |
+| Phase 2  | 核心服务系统        | ✅ 完成     |                           |
+| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                           |
+| Phase 4  | 连接管理 UI         | ✅ 完成     |                           |
+| Phase 5  | SQL 编辑器          | ✅ 完成     |                           |
+| Phase 6  | 查询结果表格        | ✅ 完成     |                           |
+| Phase 7  | i18n                | ✅ 完成     |                           |
+| Phase 8  | 插件 Manifest       | ✅ 完成     |                           |
+| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义            |
+| Phase 10 | Web Worker 插件宿主 | ✅ 完成     |                           |
+| Phase 11 | 插件权限系统        | ✅ 完成     |                           |
+| Phase 12 | 插件本地安装        | ✅ 完成     | .sgx 安装/卸载/打包       |
+| Phase 13 | Mock Marketplace    | ✅ 完成     | Marketplace UI + 安装链路 |
+| Phase 14 | 插件管理 UI         | 🔶 部分完成 | Installed 页面完成        |
 
 ---
 
