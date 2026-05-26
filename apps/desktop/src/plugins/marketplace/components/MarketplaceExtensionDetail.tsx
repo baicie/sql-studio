@@ -8,6 +8,7 @@ import {
   isMarketplaceExtensionEnabled,
   isMarketplaceExtensionInstalled,
 } from '../services/marketplaceInstallStatus';
+import { SignatureBadge } from '@/plugins/security/components/SignatureBadge';
 
 interface MarketplaceExtensionDetailProps {
   extension: MarketplaceExtension;
@@ -108,6 +109,16 @@ export function MarketplaceExtensionDetail(props: MarketplaceExtensionDetailProp
             <div>Publisher: {extension.publisher}</div>
             <div>Version: {extension.version}</div>
             {extension.license ? <div>License: {extension.license}</div> : null}
+          </section>
+
+          <section className="rounded-md border p-3">
+            <h3 className="mb-2 text-sm font-medium">Security</h3>
+            <div className="flex items-center gap-2">
+              <SignatureBadge status={extension.signatureStatus} />
+              <span className="text-xs text-muted-foreground">
+                Publisher: {extension.publisher}
+              </span>
+            </div>
           </section>
         </aside>
       </div>

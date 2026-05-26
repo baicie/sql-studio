@@ -3,6 +3,7 @@ import type { MarketplaceExtension } from '../types';
 import { useMarketplaceStore } from '../store/marketplaceStore';
 import { MarketplaceInstallButton } from './MarketplaceInstallButton';
 import { isMarketplaceExtensionInstalled } from '../services/marketplaceInstallStatus';
+import { SignatureBadge } from '@/plugins/security/components/SignatureBadge';
 
 interface MarketplaceExtensionCardProps {
   extension: MarketplaceExtension;
@@ -34,6 +35,9 @@ export function MarketplaceExtensionCard(props: MarketplaceExtensionCardProps) {
             <div className="truncate text-sm font-medium">{extension.displayName}</div>
 
             {extension.verified ? <ShieldCheck className="h-3 w-3 shrink-0 text-blue-500" /> : null}
+            {extension.signatureStatus ? (
+              <SignatureBadge status={extension.signatureStatus} />
+            ) : null}
           </div>
 
           <div className="text-xs text-muted-foreground">

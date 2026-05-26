@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -10,11 +11,17 @@ interface ExtensionManifest {
   main?: string;
 }
 
+interface ChecksumsFile {
+  algorithm: string;
+  files: Record<string, string>;
+}
+
 async function main() {
   const extensionDir = process.argv[2];
+  const skipChecksum = process.argv.includes('--no-checksum');
 
   if (!extensionDir) {
-    throw new Error('Usage: tsx scripts/pack-extension.ts <extension-dir>');
+    throw new Error('Usage: tsx scripts/pack-extension.ts <extension-dir> [--no-checksum]');
   }
 
   const absoluteDir = path.resolve(extensionDir);
@@ -34,6 +41,10 @@ async function main() {
     if (!fs.existsSync(mainPath)) {
       throw new Error(`Main file not found: ${manifest.main}`);
     }
+  }
+
+  if (!skipChecksum) {
+    writeChecksums(absoluteDir);
   }
 
   const outDir = path.resolve('dist-packages');
@@ -70,6 +81,8 @@ const IGNORE_PATTERNS = [
   '*.tsbuildinfo',
   'vite.config.ts',
   'tsconfig.json',
+  'dist-packages',
+  '.sqlgui-keys',
 ];
 
 function shouldIgnore(name: string): boolean {
@@ -81,6 +94,53 @@ function shouldIgnore(name: string): boolean {
     }
     return name === p || name.startsWith(p + '/') || name.includes('/' + p + '/');
   });
+}
+
+function collectFiles(sourceDir: string): string[] {
+  const files: string[] = [];
+
+  function walk(dir: string) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const relativePath = path.relative(sourceDir, path.join(dir, entry.name));
+
+      if (shouldIgnore(relativePath)) continue;
+
+      if (entry.isDirectory()) {
+        walk(path.join(dir, entry.name));
+      } else {
+        files.push(relativePath);
+      }
+    }
+  }
+
+  walk(sourceDir);
+
+  return files;
+}
+
+function generateChecksums(sourceDir: string): ChecksumsFile {
+  const files = collectFiles(sourceDir);
+  const result: Record<string, string> = {};
+
+  for (const file of files) {
+    if (file === 'checksums.json' || file === 'signature.sig') continue;
+
+    const bytes = fs.readFileSync(path.join(sourceDir, file));
+    result[file] = crypto.createHash('sha256').update(bytes).digest('hex');
+  }
+
+  return {
+    algorithm: 'sha256',
+    files: result,
+  };
+}
+
+function writeChecksums(sourceDir: string) {
+  const checksums = generateChecksums(sourceDir);
+  fs.writeFileSync(path.join(sourceDir, 'checksums.json'), JSON.stringify(checksums, null, 2));
+  console.log('Generated checksums.json');
 }
 
 async function zipDirectory(sourceDir: string, outPath: string) {

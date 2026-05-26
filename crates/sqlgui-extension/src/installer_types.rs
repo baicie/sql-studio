@@ -28,9 +28,18 @@ pub struct InstalledExtensionRecord {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct InstallSecurityOptions {
+    pub allow_unsigned: Option<bool>,
+    pub allow_untrusted: Option<bool>,
+    pub allow_invalid_signature: Option<bool>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct InstallFromPackageRequest {
     pub package_path: String,
     pub overwrite: Option<bool>,
+    pub security: Option<InstallSecurityOptions>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

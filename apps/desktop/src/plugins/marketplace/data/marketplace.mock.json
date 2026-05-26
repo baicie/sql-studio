@@ -16,6 +16,8 @@
     "readme": "# SQL Formatter Demo\n\nA demo extension that formats SQL in the active editor.\n\n## Features\n\n- Format selected SQL\n- Format full editor content\n- Works from command palette\n",
     "verified": true,
     "builtin": false,
+    "signatureStatus": "verified",
+    "trustedPublisher": true,
     "stats": {
       "downloads": 128,
       "rating": 4.8
@@ -39,6 +41,8 @@
     "readme": "# Explain Viewer Demo\n\nRun EXPLAIN against the current SQL query.\n",
     "verified": true,
     "builtin": false,
+    "signatureStatus": "verified",
+    "trustedPublisher": true,
     "stats": {
       "downloads": 64,
       "rating": 4.6
@@ -62,6 +66,8 @@
     "readme": "# SQL Snippets Demo\n\nProvides common SQL snippets.\n",
     "verified": false,
     "builtin": false,
+    "signatureStatus": "unsigned",
+    "trustedPublisher": false,
     "stats": {
       "downloads": 32,
       "rating": 4.2

@@ -36,11 +36,20 @@ export const extensionInstallerService = {
     });
   },
 
-  installFromPackage(input: { packagePath: string; overwrite?: boolean }) {
+  installFromPackage(input: {
+    packagePath: string;
+    overwrite?: boolean;
+    security?: {
+      allowUnsigned?: boolean;
+      allowUntrusted?: boolean;
+      allowInvalidSignature?: boolean;
+    };
+  }) {
     return callNative<ExtensionInstallResult>('extension_install_from_package', {
       request: {
         packagePath: input.packagePath,
         overwrite: input.overwrite,
+        security: input.security,
       },
     });
   },

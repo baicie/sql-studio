@@ -1,4 +1,5 @@
 import type { ExtensionPermission } from '@sqlgui/extension-schema';
+import type { SignatureStatus } from '@/plugins/security/types';
 
 export type MarketplaceInstallSource =
   | {
@@ -48,6 +49,8 @@ export interface MarketplaceExtension {
 
   verified?: boolean;
   builtin?: boolean;
+  signatureStatus?: SignatureStatus;
+  trustedPublisher?: boolean;
 
   stats?: {
     downloads?: number;

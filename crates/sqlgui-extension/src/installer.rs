@@ -2,6 +2,9 @@ use crate::fs_utils::{copy_dir_recursive, remove_dir_if_exists};
 use crate::installer_types::*;
 use crate::manifest::read_manifest;
 use crate::registry::ExtensionRegistryStore;
+use crate::security::package_verify::verify_extension_package_dir;
+use crate::security::trust::TrustStore;
+use crate::security::types::SignatureStatus;
 use anyhow::{anyhow, Result};
 use sha2::{Digest, Sha256};
 use std::fs;
@@ -102,6 +105,55 @@ impl ExtensionInstaller {
 
         let (manifest, manifest_path) = read_manifest(temp.path())?;
         let extension_id = manifest.id();
+
+        let trust_store = TrustStore::new(self.app_data_dir.join("trusted-publishers.json"));
+
+        let security = request.security.clone();
+        let allow_unsigned = security
+            .as_ref()
+            .and_then(|item| item.allow_unsigned)
+            .unwrap_or(false);
+
+        let allow_untrusted = security
+            .as_ref()
+            .and_then(|item| item.allow_untrusted)
+            .unwrap_or(false);
+
+        let allow_invalid_signature = security
+            .as_ref()
+            .and_then(|item| item.allow_invalid_signature)
+            .unwrap_or(false);
+
+        let verification =
+            verify_extension_package_dir(temp.path(), &trust_store, allow_unsigned);
+
+        match verification.status {
+            SignatureStatus::Verified => {}
+            SignatureStatus::Unsigned => {
+                if !allow_unsigned {
+                    anyhow::bail!("Unsigned extension package is not allowed");
+                }
+            }
+            SignatureStatus::Untrusted => {
+                if !allow_untrusted {
+                    anyhow::bail!("Untrusted extension publisher");
+                }
+            }
+            SignatureStatus::Invalid => {
+                if !allow_invalid_signature {
+                    anyhow::bail!(
+                        "Invalid extension signature: {}",
+                        verification.message.unwrap_or_default()
+                    );
+                }
+            }
+            SignatureStatus::Unknown => {
+                anyhow::bail!(
+                    "Unable to verify extension package: {}",
+                    verification.message.unwrap_or_default()
+                );
+            }
+        }
 
         let target = self.extension_version_dir(&extension_id, &manifest.version);
 

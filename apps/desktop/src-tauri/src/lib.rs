@@ -26,6 +26,9 @@ pub fn run() {
             commands::extension::extension_install_from_folder,
             commands::extension::extension_install_from_package,
             commands::extension::extension_uninstall,
+            commands::extension_security::extension_list_trusted_publishers,
+            commands::extension_security::extension_trust_publisher,
+            commands::extension_security::extension_revoke_publisher,
             commands::marketplace::marketplace_resolve_local_package,
         ])
         .setup(|app| {

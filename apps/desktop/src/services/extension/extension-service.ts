@@ -157,11 +157,19 @@ export class ExtensionService {
     this._subscription.emit();
   }
 
-  async installFromPackage(packagePath: string) {
+  async installFromPackage(
+    packagePath: string,
+    security?: {
+      allowUnsigned?: boolean;
+      allowUntrusted?: boolean;
+      allowInvalidSignature?: boolean;
+    },
+  ) {
     try {
       await extensionInstallerService.installFromPackage({
         packagePath,
         overwrite: true,
+        security,
       });
 
       this.reloadExtensions();

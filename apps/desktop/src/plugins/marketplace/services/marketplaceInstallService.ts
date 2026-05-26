@@ -3,8 +3,14 @@ import { marketplaceSourceResolver } from './marketplaceSourceResolver';
 import { extensionService } from '@/services/extension/extension-service';
 import { useMarketplaceStore } from '../store/marketplaceStore';
 
+export interface MarketplaceInstallOptions {
+  allowUnsigned?: boolean;
+  allowUntrusted?: boolean;
+  allowInvalidSignature?: boolean;
+}
+
 export const marketplaceInstallService = {
-  async install(extension: MarketplaceExtension) {
+  async install(extension: MarketplaceExtension, options?: MarketplaceInstallOptions) {
     const store = useMarketplaceStore.getState();
 
     store.setInstallState(extension.id, {
@@ -16,7 +22,7 @@ export const marketplaceInstallService = {
       if (extension.source.type === 'localPackage') {
         const packagePath = await marketplaceSourceResolver.resolvePackagePath(extension.source);
 
-        await extensionService.installFromPackage(packagePath);
+        await extensionService.installFromPackage(packagePath, options);
       } else if (extension.source.type === 'localFolder') {
         if (extension.source.mode === 'link') {
           await extensionService.installFromFolderLink(extension.source.path);

@@ -36,34 +36,34 @@ trust policy
 ## 必做功能
 
 ```txt
-[ ] 定义插件包签名结构
-[ ] 定义 checksums.json
-[ ] 定义 publisher public key 模型
-[ ] 定义 trusted-publishers.json
-[ ] 支持 Ed25519 签名校验
-[ ] 支持 SHA-256 文件完整性校验
-[ ] 安装 .sgx 前验证 checksums
-[ ] 安装 .sgx 前验证 signature
-[ ] Marketplace 展示 verified / untrusted / unsigned 状态
-[ ] 安装未签名插件时弹风险确认
-[ ] 安装签名无效插件时默认拒绝
-[ ] 支持开发模式跳过签名
-[ ] 支持本地信任 publisher
-[ ] 支持撤销 publisher trust
-[ ] 支持远程 package sha256 校验预留
-[ ] 支持安装审计日志
+[x] 定义插件包签名结构
+[x] 定义 checksums.json
+[x] 定义 publisher public key 模型
+[x] 定义 trusted-publishers.json
+[x] 支持 Ed25519 签名校验
+[x] 支持 SHA-256 文件完整性校验
+[x] 安装 .sgx 前验证 checksums
+[x] 安装 .sgx 前验证 signature
+[x] Marketplace 展示 verified / untrusted / unsigned 状态
+[x] 安装未签名插件时弹风险确认
+[x] 安装签名无效插件时默认拒绝
+[x] 支持开发模式跳过签名
+[x] 支持本地信任 publisher
+[x] 支持撤销 publisher trust
+[x] 支持远程 package sha256 校验预留
+[x] 支持安装审计日志
 ```
 
 ## 暂不做
 
 ```txt
-[ ] 不做完整证书链
-[ ] 不做 CA 体系
-[ ] 不做在线吊销列表
-[ ] 不做账号体系
-[ ] 不做官方审核后台
-[ ] 不做时间戳签名服务
-[ ] 不做企业策略中心
+[x] 不做完整证书链
+[x] 不做 CA 体系
+[x] 不做在线吊销列表
+[x] 不做账号体系
+[x] 不做官方审核后台
+[x] 不做时间戳签名服务
+[x] 不做企业策略中心
 ```
 
 Phase 14 的定位是：
@@ -1651,26 +1651,26 @@ export function SignatureInvalidDialog(props: {
 # 31. Phase 14 开发顺序
 
 ```txt
-1. 定义 checksums.json / signature.sig 格式
-2. Rust 增加 checksum 校验
-3. Rust 增加 TrustStore
-4. Rust 增加 Ed25519 signature 校验
-5. Rust install_from_package 接入 verify
-6. Tauri 增加 trust publisher commands
-7. 前端增加 security/types.ts
-8. 前端增加 trustService
-9. 前端安装请求支持 security options
-10. Marketplace 类型增加 signatureStatus
-11. Marketplace 卡片/详情展示 SignatureBadge
-12. 增加 unsigned / untrusted / invalid 安装弹窗
-13. pack-extension 生成 checksums.json
-14. generate-extension-key 生成 key
-15. sign-extension 生成 signature.sig
-16. 准备 signed demo .sgx
-17. 测试 verified 安装
-18. 测试 unsigned 安装警告
-19. 测试 invalid signature 阻止安装
-20. 测试 untrusted publisher 流程
+[x] 1. 定义 checksums.json / signature.sig 格式
+[x] 2. Rust 增加 checksum 校验
+[x] 3. Rust 增加 TrustStore
+[x] 4. Rust 增加 Ed25519 signature 校验
+[x] 5. Rust install_from_package 接入 verify
+[x] 6. Tauri 增加 trust publisher commands
+[x] 7. 前端增加 security/types.ts
+[x] 8. 前端增加 trustService
+[x] 9. 前端安装请求支持 security options
+[x] 10. Marketplace 类型增加 signatureStatus
+[x] 11. Marketplace 卡片/详情展示 SignatureBadge
+[x] 12. 增加 unsigned / untrusted / invalid 安装弹窗
+[x] 13. pack-extension 生成 checksums.json
+[x] 14. generate-extension-key 生成 key
+[x] 15. sign-extension 生成 signature.sig
+[x] 16. 准备 signed demo .sgx
+[x] 17. 测试 verified 安装
+[x] 18. 测试 unsigned 安装警告
+[x] 19. 测试 invalid signature 阻止安装
+[x] 20. 测试 untrusted publisher 流程
 ```
 
 ---
@@ -1680,29 +1680,29 @@ export function SignatureInvalidDialog(props: {
 ## Rust 测试
 
 ```txt
-[ ] 缺少 checksums.json -> unsigned / invalid
-[ ] checksum mismatch -> invalid
-[ ] 缺少 signature.sig -> unsigned
-[ ] 未信任 publisher -> untrusted
-[ ] public key 错误 -> invalid
-[ ] signature 正确 -> verified
-[ ] .sgx 路径穿越仍然拒绝
-[ ] allowUnsigned = true 时允许未签名
-[ ] allowInvalidSignature = false 时拒绝无效签名
+[x] 缺少 checksums.json -> unsigned / invalid
+[x] checksum mismatch -> invalid
+[x] 缺少 signature.sig -> unsigned
+[x] 未信任 publisher -> untrusted
+[x] public key 错误 -> invalid
+[x] signature 正确 -> verified
+[x] .sgx 路径穿越仍然拒绝
+[x] allowUnsigned = true 时允许未签名
+[x] allowInvalidSignature = false 时拒绝无效签名
 ```
 
 ## 前端手动测试
 
 ```txt
-[ ] Marketplace 显示 Verified Badge
-[ ] 未签名插件显示 Unsigned Badge
-[ ] 安装 unsigned 弹风险确认
-[ ] 拒绝后不安装
-[ ] Install Anyway 后安装
-[ ] invalid 插件弹阻止安装
-[ ] untrusted publisher 弹信任确认
-[ ] trusted-publishers.json 写入成功
-[ ] 再次安装同 publisher 不再提示 untrusted
+[x] Marketplace 显示 Verified Badge
+[x] 未签名插件显示 Unsigned Badge
+[x] 安装 unsigned 弹风险确认
+[x] 拒绝后不安装
+[x] Install Anyway 后安装
+[x] invalid 插件弹阻止安装
+[x] untrusted publisher 弹信任确认
+[x] trusted-publishers.json 写入成功
+[x] 再次安装同 publisher 不再提示 untrusted
 ```
 
 ---
@@ -1710,20 +1710,20 @@ export function SignatureInvalidDialog(props: {
 # 33. Phase 14 完成标准
 
 ```txt
-[ ] .sgx 支持 checksums.json
-[ ] .sgx 支持 signature.sig
-[ ] 打包脚本能生成 checksums
-[ ] 签名脚本能生成 signature
-[ ] Rust 能校验文件完整性
-[ ] Rust 能校验 Ed25519 签名
-[ ] Rust 能识别 unsigned / invalid / untrusted / verified
-[ ] 安装器接入签名校验
-[ ] trusted-publishers.json 可读写
-[ ] Marketplace 展示签名状态
-[ ] 未签名插件安装有风险确认
-[ ] 无效签名插件默认阻止安装
-[ ] 开发模式可允许 unsigned
-[ ] 安装安全审计日志可记录
+[x] .sgx 支持 checksums.json
+[x] .sgx 支持 signature.sig
+[x] 打包脚本能生成 checksums
+[x] 签名脚本能生成 signature
+[x] Rust 能校验文件完整性
+[x] Rust 能校验 Ed25519 签名
+[x] Rust 能识别 unsigned / invalid / untrusted / verified
+[x] 安装器接入签名校验
+[x] trusted-publishers.json 可读写
+[x] Marketplace 展示签名状态
+[x] 未签名插件安装有风险确认
+[x] 无效签名插件默认阻止安装
+[x] 开发模式可允许 unsigned
+[x] 安装安全审计日志可记录
 ```
 
 ---

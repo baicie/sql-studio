@@ -10,6 +10,8 @@
     "check": "pnpm -r --if-present check && cargo check --workspace",
     "check:i18n": "tsx scripts/check-i18n.ts",
     "sqlgui:pack": "tsx scripts/pack-extension.ts",
+    "extension:keygen": "tsx scripts/generate-extension-key.ts",
+    "extension:sign": "tsx scripts/sign-extension.ts",
     "lint": "pnpm -r --if-present lint",
     "format": "prettier --write .",
     "clean": "rimraf node_modules apps/*/node_modules packages/*/node_modules extensions/*/node_modules target",

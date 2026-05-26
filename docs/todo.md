@@ -12,23 +12,23 @@
 
 # 当前进度总览
 
-| Phase    | 名称                | 进度        | 说明                      |
-| -------- | ------------------- | ----------- | ------------------------- |
-| Phase 0  | 项目初始化          | ✅ 完成     |                           |
-| Phase 1  | Workbench 基础布局  | ✅ 完成     |                           |
-| Phase 2  | 核心服务系统        | ✅ 完成     |                           |
-| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                           |
-| Phase 4  | 连接管理 UI         | ✅ 完成     |                           |
-| Phase 5  | SQL 编辑器          | ✅ 完成     |                           |
-| Phase 6  | 查询结果表格        | ✅ 完成     |                           |
-| Phase 7  | i18n                | ✅ 完成     |                           |
-| Phase 8  | 插件 Manifest       | ✅ 完成     |                           |
-| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义            |
-| Phase 10 | Web Worker 插件宿主 | ✅ 完成     |                           |
-| Phase 11 | 插件权限系统        | ✅ 完成     |                           |
-| Phase 12 | 插件本地安装        | ✅ 完成     | .sgx 安装/卸载/打包       |
-| Phase 13 | Mock Marketplace    | ✅ 完成     | Marketplace UI + 安装链路 |
-| Phase 14 | 插件管理 UI         | 🔶 部分完成 | Installed 页面完成        |
+| Phase    | 名称                | 进度        | 说明                       |
+| -------- | ------------------- | ----------- | -------------------------- |
+| Phase 0  | 项目初始化          | ✅ 完成     |                            |
+| Phase 1  | Workbench 基础布局  | ✅ 完成     |                            |
+| Phase 2  | 核心服务系统        | ✅ 完成     |                            |
+| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                            |
+| Phase 4  | 连接管理 UI         | ✅ 完成     |                            |
+| Phase 5  | SQL 编辑器          | ✅ 完成     |                            |
+| Phase 6  | 查询结果表格        | ✅ 完成     |                            |
+| Phase 7  | i18n                | ✅ 完成     |                            |
+| Phase 8  | 插件 Manifest       | ✅ 完成     |                            |
+| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义             |
+| Phase 10 | Web Worker 插件宿主 | ✅ 完成     |                            |
+| Phase 11 | 插件权限系统        | ✅ 完成     |                            |
+| Phase 12 | 插件本地安装        | ✅ 完成     | .sgx 安装/卸载/打包        |
+| Phase 13 | Mock Marketplace    | ✅ 完成     | Marketplace UI + 安装链路  |
+| Phase 14 | 插件签名/信任模型   | ✅ 完成     | 插件包签名/checksums/trust |
 
 ---
 
@@ -740,18 +740,42 @@ secret
 
 ---
 
-## Phase 14：插件管理 UI
+## Phase 14：插件签名 / 信任模型
 
-### Todo
+> Phase 14 包含两部分内容：插件签名安全体系（已完成）+ 插件管理 UI（部分完成）。
+
+### Part A：插件签名 / 信任模型（✅ 全部完成）
+
+```txt
+[x] 定义插件包签名结构
+[x] 定义 checksums.json
+[x] 定义 publisher public key 模型
+[x] 定义 trusted-publishers.json
+[x] 支持 Ed25519 签名校验
+[x] 支持 SHA-256 文件完整性校验
+[x] 安装 .sgx 前验证 checksums
+[x] 安装 .sgx 前验证 signature
+[x] Marketplace 展示 verified / untrusted / unsigned 状态
+[x] 安装未签名插件时弹风险确认
+[x] 安装签名无效插件时默认拒绝
+[x] 支持开发模式跳过签名
+[x] 支持本地信任 publisher
+[x] 支持撤销 publisher trust
+[x] 支持安装审计日志
+```
+
+详细设计见 [phase14.md](./desgin/phase14.md)
+
+### Part B：插件管理 UI（🔶 部分完成）
 
 ```txt
 [x] Installed Extensions 页面
-[~] Marketplace 页面
-[ ] Extension Detail 页面
-[ ] 权限展示
+[x] Marketplace 页面（含签名状态展示）
 [x] Enable / Disable
-[ ] Uninstall
 [x] Reload
+[~] Extension Detail 页面（详情页部分完成，签名状态展示已接入）
+[~] 权限展示（Marketplace 侧已展示，Installed 页面待补充）
+[ ] Uninstall
 [ ] 查看插件日志
 [ ] 查看插件贡献的命令
 [ ] 查看插件贡献的菜单
