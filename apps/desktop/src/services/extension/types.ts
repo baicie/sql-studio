@@ -4,6 +4,8 @@ export interface InstalledExtension {
   id: string;
   manifest: ExtensionManifest;
   enabled: boolean;
+  extensionPath?: string;
+  manifestPath?: string;
 }
 
 export type ExtensionHostState = 'idle' | 'loading' | 'ready' | 'error';

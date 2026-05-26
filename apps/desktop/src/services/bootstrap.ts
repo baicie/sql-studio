@@ -38,7 +38,7 @@ export function bootstrapServices() {
   registerCoreKeybindings();
   registerCoreMenus();
   connectionService.initialize();
-  extensionService.initialize();
+  void extensionService.initialize();
   void connectionService.restoreActiveConnection();
   logService.info('app', 'Application bootstrapped.');
 

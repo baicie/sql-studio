@@ -20,6 +20,7 @@ pub fn run() {
             commands::db::db_list_schemas,
             commands::db::db_list_tables,
             commands::db::db_list_columns,
+            commands::extension::extension_scan,
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

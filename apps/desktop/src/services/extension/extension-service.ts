@@ -1,30 +1,27 @@
-import type { CommandRegistration } from '../command/types';
-import { commandService } from '../command/command-service';
-import { keybindingService } from '../keybinding/keybinding-service';
-import type { KeybindingRegistration } from '../keybinding/types';
-import { menuService } from '../menu/menu-service';
+import type { ExtensionManifest } from '@sqlgui/extension-schema';
+import { createSubscription } from '../common/subscription';
+import { scanExtensions } from './extension-scanner';
+import { validateManifest } from './manifest-validator';
+import { activationRegistry } from './activation-registry';
+import { contributionRegistry } from './contribution-registry';
 import { notificationService } from '../notification/notification-service';
 import { appStorage } from '../storage/storage-service';
-import { createSubscription } from '../common/subscription';
-import { demoExtensionManifest } from './demo-extension-manifest';
 import type { ExtensionHostState, ExtensionSnapshot, InstalledExtension } from './types';
 
 const EXTENSIONS_KEY = 'extensions';
+const SCANNED_EXTENSIONS_KEY = 'scanned_extensions';
 
-function buildExtensionId(manifest: InstalledExtension['manifest']) {
+function buildExtensionId(manifest: ExtensionManifest): string {
   return `${manifest.publisher}.${manifest.name}`;
 }
 
 export class ExtensionService {
   private _extensions: InstalledExtension[] = [];
   private _hostState: ExtensionHostState = 'idle';
-  private _commandDisposables: CommandRegistration[] = [];
-  private _keybindingDisposables: KeybindingRegistration[] = [];
   private _snapshot: ExtensionSnapshot = {
     extensions: this._extensions,
     hostState: this._hostState,
   };
-
   private _subscription = createSubscription();
 
   subscribe(listener: () => void) {
@@ -35,30 +32,86 @@ export class ExtensionService {
     return this._snapshot;
   }
 
-  initialize() {
+  async initialize() {
     this._hostState = 'loading';
     this._refreshSnapshot();
     this._subscription.emit();
 
-    const stored = appStorage.getJSON<InstalledExtension[]>(EXTENSIONS_KEY);
-
-    if (stored && stored.length > 0) {
-      this._extensions = stored;
-    } else {
-      this._extensions = [
-        {
-          id: buildExtensionId(demoExtensionManifest),
-          manifest: demoExtensionManifest,
-          enabled: true,
-        },
-      ];
-      this._persist();
-    }
-
+    await this._scanAndLoadExtensions();
+    this._loadStoredExtensions();
     this.activateAll();
     this._hostState = 'ready';
     this._refreshSnapshot();
     this._subscription.emit();
+  }
+
+  private async _scanAndLoadExtensions() {
+    const scanResult = await scanExtensions();
+
+    if (scanResult.errors.length > 0) {
+      for (const error of scanResult.errors) {
+        console.error(`[ExtensionScanner] ${error.path}: ${error.message}`);
+      }
+    }
+
+    const scannedExtensions: InstalledExtension[] = [];
+
+    for (const scanned of scanResult.extensions) {
+      const validation = validateManifest(scanned.manifest);
+
+      if (!validation.valid) {
+        console.error(`[Extension] Invalid manifest at ${scanned.manifestPath}`, validation.errors);
+        continue;
+      }
+
+      if (validation.warnings.length > 0) {
+        for (const warning of validation.warnings) {
+          console.warn(`[Extension] ${scanned.manifest.name}: ${warning}`);
+        }
+      }
+
+      const extension: InstalledExtension = {
+        id: buildExtensionId(scanned.manifest),
+        manifest: scanned.manifest,
+        enabled: true,
+        extensionPath: scanned.extensionPath,
+        manifestPath: scanned.manifestPath,
+      };
+
+      scannedExtensions.push(extension);
+    }
+
+    appStorage.setJSON(SCANNED_EXTENSIONS_KEY, scannedExtensions);
+  }
+
+  private _loadStoredExtensions() {
+    const stored = appStorage.getJSON<InstalledExtension[]>(EXTENSIONS_KEY);
+    const scanned = appStorage.getJSON<InstalledExtension[]>(SCANNED_EXTENSIONS_KEY);
+
+    const scannedIds = new Set<string>(scanned?.map((e) => e.id) ?? []);
+
+    if (stored && stored.length > 0) {
+      this._extensions = stored.map((extension) => {
+        if (scannedIds.has(extension.id)) {
+          return extension;
+        }
+        return this._withEnabled(extension, false);
+      });
+    } else if (scanned && scanned.length > 0) {
+      this._extensions = scanned;
+    }
+
+    this._persist();
+  }
+
+  private _withEnabled(extension: InstalledExtension, enabled: boolean): InstalledExtension {
+    return {
+      id: extension.id,
+      manifest: extension.manifest,
+      enabled,
+      extensionPath: extension.extensionPath,
+      manifestPath: extension.manifestPath,
+    };
   }
 
   getExtensions() {
@@ -71,6 +124,7 @@ export class ExtensionService {
 
   reload() {
     this.deactivateAll();
+    activationRegistry.clear();
     this.activateAll();
     notificationService.info('Extensions reloaded.');
     this._subscription.emit();
@@ -79,14 +133,22 @@ export class ExtensionService {
   setEnabled(id: string, enabled: boolean) {
     this._extensions = this._extensions.map((extension) => {
       if (extension.id === id) {
-        return Object.assign({}, extension, { enabled });
+        return this._withEnabled(extension, enabled);
       }
-
       return extension;
     });
 
     this._persist();
     this.deactivateAll();
+    this.activateAll();
+    this._refreshSnapshot();
+    this._subscription.emit();
+  }
+
+  uninstall(id: string) {
+    this.deactivateAll();
+    this._extensions = this._extensions.filter((extension) => extension.id !== id);
+    this._persist();
     this.activateAll();
     this._refreshSnapshot();
     this._subscription.emit();
@@ -101,73 +163,15 @@ export class ExtensionService {
   }
 
   private deactivateAll() {
-    this._commandDisposables.forEach((disposable) => {
-      disposable.dispose();
-    });
-    this._commandDisposables = [];
-
-    this._keybindingDisposables.forEach((disposable) => {
-      disposable.dispose();
-    });
-    this._keybindingDisposables = [];
-
     for (const extension of this._extensions) {
-      menuService.removeByExtension(extension.id);
+      contributionRegistry.unregisterExtension(extension.id);
     }
+    activationRegistry.clear();
   }
 
   private _activateExtension(extension: InstalledExtension) {
-    const commands = extension.manifest.contributes?.commands ?? [];
-
-    for (const command of commands) {
-      const registration = commandService.registerOrReplace({
-        id: command.command,
-        title: command.title,
-        category: command.category,
-        source: 'plugin',
-        extensionId: extension.id,
-        handler: async () => {
-          notificationService.info(
-            `${command.title} from ${extension.manifest.displayName ?? extension.manifest.name}`,
-          );
-        },
-      });
-
-      this._commandDisposables.push(registration);
-    }
-
-    const menus = extension.manifest.contributes?.menus ?? {};
-
-    for (const location of Object.keys(menus)) {
-      const items = menus[location] ?? [];
-
-      menuService.contribute(
-        location,
-        items.map((item) => ({
-          command: item.command,
-          title: item.title,
-          when: item.when,
-          group: item.group,
-          order: item.order,
-          source: 'plugin' as const,
-          extensionId: extension.id,
-        })),
-      );
-    }
-
-    const keybindings = extension.manifest.contributes?.keybindings ?? [];
-
-    for (const keybinding of keybindings) {
-      const registration = keybindingService.register({
-        command: keybinding.command,
-        key: keybinding.key,
-        when: keybinding.when,
-        source: 'plugin',
-        extensionId: extension.id,
-      });
-
-      this._keybindingDisposables.push(registration);
-    }
+    contributionRegistry.registerExtension(extension);
+    activationRegistry.register(extension);
   }
 
   private _persist() {

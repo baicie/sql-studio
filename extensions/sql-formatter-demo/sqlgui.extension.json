@@ -3,7 +3,12 @@
   "displayName": "SQL Formatter Demo",
   "publisher": "baicie",
   "version": "0.1.0",
+  "description": "A demo extension that contributes a SQL format command.",
   "main": "dist/extension.js",
+  "engines": {
+    "sqlgui": "^0.1.0"
+  },
+  "categories": ["Formatter"],
   "activationEvents": ["onCommand:sql.format"],
   "permissions": ["editor.read", "editor.write", "ui.notification"],
   "contributes": {
