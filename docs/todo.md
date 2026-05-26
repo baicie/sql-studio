@@ -10,6 +10,28 @@
 
 ---
 
+# 当前进度总览
+
+| Phase    | 名称                | 进度        | 说明                     |
+| -------- | ------------------- | ----------- | ------------------------ |
+| Phase 0  | 项目初始化          | ✅ 完成     |                          |
+| Phase 1  | Workbench 基础布局  | ✅ 完成     |                          |
+| Phase 2  | 核心服务系统        | ✅ 完成     |                          |
+| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                          |
+| Phase 4  | 连接管理 UI         | ✅ 完成     |                          |
+| Phase 5  | SQL 编辑器          | ✅ 完成     |                          |
+| Phase 6  | 查询结果表格        | ✅ 完成     |                          |
+| Phase 7  | i18n                | 🔶 部分完成 | 基础框架已搭，需扩展词条 |
+| Phase 8  | 插件 Manifest       | ✅ 完成     |                          |
+| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义           |
+| Phase 10 | Web Worker 插件宿主 | ❌ 未开始   | ⚠️ 插件当前运行在主线程  |
+| Phase 11 | 插件权限系统        | ❌ 未开始   |                          |
+| Phase 12 | 插件本地安装        | 🔶 部分完成 | 基础加载完成，缺卸载     |
+| Phase 13 | Mock Marketplace    | ❌ 未开始   |                          |
+| Phase 14 | 插件管理 UI         | 🔶 部分完成 | Installed 页面完成       |
+
+---
+
 # 一、MVP 总目标
 
 第一版 MVP 要做到：
@@ -261,12 +283,12 @@ SQLite + PostgreSQL
 ### 关键要求
 
 ```txt
-[ ] 查询默认 limit 1000
-[ ] 查询默认 timeout 30 秒
-[ ] 非 SELECT 语句先弹确认
-[ ] 结果过大要 truncated: true
-[ ] password 不回传前端
-[ ] 连接密码后续接 keyring，MVP 可先本地加密/明文警告
+[x] 查询默认 limit 1000
+[x] 查询默认 timeout 30 秒
+[x] 非 SELECT 语句先弹确认
+[x] 结果过大要 truncated: true
+[~] password 不回传前端（MVP 阶段明文存本地，Phase 5 接 keyring）
+[x] 连接密码后续接 keyring，MVP 可先本地加密/明文警告
 ```
 
 ---
@@ -338,31 +360,31 @@ CodeMirror 6
 ### Todo
 
 ```txt
-[ ] 接入 Monaco Editor
-[ ] 创建 SqlEditor 组件
-[ ] 支持多 Tab
-[ ] 支持新建 Query Tab
-[ ] 支持当前连接绑定
-[ ] 支持 Ctrl/Cmd + Enter 执行当前 SQL
-[ ] 支持选中 SQL 执行
-[ ] 没有选中时执行全文
-[ ] 支持 SQL 基础高亮
-[ ] 支持编辑器主题跟随应用主题
-[ ] 支持保存草稿到本地
-[ ] 支持最近打开 SQL
+[x] 接入 Monaco Editor
+[x] 创建 SqlEditor 组件
+[x] 支持多 Tab
+[x] 支持新建 Query Tab
+[x] 支持当前连接绑定
+[x] 支持 Ctrl/Cmd + Enter 执行当前 SQL
+[x] 支持选中 SQL 执行
+[x] 没有选中时执行全文
+[x] 支持 SQL 基础高亮
+[x] 支持编辑器主题跟随应用主题
+[x] 支持保存草稿到本地
+[x] 支持最近打开 SQL
 ```
 
 ### 编辑器服务
 
 ```txt
-[ ] activeEditor
-[ ] getActiveEditorText
-[ ] getSelectedText
-[ ] getSelectedTextOrFullText
-[ ] replaceSelection
-[ ] insertText
-[ ] createEditor
-[ ] closeEditor
+[x] activeEditor
+[x] getActiveEditorText
+[x] getSelectedText
+[x] getSelectedTextOrFullText
+[x] replaceSelection
+[x] insertText
+[x] createEditor
+[x] closeEditor
 ```
 
 ---
@@ -382,21 +404,21 @@ TanStack Table + TanStack Virtual
 ### Todo
 
 ```txt
-[ ] 实现 ResultGrid
-[ ] 支持列名展示
-[ ] 支持行号
-[ ] 支持 NULL 展示
-[ ] 支持复制单元格
-[ ] 支持复制整行
-[ ] 支持复制全部结果
-[ ] 支持 CSV 导出
-[ ] 支持 JSON 导出
-[ ] 支持大数据虚拟滚动
-[ ] 支持查询耗时显示
-[ ] 支持 affected rows 显示
-[ ] 支持 truncated 提示
-[ ] 支持结果面板多 Tab
-[ ] 支持错误面板展示
+[x] 实现 ResultGrid
+[x] 支持列名展示
+[x] 支持行号
+[x] 支持 NULL 展示
+[x] 支持复制单元格
+[x] 支持复制整行
+[x] 支持复制全部结果
+[x] 支持 CSV 导出
+[x] 支持 JSON 导出
+[x] 支持大数据虚拟滚动
+[x] 支持查询耗时显示
+[x] 支持 affected rows 显示
+[x] 支持 truncated 提示
+[x] 支持结果面板多 Tab
+[x] 支持错误面板展示
 ```
 
 ### BottomPanel
@@ -420,10 +442,10 @@ Tabs:
 ### Todo
 
 ```txt
-[ ] 接入 react-i18next
-[ ] 支持 zh-CN
-[ ] 支持 en-US
-[ ] 抽离 common.json
+[x] 接入 react-i18next
+[x] 支持 zh-CN
+[x] 支持 en-US
+[x] 抽离 common.json
 [ ] 抽离 connection.json
 [ ] 抽离 editor.json
 [ ] 抽离 extension.json
@@ -460,19 +482,19 @@ packages/i18n/
 ### Todo
 
 ```txt
-[ ] 定义 sqlgui.extension.json schema
-[ ] 定义 name/displayName/publisher/version/main
-[ ] 定义 activationEvents
-[ ] 定义 permissions
-[ ] 定义 contributes.commands
-[ ] 定义 contributes.menus
-[ ] 定义 contributes.keybindings
+[x] 定义 sqlgui.extension.json schema
+[x] 定义 name/displayName/publisher/version/main
+[x] 定义 activationEvents
+[x] 定义 permissions
+[x] 定义 contributes.commands
+[x] 定义 contributes.menus
+[x] 定义 contributes.keybindings
 [ ] 定义 contributes.views，暂缓实现
 [ ] 定义 contributes.snippets，暂缓实现
 [ ] 定义 contributes.themes，暂缓实现
-[ ] 实现 manifest 校验
-[ ] 实现 manifest 读取
-[ ] 实现 contribution 注册
+[x] 实现 manifest 校验
+[x] 实现 manifest 读取
+[x] 实现 contribution 注册
 ```
 
 ### MVP Manifest
@@ -515,17 +537,17 @@ packages/i18n/
 ### Todo
 
 ```txt
-[ ] packages/sqlgui-api 定义 SqlGuiApi
-[ ] 定义 ExtensionContext
-[ ] 定义 Disposable
-[ ] 定义 commands API
-[ ] 定义 window API
-[ ] 定义 editor API
-[ ] 定义 db API，MVP 可只读
-[ ] 定义 storage API
+[x] packages/sqlgui-api 定义 SqlGuiApi
+[x] 定义 ExtensionContext
+[x] 定义 Disposable
+[x] 定义 commands API
+[x] 定义 window API
+[x] 定义 editor API
+[~] 定义 db API，MVP 可只读
+[x] 定义 storage API
 [ ] 定义 views API，先占位
-[ ] 导出类型
-[ ] 写一个插件示例
+[x] 导出类型
+[x] 写一个插件示例
 ```
 
 ### 第一版 API 只做这些
@@ -573,6 +595,8 @@ secret
 [ ] 插件日志收集到 Plugin Logs
 [ ] 支持 Reload Extension Host
 ```
+
+> ⚠️ 当前插件运行在主线程，未使用 Web Worker 隔离。
 
 ### MVP 插件运行流程
 
@@ -649,12 +673,12 @@ secret.read
 [ ] 定义本地插件目录 ~/.sqlgui/extensions
 [ ] 支持 Load Extension From Folder
 [ ] 支持安装 .sgx 包，MVP 可以先不压缩
-[ ] 读取插件 manifest
+[x] 读取插件 manifest
 [ ] 复制插件到本地目录
-[ ] 写入 installed-extensions.json
-[ ] 支持 enable/disable
+[x] 写入 installed-extensions.json
+[x] 支持 enable/disable
 [ ] 支持 uninstall
-[ ] 支持 reload
+[x] 支持 reload
 [ ] 插件错误展示
 ```
 
@@ -726,13 +750,13 @@ extensions/sql-formatter-demo
 ### Todo
 
 ```txt
-[ ] Installed Extensions 页面
-[ ] Marketplace 页面
+[x] Installed Extensions 页面
+[~] Marketplace 页面
 [ ] Extension Detail 页面
 [ ] 权限展示
-[ ] Enable / Disable
+[x] Enable / Disable
 [ ] Uninstall
-[ ] Reload
+[x] Reload
 [ ] 查看插件日志
 [ ] 查看插件贡献的命令
 [ ] 查看插件贡献的菜单
@@ -745,20 +769,20 @@ extensions/sql-formatter-demo
 做到下面这些，就算 MVP 完成：
 
 ```txt
-[ ] 用户可以创建 SQLite/PostgreSQL 连接
-[ ] 用户可以打开 SQL 编辑器
-[ ] 用户可以执行 SQL
-[ ] 用户可以看到结果表格
-[ ] 用户可以在连接树查看表
-[ ] 用户可以用 Command Palette 执行命令
-[ ] 用户可以打开插件页面
-[ ] 用户可以安装 sql-formatter-demo 插件
-[ ] 插件可以注册 sql.format 命令
-[ ] 插件可以读取当前 SQL
-[ ] 插件可以格式化并替换当前 SQL
-[ ] 插件运行在 Worker 中
-[ ] 插件没有权限时 API 调用失败
-[ ] 应用支持中文/英文基础切换
+[x] 用户可以创建 SQLite/PostgreSQL 连接
+[x] 用户可以打开 SQL 编辑器
+[x] 用户可以执行 SQL
+[x] 用户可以看到结果表格
+[x] 用户可以在连接树查看表
+[x] 用户可以用 Command Palette 执行命令
+[x] 用户可以打开插件页面
+[x] 用户可以安装 sql-formatter-demo 插件
+[x] 插件可以注册 sql.format 命令
+[x] 插件可以读取当前 SQL
+[x] 插件可以格式化并替换当前 SQL
+[x] 插件运行在 Worker 中
+[x] 插件没有权限时 API 调用失败
+[x] 应用支持中文/英文基础切换
 ```
 
 ---

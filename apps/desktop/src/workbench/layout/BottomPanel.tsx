@@ -5,6 +5,7 @@ import { PanelTabs } from './PanelTabs';
 import { useWorkbenchStore } from '../store/workbenchStore';
 import { useResultStore } from '../results/store/resultStore';
 import { resultService } from '../results/services/resultService';
+import { ResultGrid } from '../results/components/ResultGrid';
 
 export function BottomPanel() {
   const activeBottomPanel = useWorkbenchStore((state) => state.activeBottomPanel);
@@ -88,67 +89,8 @@ function ResultsPanel() {
         </button>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto">
-        <table className="min-w-full text-xs">
-          <thead className="sticky top-0 bg-muted/50">
-            <tr>
-              <th className="border-b px-2 py-1 text-left font-medium text-muted-foreground w-10">
-                #
-              </th>
-              {result.columns.map((col, i) => (
-                <th
-                  key={i}
-                  className="border-b px-2 py-1 text-left font-medium"
-                  style={{ minWidth: 80 }}
-                >
-                  <div
-                    className="truncate max-w-[200px]"
-                    title={`${col.name} (${col.databaseType})`}
-                  >
-                    {col.name}
-                  </div>
-                  <div className="truncate text-xs font-normal text-muted-foreground">
-                    {col.databaseType}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {result.rows.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={result.columns.length + 1}
-                  className="px-2 py-4 text-center text-muted-foreground"
-                >
-                  No rows returned.
-                </td>
-              </tr>
-            ) : (
-              result.rows.map((row, rowIndex) => (
-                <tr key={rowIndex} className="hover:bg-muted/30">
-                  <td className="border-b px-2 py-1 text-muted-foreground">{rowIndex + 1}</td>
-                  {row.map((cell, cellIndex) => (
-                    <td key={cellIndex} className="border-b px-2 py-1">
-                      <span
-                        className="truncate block max-w-[200px]"
-                        title={cell === null ? 'NULL' : String(cell)}
-                      >
-                        {cell === null ? (
-                          <span className="italic text-muted-foreground">NULL</span>
-                        ) : typeof cell === 'object' ? (
-                          JSON.stringify(cell)
-                        ) : (
-                          String(cell)
-                        )}
-                      </span>
-                    </td>
-                  ))}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <ResultGrid result={result} />
       </div>
     </div>
   );

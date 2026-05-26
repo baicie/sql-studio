@@ -40,5 +40,10 @@
     "simple-git-hooks": "^2.13.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.0"
+  },
+  "dependencies": {
+    "@tanstack/react-virtual": "^3.13.25",
+    "@tauri-apps/plugin-dialog": "^2.7.1",
+    "@tauri-apps/plugin-fs": "^2.5.1"
   }
 }

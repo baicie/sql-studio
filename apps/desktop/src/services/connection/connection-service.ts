@@ -12,6 +12,7 @@ import type {
 } from './types';
 
 const CONNECTIONS_KEY = 'connections';
+const ACTIVE_CONNECTION_KEY = 'active_connection';
 
 export class ConnectionService {
   private _profiles: ConnectionProfile[] = [];
@@ -46,8 +47,70 @@ export class ConnectionService {
 
   initialize() {
     this._profiles = appStorage.getJSON<ConnectionProfile[]>(CONNECTIONS_KEY) ?? [];
+    this._activeConnectionId = appStorage.getItem(ACTIVE_CONNECTION_KEY);
+    this._status = 'disconnected';
     this._refreshSnapshot();
     this._subscription.emit();
+  }
+
+  async restoreActiveConnection(): Promise<string | null> {
+    if (!this._activeConnectionId) {
+      return null;
+    }
+
+    const profile = this.getProfile(this._activeConnectionId);
+
+    if (!profile) {
+      this._activeConnectionId = null;
+      this._status = 'disconnected';
+      this._persistActiveConnection();
+      this._refreshSnapshot();
+      this._subscription.emit();
+      return null;
+    }
+
+    this._status = 'connecting';
+    this._refreshSnapshot();
+    this._subscription.emit();
+
+    try {
+      logService.info('connection', `Restoring connection: ${profile.name}`);
+
+      const result = await dbService.openConnection({
+        id: profile.id,
+        name: profile.name,
+        kind: profile.kind,
+        filePath: profile.filePath,
+        host: profile.host,
+        port: profile.port,
+        username: profile.username,
+        password: profile.password,
+        database: profile.database,
+      });
+
+      this._activeConnectionId = result.connectionId;
+      this._status = 'connected';
+      this._persistActiveConnection();
+      this._refreshSnapshot();
+      this._subscription.emit();
+      this._onDidChangeActiveConnectionEmitter.fire(profile);
+
+      notificationService.success(`Reconnected to ${profile.name}.`);
+      logService.info('connection', `Connection restored: ${profile.name}`);
+
+      return result.connectionId;
+    } catch (error) {
+      this._activeConnectionId = null;
+      this._status = 'disconnected';
+      this._persistActiveConnection();
+      this._refreshSnapshot();
+      this._subscription.emit();
+
+      const message = error instanceof Error ? error.message : String(error);
+      notificationService.warning(`Failed to restore connection: ${message}`);
+      logService.error('connection', `Failed to restore connection: ${profile.name}`, error);
+      return null;
+    }
   }
 
   getProfiles() {
@@ -68,6 +131,10 @@ export class ConnectionService {
     }
 
     return this.getProfile(this._activeConnectionId);
+  }
+
+  getConnectionIdForQuery() {
+    return this._activeConnectionId;
   }
 
   addProfile(profile: ConnectionProfile) {
@@ -92,6 +159,7 @@ export class ConnectionService {
   setActiveConnection(connection: ConnectionProfile | null) {
     this._activeConnectionId = connection?.id ?? null;
     this._status = connection ? 'connected' : 'disconnected';
+    this._persistActiveConnection();
     this._refreshSnapshot();
     this._subscription.emit();
     this._onDidChangeActiveConnectionEmitter.fire(connection);
@@ -197,6 +265,7 @@ export class ConnectionService {
 
       this._activeConnectionId = id;
       this._status = 'connected';
+      this._persistActiveConnection();
       this._refreshSnapshot();
       this._subscription.emit();
       this._onDidChangeActiveConnectionEmitter.fire(profile);
@@ -228,6 +297,7 @@ export class ConnectionService {
 
     this._activeConnectionId = null;
     this._status = 'disconnected';
+    this._persistActiveConnection();
     this._refreshSnapshot();
     this._subscription.emit();
     this._onDidChangeActiveConnectionEmitter.fire(null);
@@ -269,6 +339,14 @@ export class ConnectionService {
 
   private _persist() {
     appStorage.setJSON(CONNECTIONS_KEY, this._profiles);
+  }
+
+  private _persistActiveConnection() {
+    if (this._activeConnectionId) {
+      appStorage.setItem(ACTIVE_CONNECTION_KEY, this._activeConnectionId);
+    } else {
+      appStorage.removeItem(ACTIVE_CONNECTION_KEY);
+    }
   }
 
   private _refreshSnapshot() {

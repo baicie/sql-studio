@@ -1,0 +1,258 @@
+/* eslint-disable react-hooks/incompatible-library */
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { Copy, Download } from 'lucide-react';
+import type { QueryResult } from '../../editor/types';
+
+export interface ResultGridProps {
+  result: QueryResult;
+  onClose?: () => void;
+}
+
+export function ResultGrid({ result }: ResultGridProps) {
+  const [selectedCell, setSelectedCell] = useState<{
+    rowIndex: number;
+    columnIndex: number;
+  } | null>(null);
+
+  const tableRef = useRef<HTMLDivElement>(null);
+  const rowVirtualizer = useVirtualizer({
+    count: result.rows.length,
+    getScrollElement: () => tableRef.current,
+    estimateSize: () => 28,
+    overscan: 20,
+  });
+
+  const { columns, rows } = result;
+
+  const formatCell = (cell: unknown): string => {
+    if (cell === null) return 'NULL';
+    if (typeof cell === 'object') return JSON.stringify(cell);
+    return String(cell);
+  };
+
+  const handleCellClick = useCallback((rowIndex: number, columnIndex: number) => {
+    setSelectedCell({ rowIndex, columnIndex });
+  }, []);
+
+  const handleCopyCell = useCallback(() => {
+    if (!selectedCell) return;
+    const { rowIndex, columnIndex } = selectedCell;
+    const value = formatCell(rows[rowIndex]?.[columnIndex]);
+    void navigator.clipboard.writeText(value);
+  }, [selectedCell, rows]);
+
+  const handleCopyRow = useCallback(
+    (rowIndex: number) => {
+      const row = rows[rowIndex];
+      if (!row) return;
+      const values = row.map((cell) => formatCell(cell)).join('\t');
+      void navigator.clipboard.writeText(values);
+    },
+    [rows],
+  );
+
+  const handleCopyAll = useCallback(() => {
+    const header = columns.map((c) => c.name).join('\t');
+    const body = rows.map((row) => row.map((cell) => formatCell(cell)).join('\t')).join('\n');
+    void navigator.clipboard.writeText(`${header}\n${body}`);
+  }, [columns, rows]);
+
+  const toCSV = useCallback(() => {
+    const escape = (v: string) => {
+      if (v.includes('"') || v.includes(',') || v.includes('\n')) {
+        return `"${v.replace(/"/g, '""')}"`;
+      }
+      return v;
+    };
+    const header = columns.map((c) => escape(c.name)).join(',');
+    const body = rows
+      .map((row) => row.map((cell) => escape(formatCell(cell))).join(','))
+      .join('\n');
+    return `${header}\n${body}`;
+  }, [columns, rows]);
+
+  const toJSON = useCallback(() => {
+    const data = rows.map((row) => {
+      const obj: Record<string, unknown> = {};
+      columns.forEach((col, i) => {
+        obj[col.name] = row[i];
+      });
+      return obj;
+    });
+    return JSON.stringify(data, null, 2);
+  }, [columns, rows]);
+
+  const csvContent = useMemo(() => toCSV(), [toCSV]);
+  const jsonContent = useMemo(() => toJSON(), [toJSON]);
+
+  return (
+    <div className="flex h-full flex-col">
+      <ResultToolbar
+        onCopyCell={handleCopyCell}
+        onCopyRow={handleCopyRow}
+        onCopyAll={handleCopyAll}
+        onExportCSV={() => downloadFile(csvContent, 'result.csv', 'text/csv')}
+        onExportJSON={() => downloadFile(jsonContent, 'result.json', 'application/json')}
+        selectedCell={selectedCell}
+        rows={rows}
+        csvContent={csvContent}
+        jsonContent={jsonContent}
+      />
+
+      <div className="min-h-0 flex-1 overflow-auto" ref={tableRef}>
+        <div className="min-w-full text-xs">
+          <div className="sticky top-0 z-10 flex bg-muted/50">
+            <div className="flex w-12 shrink-0 items-center justify-center border-b px-2 py-1.5 text-muted-foreground">
+              #
+            </div>
+            {columns.map((col, i) => (
+              <div
+                key={i}
+                className="flex min-w-[80px] max-w-[200px] shrink-0 flex-col border-b px-2 py-1.5"
+              >
+                <span className="truncate font-medium" title={`${col.name} (${col.databaseType})`}>
+                  {col.name}
+                </span>
+                <span className="truncate text-xs font-normal text-muted-foreground">
+                  {col.databaseType}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const row = rows[virtualRow.index];
+              return (
+                <div
+                  key={virtualRow.key}
+                  className="absolute left-0 top-0 flex w-full hover:bg-muted/30"
+                  style={{
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <div className="flex w-12 shrink-0 items-center justify-center px-2 text-muted-foreground">
+                    {virtualRow.index + 1}
+                  </div>
+                  {row.map((cell, cellIndex) => {
+                    const isSelected =
+                      selectedCell?.rowIndex === virtualRow.index &&
+                      selectedCell?.columnIndex === cellIndex;
+                    return (
+                      <div
+                        key={cellIndex}
+                        className={`flex min-w-[80px] max-w-[200px] shrink-0 cursor-pointer items-center border-b px-2 py-1 ${
+                          isSelected ? 'bg-primary/20' : ''
+                        }`}
+                        onClick={() => handleCellClick(virtualRow.index, cellIndex)}
+                        title={formatCell(cell)}
+                      >
+                        {cell === null ? (
+                          <span className="truncate italic text-muted-foreground">NULL</span>
+                        ) : (
+                          <span className="truncate">{formatCell(cell)}</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface ResultToolbarProps {
+  onCopyCell: () => void;
+  onCopyRow: (rowIndex: number) => void;
+  onCopyAll: () => void;
+  onExportCSV: () => void;
+  onExportJSON: () => void;
+  selectedCell: { rowIndex: number; columnIndex: number } | null;
+  rows: unknown[][];
+  csvContent: string;
+  jsonContent: string;
+}
+
+function ResultToolbar({
+  onCopyCell,
+  onExportCSV,
+  onExportJSON,
+  selectedCell,
+}: ResultToolbarProps) {
+  return (
+    <div className="flex shrink-0 items-center gap-1 border-b px-2 py-1">
+      <button
+        type="button"
+        className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40"
+        onClick={onCopyCell}
+        disabled={!selectedCell}
+        title="Copy selected cell"
+      >
+        <Copy className="h-3 w-3" />
+        Copy Cell
+      </button>
+
+      <div className="mx-1 h-3 w-px bg-border" />
+
+      <button
+        type="button"
+        className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
+        onClick={onExportCSV}
+        title="Export as CSV"
+      >
+        <Download className="h-3 w-3" />
+        CSV
+      </button>
+      <button
+        type="button"
+        className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
+        onClick={onExportJSON}
+        title="Export as JSON"
+      >
+        <Download className="h-3 w-3" />
+        JSON
+      </button>
+    </div>
+  );
+}
+
+async function downloadFile(content: string, filename: string, mimeType: string) {
+  try {
+    const { save } = await import('@tauri-apps/plugin-dialog');
+    const { writeTextFile } = await import('@tauri-apps/plugin-fs');
+
+    const filePath = await save({
+      defaultPath: filename,
+      filters: [
+        {
+          name: filename.endsWith('.csv') ? 'CSV' : 'JSON',
+          extensions: [filename.split('.').pop() ?? '*'],
+        },
+      ],
+    });
+
+    if (filePath) {
+      await writeTextFile(filePath, content);
+    }
+  } catch {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+}
