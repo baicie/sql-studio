@@ -29,6 +29,7 @@ export interface QueryRequest {
   sql: string;
   limit?: number;
   timeoutMs?: number;
+  readonly?: boolean;
 }
 
 export interface QueryResult {

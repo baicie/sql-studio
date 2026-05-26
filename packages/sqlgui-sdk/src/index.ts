@@ -1,4 +1,4 @@
-export { RpcClient } from './rpcClient';
+export { RpcClient, RpcError } from './rpcClient';
 
 export type { RpcTransport } from './rpcClient';
 

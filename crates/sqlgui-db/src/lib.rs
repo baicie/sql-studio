@@ -5,6 +5,7 @@ pub mod mysql;
 pub mod pool;
 pub mod postgres;
 pub mod sqlite;
+pub mod sql_safety;
 pub mod types;
 
 pub use error::{DbError, DbResult};

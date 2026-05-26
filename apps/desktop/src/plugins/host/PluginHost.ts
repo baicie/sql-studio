@@ -238,13 +238,25 @@ export class PluginHost {
         },
       } satisfies HostToPluginMessage);
     } catch (error) {
+      const anyError = error as {
+        code?: string;
+        extensionId?: string;
+        method?: string;
+        missingPermissions?: unknown;
+      };
+
       this.worker.postMessage({
         type: 'rpc:response',
         response: {
           id: request.id,
           error: {
-            code: 'PLUGIN_RPC_ERROR',
+            code: anyError.code ?? 'PLUGIN_RPC_ERROR',
             message: error instanceof Error ? error.message : String(error),
+            data: {
+              extensionId: anyError.extensionId,
+              method: anyError.method,
+              missingPermissions: anyError.missingPermissions,
+            },
           },
         },
       } satisfies HostToPluginMessage);

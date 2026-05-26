@@ -57,6 +57,8 @@ pub struct QueryRequest {
     pub limit: Option<u32>,
     #[serde(rename = "timeoutMs", default)]
     pub timeout_ms: Option<u64>,
+    #[serde(default)]
+    pub readonly: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

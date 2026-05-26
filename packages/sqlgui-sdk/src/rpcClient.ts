@@ -10,6 +10,19 @@ interface PendingRequest {
   reject(error: Error): void;
 }
 
+export class RpcError extends Error {
+  constructor(
+    readonly code: string,
+    message: string,
+    data?: unknown,
+  ) {
+    super(message);
+    this.data = data;
+  }
+
+  data?: unknown;
+}
+
 export class RpcClient {
   private seq = 0;
   private readonly pending = new Map<string, PendingRequest>();
@@ -76,7 +89,9 @@ export class RpcClient {
     this.pending.delete(response.id);
 
     if (response.error) {
-      pending.reject(new Error(response.error.message || response.error.code || 'RPC Error'));
+      const rpcError = new RpcError(response.error.code, response.error.message);
+      rpcError.data = response.error.data;
+      pending.reject(rpcError);
       return;
     }
 

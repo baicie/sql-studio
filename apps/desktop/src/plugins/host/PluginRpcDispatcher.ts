@@ -10,6 +10,7 @@ import { resultRpcHandlers } from './rpc/resultRpcHandlers';
 import { diagnosticsRpcHandlers } from './rpc/diagnosticsRpcHandlers';
 import { viewRpcHandlers } from './rpc/viewRpcHandlers';
 import { pluginLogService } from './PluginLogService';
+import { permissionBroker } from '@/plugins/permissions/PermissionBroker';
 
 export type PluginRpcHandler = (
   extension: InstalledExtension,
@@ -48,6 +49,8 @@ class PluginRpcDispatcher {
       throw new Error(`Unknown plugin RPC method: ${request.method}`);
     }
 
+    await permissionBroker.assertAllowed(extension, request.method, request.params);
+
     return await handler(extension, request.params);
   }
 
@@ -70,6 +73,8 @@ class PluginRpcDispatcher {
 
     const handler = this.handlers.get(notification.method);
     if (!handler) return;
+
+    await permissionBroker.assertAllowed(extension, notification.method, notification.params);
 
     await handler(extension, notification.params);
   }

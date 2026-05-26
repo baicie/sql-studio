@@ -42,6 +42,19 @@
     "db.connection.read": "Read database connection info",
     "db.schema.read": "Read database schema",
     "db.query.read": "Execute read-only queries",
-    "db.query.write": "Execute write queries"
-  }
+    "db.query.write": "Execute write queries",
+    "db.query.explain": "Execute EXPLAIN queries",
+    "clipboard.read": "Read clipboard",
+    "clipboard.write": "Write clipboard",
+    "network.fetch": "Access network resources"
+  },
+  "permissionGrant": "Extension Permission Request",
+  "permissionRequest": "requires the following permissions",
+  "permissionChanged": "This extension has changed its requested permissions. Please review before enabling.",
+  "deny": "Deny",
+  "allow": "Allow",
+  "allowOnce": "Allow Once",
+  "dangerousSqlConfirm": "Confirm Dangerous SQL Operation",
+  "dangerousSqlMessage": "Extension <b>{{extensionName}}</b> wants to execute a potentially dangerous SQL operation.",
+  "reason": "Reason"
 }

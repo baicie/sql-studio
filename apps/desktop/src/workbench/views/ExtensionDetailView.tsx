@@ -2,6 +2,7 @@ import type { InstalledExtension } from '@/services/extension/types';
 import { extensionService } from '@/services/extension/extension-service';
 import { useAppTranslation } from '@/i18n';
 import { ALLOWED_PERMISSIONS } from '@sqlgui/extension-schema';
+import { useExtensionPermissions } from '@/plugins/permissions/useExtensionPermissions';
 
 interface ExtensionDetailViewProps {
   extension: InstalledExtension;
@@ -12,6 +13,7 @@ export function ExtensionDetailView({ extension, onBack }: ExtensionDetailViewPr
   const { t } = useAppTranslation('extension');
   const manifest = extension.manifest;
   const contributes = manifest.contributes;
+  const { grantedPermissions } = useExtensionPermissions(extension.id);
 
   return (
     <section className="flex h-full flex-col">
@@ -128,15 +130,25 @@ export function ExtensionDetailView({ extension, onBack }: ExtensionDetailViewPr
               <div className="space-y-1">
                 {manifest.permissions.map((permission) => {
                   const isAllowed = ALLOWED_PERMISSIONS.includes(permission);
+                  const isGranted = grantedPermissions.includes(permission);
                   return (
                     <div
                       key={permission}
                       className={`rounded border p-2 text-xs ${isAllowed ? 'bg-muted/50' : 'border-destructive bg-destructive/10'}`}
                     >
-                      <span className="font-mono">{permission}</span>
-                      {!isAllowed && (
-                        <span className="ml-2 text-destructive">{t('unknownPermission')}</span>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono">{permission}</span>
+                        {!isAllowed && (
+                          <span className="text-destructive">{t('unknownPermission')}</span>
+                        )}
+                        {isAllowed && (
+                          <span
+                            className={`rounded px-1 py-0.5 text-[10px] ${isGranted ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}
+                          >
+                            {isGranted ? 'Granted' : 'Not Granted'}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}

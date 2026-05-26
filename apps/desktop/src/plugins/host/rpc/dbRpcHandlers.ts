@@ -1,6 +1,7 @@
 import type { PluginRpcHandler } from '../PluginRpcDispatcher';
 import { dbService } from '@/services/db/dbService';
 import { connectionService } from '@/services/connection/connection-service';
+import { sqlSafetyAnalyzer } from '@/plugins/permissions/SqlSafetyAnalyzer';
 
 export const dbRpcHandlers: Record<string, PluginRpcHandler> = {
   async 'db.getActiveConnection'() {
@@ -70,11 +71,14 @@ export const dbRpcHandlers: Record<string, PluginRpcHandler> = {
       timeoutMs?: number;
     };
 
+    const analysis = sqlSafetyAnalyzer.analyze(payload.sql);
+
     return dbService.executeQuery({
       connectionId: payload.connectionId,
       sql: payload.sql,
       limit: payload.limit ?? 1000,
       timeoutMs: payload.timeoutMs ?? 30_000,
+      readonly: analysis.readonly,
     });
   },
 

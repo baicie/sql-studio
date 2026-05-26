@@ -42,6 +42,19 @@
     "db.connection.read": "读取数据库连接信息",
     "db.schema.read": "读取数据库结构",
     "db.query.read": "执行只读查询",
-    "db.query.write": "执行写入查询"
-  }
+    "db.query.write": "执行写入查询",
+    "db.query.explain": "执行 EXPLAIN 查询",
+    "clipboard.read": "读取剪贴板",
+    "clipboard.write": "写入剪贴板",
+    "network.fetch": "访问网络资源"
+  },
+  "permissionGrant": "插件权限请求",
+  "permissionRequest": "请求以下权限",
+  "permissionChanged": "此插件已变更请求的权限，请在启用前仔细检查。",
+  "deny": "拒绝",
+  "allow": "允许",
+  "allowOnce": "允许一次",
+  "dangerousSqlConfirm": "确认危险 SQL 操作",
+  "dangerousSqlMessage": "插件 <b>{{extensionName}}</b> 想要执行潜在危险的 SQL 操作。",
+  "reason": "原因"
 }

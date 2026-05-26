@@ -12,23 +12,23 @@
 
 # 当前进度总览
 
-| Phase    | 名称                | 进度        | 说明                    |
-| -------- | ------------------- | ----------- | ----------------------- |
-| Phase 0  | 项目初始化          | ✅ 完成     |                         |
-| Phase 1  | Workbench 基础布局  | ✅ 完成     |                         |
-| Phase 2  | 核心服务系统        | ✅ 完成     |                         |
-| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                         |
-| Phase 4  | 连接管理 UI         | ✅ 完成     |                         |
-| Phase 5  | SQL 编辑器          | ✅ 完成     |                         |
-| Phase 6  | 查询结果表格        | ✅ 完成     |                         |
-| Phase 7  | i18n                | ✅ 完成     |                         |
-| Phase 8  | 插件 Manifest       | ✅ 完成     |                         |
-| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义          |
-| Phase 10 | Web Worker 插件宿主 | ❌ 未开始   | ⚠️ 插件当前运行在主线程 |
-| Phase 11 | 插件权限系统        | ❌ 未开始   |                         |
-| Phase 12 | 插件本地安装        | 🔶 部分完成 | 基础加载完成，缺卸载    |
-| Phase 13 | Mock Marketplace    | ❌ 未开始   |                         |
-| Phase 14 | 插件管理 UI         | 🔶 部分完成 | Installed 页面完成      |
+| Phase    | 名称                | 进度        | 说明                 |
+| -------- | ------------------- | ----------- | -------------------- |
+| Phase 0  | 项目初始化          | ✅ 完成     |                      |
+| Phase 1  | Workbench 基础布局  | ✅ 完成     |                      |
+| Phase 2  | 核心服务系统        | ✅ 完成     |                      |
+| Phase 3  | Rust DB Core MVP    | ✅ 完成     |                      |
+| Phase 4  | 连接管理 UI         | ✅ 完成     |                      |
+| Phase 5  | SQL 编辑器          | ✅ 完成     |                      |
+| Phase 6  | 查询结果表格        | ✅ 完成     |                      |
+| Phase 7  | i18n                | ✅ 完成     |                      |
+| Phase 8  | 插件 Manifest       | ✅ 完成     |                      |
+| Phase 9  | 插件 API 包         | 🔶 部分完成 | 基础类型已定义       |
+| Phase 10 | Web Worker 插件宿主 | ✅ 完成     |                      |
+| Phase 11 | 插件权限系统        | ✅ 完成     |                      |
+| Phase 12 | 插件本地安装        | 🔶 部分完成 | 基础加载完成，缺卸载 |
+| Phase 13 | Mock Marketplace    | ❌ 未开始   |                      |
+| Phase 14 | 插件管理 UI         | 🔶 部分完成 | Installed 页面完成   |
 
 ---
 
@@ -627,38 +627,29 @@ secret
 ### Todo
 
 ```txt
-[ ] 定义权限枚举
-[ ] 插件安装时读取 permissions
-[ ] 本地保存 grantedPermissions
-[ ] API 调用前检查权限
-[ ] editor.read 保护读取编辑器
-[ ] editor.write 保护修改编辑器
-[ ] storage.local 保护插件存储
-[ ] db.schema.read 保护读取表结构
-[ ] db.query.read 暂缓开放
-[ ] db.query.write MVP 禁止
-[ ] 权限不足时抛出标准错误
-```
-
-### MVP 权限
-
-```txt
-editor.read
-editor.write
-storage.local
-ui.notification
-db.connection.read
-db.schema.read
-```
-
-先不要做：
-
-```txt
-db.query.write
-network.fetch
-file.read
-file.write
-secret.read
+[x] 定义权限枚举 (ExtensionPermission)
+[x] 插件安装时读取 permissions
+[x] 本地保存 grantedPermissions
+[x] API 调用前检查权限
+[x] editor.read 保护读取编辑器
+[x] editor.write 保护修改编辑器
+[x] storage.local 保护插件存储
+[x] db.schema.read 保护读取表结构
+[x] db.query.read 保护读取查询
+[x] db.query.write 高危写入权限
+[x] db.query.explain EXPLAIN 查询权限
+[x] clipboard.read/write 剪贴板权限
+[x] ui.notification 通知权限
+[x] network.fetch 默认拒绝
+[x] 权限不足时抛出标准错误 (PermissionError)
+[x] 高危 SQL 二次确认
+[x] manifest hash 检测权限变更
+[x] 插件禁用后清理权限缓存
+[x] PermissionGrantDialog 弹窗
+[x] DangerousSqlConfirmDialog 危险 SQL 确认
+[x] PluginAuditService 审计日志
+[x] Rust DB 层 readonly 二次保护
+[x] RpcError 错误码返回
 ```
 
 ---

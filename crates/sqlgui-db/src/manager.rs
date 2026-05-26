@@ -5,6 +5,7 @@ use crate::error::{DbError, DbResult};
 use crate::mysql::MySqlConnector;
 use crate::postgres::PostgresConnector;
 use crate::pool::PoolManager;
+use crate::sql_safety::is_readonly_sql;
 use crate::sqlite::SqliteConnector;
 use crate::types::{
     ColumnSchema, ConnectionConfig, DatabaseMeta, DbKind, OpenConnectionResult,
@@ -58,6 +59,12 @@ impl DbManager {
     }
 
     pub async fn query(&self, request: QueryRequest) -> DbResult<QueryResult> {
+        if request.readonly.unwrap_or(false) && !is_readonly_sql(&request.sql) {
+            return Err(DbError::QueryFailed(
+                "Readonly query rejected: SQL may modify data".to_string(),
+            ));
+        }
+
         let connection = self
             .pool_manager
             .get(&request.connection_id)

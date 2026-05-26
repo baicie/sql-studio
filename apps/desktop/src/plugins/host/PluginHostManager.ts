@@ -1,5 +1,7 @@
 import { PluginHost } from './PluginHost';
 import { activationRegistry } from '@/services/extension/activation-registry';
+import { permissionBroker } from '@/plugins/permissions/PermissionBroker';
+import { permissionStorage } from '@/plugins/permissions/PermissionStorage';
 
 class PluginHostManager {
   private hosts = new Map<string, PluginHost>();
@@ -23,6 +25,12 @@ class PluginHostManager {
 
     if (!extension.enabled) {
       throw new Error(`Extension is not enabled: ${extensionId}`);
+    }
+
+    const granted = await permissionBroker.ensureManifestGranted(extension);
+
+    if (!granted) {
+      throw new Error(`User denied permissions for extension: ${extensionId}`);
     }
 
     let host = this.hosts.get(extensionId);
@@ -65,6 +73,7 @@ class PluginHostManager {
 
     await host.deactivate();
     this.hosts.delete(extensionId);
+    permissionStorage.revoke(extensionId);
   }
 
   async reloadExtension(extensionId: string) {
