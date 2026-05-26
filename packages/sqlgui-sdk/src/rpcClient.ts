@@ -20,7 +20,7 @@ export class RpcClient {
     });
   }
 
-  request<T>(method: string, params?: unknown): Promise<T> {
+  request<T>(method: string, params?: unknown, timeoutMs = 30_000): Promise<T> {
     const id = String(++this.seq);
 
     const request: RpcRequest = {
@@ -30,9 +30,20 @@ export class RpcClient {
     };
 
     return new Promise<T>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.pending.delete(id);
+        reject(new Error(`RPC timeout: ${method}`));
+      }, timeoutMs);
+
       this.pending.set(id, {
-        resolve: resolve as (value: unknown) => void,
-        reject,
+        resolve: (value) => {
+          clearTimeout(timer);
+          resolve(value as T);
+        },
+        reject: (error) => {
+          clearTimeout(timer);
+          reject(error);
+        },
       });
 
       this.transport.postMessage({

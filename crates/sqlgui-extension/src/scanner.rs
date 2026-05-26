@@ -42,10 +42,6 @@ fn scan_directory(dir: &std::path::Path) -> ExtensionScanResult {
     let mut errors = Vec::new();
 
     if !dir.exists() {
-        errors.push(ExtensionScanError {
-            path: dir.to_string_lossy().to_string(),
-            message: "Directory does not exist".to_string(),
-        });
         return ExtensionScanResult { extensions, errors };
     }
 

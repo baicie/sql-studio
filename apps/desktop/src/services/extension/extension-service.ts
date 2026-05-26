@@ -7,6 +7,7 @@ import { contributionRegistry } from './contribution-registry';
 import { notificationService } from '../notification/notification-service';
 import { appStorage } from '../storage/storage-service';
 import type { ExtensionHostState, ExtensionSnapshot, InstalledExtension } from './types';
+import { pluginHostManager } from '@/plugins/host/PluginHostManager';
 
 const EXTENSIONS_KEY = 'extensions';
 const SCANNED_EXTENSIONS_KEY = 'scanned_extensions';
@@ -139,6 +140,8 @@ export class ExtensionService {
     });
 
     this._persist();
+    pluginHostManager.deactivateExtension(id);
+    contributionRegistry.unregisterExtension(id);
     this.deactivateAll();
     this.activateAll();
     this._refreshSnapshot();
@@ -146,12 +149,21 @@ export class ExtensionService {
   }
 
   uninstall(id: string) {
+    pluginHostManager.deactivateExtension(id);
     this.deactivateAll();
     this._extensions = this._extensions.filter((extension) => extension.id !== id);
     this._persist();
     this.activateAll();
     this._refreshSnapshot();
     this._subscription.emit();
+  }
+
+  async reloadExtension(extensionId: string) {
+    await pluginHostManager.reloadExtension(extensionId);
+  }
+
+  async reloadAllHosts() {
+    await pluginHostManager.reloadAll();
   }
 
   private activateAll() {
@@ -163,6 +175,7 @@ export class ExtensionService {
   }
 
   private deactivateAll() {
+    pluginHostManager.terminateAll();
     for (const extension of this._extensions) {
       contributionRegistry.unregisterExtension(extension.id);
     }

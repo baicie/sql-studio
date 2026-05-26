@@ -3,8 +3,8 @@ import type { InstalledExtension } from './types';
 import { commandService } from '@/services/command/command-service';
 import { keybindingService } from '@/services/keybinding/keybinding-service';
 import { menuService } from '@/services/menu/menu-service';
-import { notificationService } from '@/services/notification/notification-service';
 import { registerViewContributions } from './view-contribution-registry';
+import { pluginHostManager } from '@/plugins/host/PluginHostManager';
 
 export interface ContributionDisposable extends Disposable {
   extensionId: string;
@@ -59,10 +59,8 @@ export class ContributionRegistry {
         category: command.category,
         source: 'plugin',
         extensionId: extension.id,
-        handler: async () => {
-          notificationService.info(
-            `${command.title} from ${extension.manifest.displayName ?? extension.manifest.name}`,
-          );
+        handler: async (...args: unknown[]) => {
+          return pluginHostManager.invokeCommand(extension.id, command.command, args);
         },
       });
 

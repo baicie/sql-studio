@@ -5,6 +5,7 @@ import { extensionService } from '../extension/extension-service';
 import { notificationService } from '../notification/notification-service';
 import { workbenchService } from '../workbench/workbench-service';
 import { sqlExecutionService } from '../../workbench/editor/services/sqlExecutionService';
+import { pluginHostManager } from '@/plugins/host/PluginHostManager';
 
 export function registerCoreCommands() {
   commandService.register({
@@ -239,6 +240,32 @@ export function registerCoreCommands() {
     source: 'core',
     handler: () => {
       extensionService.reload();
+    },
+  });
+
+  commandService.register({
+    id: 'extensions.activateExtension',
+    titleKey: 'extension.activate',
+    category: 'Extensions',
+    source: 'core',
+    handler: async (_extensionId?: unknown) => {
+      if (typeof _extensionId === 'string') {
+        await pluginHostManager.activateExtension(_extensionId);
+        notificationService.info(`Extension ${_extensionId} activated.`);
+      }
+    },
+  });
+
+  commandService.register({
+    id: 'extensions.deactivateExtension',
+    titleKey: 'extension.deactivate',
+    category: 'Extensions',
+    source: 'core',
+    handler: async (_extensionId?: unknown) => {
+      if (typeof _extensionId === 'string') {
+        await pluginHostManager.deactivateExtension(_extensionId);
+        notificationService.info(`Extension ${_extensionId} deactivated.`);
+      }
     },
   });
 }

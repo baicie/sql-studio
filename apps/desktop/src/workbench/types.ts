@@ -6,11 +6,39 @@ export type BottomPanelId = 'results' | 'problems' | 'logs';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+export type SqlEditorKind2 = 'welcome' | 'query' | 'readonly';
+
 export interface EditorTab {
   id: string;
   title: string;
-  kind: 'welcome' | 'query' | 'extension';
+  kind: SqlEditorKind2;
+
+  connectionId?: string;
+  database?: string;
+  schema?: string;
+
+  content?: string;
+  language?: string;
+
   dirty?: boolean;
+  readonly?: boolean;
+
+  createdAt?: number;
+  updatedAt?: number;
+
+  source?: {
+    type: 'connection-tree' | 'history' | 'manual' | 'plugin';
+    nodeId?: string;
+  };
+}
+
+export interface SqlEditorTab extends EditorTab {
+  kind: 'query' | 'readonly';
+  content: string;
+  language: 'sql';
+  dirty: boolean;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface ActivityItem {

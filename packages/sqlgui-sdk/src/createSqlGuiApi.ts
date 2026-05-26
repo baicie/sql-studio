@@ -18,6 +18,7 @@ import type {
 import type { RpcClient } from './rpcClient';
 import type { CommandRuntime } from './commandRuntime';
 import { Emitter } from '@sqlgui/api';
+import { createSqlEditorProxy } from './editorProxy';
 
 export interface CreateSqlGuiApiOptions {
   version: string;
@@ -107,15 +108,21 @@ export function createSqlGuiApi(options: CreateSqlGuiApiOptions): SqlGuiApi {
     onDidChangeActiveEditor: activeEditorEmitter.event,
 
     getActiveEditor() {
-      return rpc.request('editor.getActive');
+      return rpc
+        .request<unknown>('editor.getActive')
+        .then((data) => (data ? createSqlEditorProxy(rpc, data as any) : undefined));
     },
 
     getEditors() {
-      return rpc.request('editor.getAll');
+      return rpc
+        .request<unknown[]>('editor.getAll')
+        .then((list) => list.map((item) => createSqlEditorProxy(rpc, item as any)));
     },
 
     openSql(openOptions) {
-      return rpc.request('editor.openSql', openOptions);
+      return rpc
+        .request<unknown>('editor.openSql', openOptions)
+        .then((data) => createSqlEditorProxy(rpc, data as any));
     },
 
     closeEditor(editorId) {

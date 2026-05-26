@@ -15,7 +15,8 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@sqlgui/sdk": ["../../packages/sqlgui-sdk/src"]
     }
   },
   "include": ["src"]

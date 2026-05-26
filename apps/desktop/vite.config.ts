@@ -20,6 +20,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@sqlgui/sdk': path.resolve(__dirname, '../../packages/sqlgui-sdk/src'),
     },
   },
   worker: {

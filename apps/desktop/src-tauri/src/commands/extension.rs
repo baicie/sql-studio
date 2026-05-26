@@ -1,7 +1,22 @@
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
 
+use sqlgui_extension::file::read_extension_entry;
 use sqlgui_extension::scanner::{scan_extensions, ExtensionScanResult};
+use sqlgui_extension::types::{ExtensionEntryRequest, ExtensionEntrySource};
+
+#[tauri::command]
+pub async fn extension_read_entry(
+    request: ExtensionEntryRequest,
+) -> Result<ExtensionEntrySource, String> {
+    let (source, path) = read_extension_entry(request.extension_path, &request.main)
+        .map_err(|err| err.to_string())?;
+
+    Ok(ExtensionEntrySource {
+        source,
+        path: path.to_string_lossy().to_string(),
+    })
+}
 
 #[tauri::command]
 pub async fn extension_scan(app: AppHandle) -> Result<ExtensionScanResult, String> {

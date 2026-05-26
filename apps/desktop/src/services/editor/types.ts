@@ -1,4 +1,6 @@
-export type EditorKind = 'welcome' | 'query' | 'extension';
+import type { SqlEditorKind2 } from '../../workbench/types';
+
+export type EditorKind = SqlEditorKind2;
 
 export interface EditorInput {
   id: string;
