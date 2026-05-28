@@ -1,14 +1,18 @@
-/* eslint-disable react-hooks/incompatible-library */
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { useCallback, useMemo, useState } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
 import { Copy, Download } from 'lucide-react';
-import { Toolbar, ToolbarButton } from '@sqlgui/ui';
+import { DataTable, DataTableColumnHeader, Toolbar, ToolbarButton } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import type { QueryResult } from '../../editor/types';
 
 export interface ResultGridProps {
   result: QueryResult;
   onClose?: () => void;
+}
+
+interface ResultRow {
+  __rowIndex: number;
+  __cells: unknown[];
 }
 
 export function ResultGrid({ result }: ResultGridProps) {
@@ -19,14 +23,6 @@ export function ResultGrid({ result }: ResultGridProps) {
     columnIndex: number;
   } | null>(null);
 
-  const tableRef = useRef<HTMLDivElement>(null);
-  const rowVirtualizer = useVirtualizer({
-    count: result.rows.length,
-    getScrollElement: () => tableRef.current,
-    estimateSize: () => 28,
-    overscan: 20,
-  });
-
   const { columns, rows } = result;
 
   const formatCell = (cell: unknown): string => {
@@ -34,6 +30,11 @@ export function ResultGrid({ result }: ResultGridProps) {
     if (typeof cell === 'object') return JSON.stringify(cell);
     return String(cell);
   };
+
+  const data: ResultRow[] = useMemo(
+    () => rows.map((row, index) => ({ __rowIndex: index, __cells: row })),
+    [rows],
+  );
 
   const handleCellClick = useCallback((rowIndex: number, columnIndex: number) => {
     setSelectedCell({ rowIndex, columnIndex });
@@ -76,6 +77,58 @@ export function ResultGrid({ result }: ResultGridProps) {
   const csvContent = useMemo(() => toCSV(), [toCSV]);
   const jsonContent = useMemo(() => toJSON(), [toJSON]);
 
+  const tableColumns: ColumnDef<ResultRow, unknown>[] = useMemo(() => {
+    const cols: ColumnDef<ResultRow, unknown>[] = [
+      {
+        id: '__rowNumber',
+        size: 48,
+        header: '#',
+        cell: ({ row }) => (
+          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+            {row.original.__rowIndex + 1}
+          </div>
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      },
+    ];
+
+    columns.forEach((col, colIndex) => {
+      cols.push({
+        id: col.name,
+        size: 160,
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title={`${col.name}\n(${col.databaseType})`} />
+        ),
+        cell: ({ row }) => {
+          const cell = row.original.__cells[colIndex];
+          const isSelected =
+            selectedCell?.rowIndex === row.original.__rowIndex &&
+            selectedCell?.columnIndex === colIndex;
+          return (
+            <div
+              className={`flex h-full w-full cursor-pointer items-center overflow-hidden px-2 ${
+                isSelected ? 'bg-primary/20' : ''
+              }`}
+              onClick={() => handleCellClick(row.original.__rowIndex, colIndex)}
+              title={formatCell(cell)}
+            >
+              {cell === null ? (
+                <span className="truncate italic text-muted-foreground">{t('cell.null')}</span>
+              ) : (
+                <span className="truncate">{formatCell(cell)}</span>
+              )}
+            </div>
+          );
+        },
+        enableSorting: false,
+      });
+    });
+
+    return cols;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columns, selectedCell, handleCellClick, t]);
+
   return (
     <div className="flex h-full flex-col">
       <ResultToolbar
@@ -85,76 +138,16 @@ export function ResultGrid({ result }: ResultGridProps) {
         selectedCell={selectedCell}
       />
 
-      <div className="min-h-0 flex-1 overflow-auto" ref={tableRef}>
-        <div className="min-w-full text-xs">
-          <div className="sticky top-0 z-10 flex bg-muted/50">
-            <div className="flex w-12 shrink-0 items-center justify-center border-b px-2 py-1.5 text-muted-foreground">
-              #
-            </div>
-            {columns.map((col, i) => (
-              <div
-                key={i}
-                className="flex min-w-[80px] max-w-[200px] shrink-0 flex-col border-b px-2 py-1.5"
-              >
-                <span className="truncate font-medium" title={`${col.name} (${col.databaseType})`}>
-                  {col.name}
-                </span>
-                <span className="truncate text-xs font-normal text-muted-foreground">
-                  {col.databaseType}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div
-            style={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
-              width: '100%',
-              position: 'relative',
-            }}
-          >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const row = rows[virtualRow.index];
-              return (
-                <div
-                  key={virtualRow.key}
-                  className="absolute left-0 top-0 flex w-full hover:bg-muted/30"
-                  style={{
-                    height: `${virtualRow.size}px`,
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
-                >
-                  <div className="flex w-12 shrink-0 items-center justify-center px-2 text-muted-foreground">
-                    {virtualRow.index + 1}
-                  </div>
-                  {row.map((cell, cellIndex) => {
-                    const isSelected =
-                      selectedCell?.rowIndex === virtualRow.index &&
-                      selectedCell?.columnIndex === cellIndex;
-                    return (
-                      <div
-                        key={cellIndex}
-                        className={`flex min-w-[80px] max-w-[200px] shrink-0 cursor-pointer items-center border-b px-2 py-1 ${
-                          isSelected ? 'bg-primary/20' : ''
-                        }`}
-                        onClick={() => handleCellClick(virtualRow.index, cellIndex)}
-                        title={formatCell(cell)}
-                      >
-                        {cell === null ? (
-                          <span className="truncate italic text-muted-foreground">
-                            {t('cell.null')}
-                          </span>
-                        ) : (
-                          <span className="truncate">{formatCell(cell)}</span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+      <div className="min-h-0 flex-1 overflow-auto">
+        <DataTable
+          columns={tableColumns}
+          data={data}
+          enableSorting={false}
+          enablePagination={false}
+          enableColumnVisibility={false}
+          enableRowSelection={false}
+          getRowId={(row) => String(row.__rowIndex)}
+        />
       </div>
     </div>
   );

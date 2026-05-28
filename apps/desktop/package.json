@@ -21,6 +21,8 @@
     "@sqlgui/i18n": "workspace:*",
     "@sqlgui/ui": "workspace:*",
     "@sqlgui/utils": "workspace:*",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.26",
     "@tauri-apps/api": "^2.11.0",
     "@tauri-apps/plugin-dialog": "^2.7.1",
     "@tauri-apps/plugin-fs": "^2.5.1",

@@ -97,3 +97,24 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
 } from './components/ui/dropdown-menu';
+
+// Table
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+} from './components/ui/table';
+
+export {
+  DataTable,
+  DataTableColumnHeader,
+  DataTableRowCheckbox,
+  DataTablePagination,
+  DataTableViewOptions,
+  type DataTableProps,
+} from './components/ui/data-table';

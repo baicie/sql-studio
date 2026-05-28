@@ -90,6 +90,12 @@ importers:
       '@sqlgui/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@tanstack/react-table':
+        specifier: ^8.21.3
+        version: 8.21.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@tanstack/react-virtual':
+        specifier: ^3.13.26
+        version: 3.13.26(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@tauri-apps/api':
         specifier: ^2.11.0
         version: 2.11.0
@@ -262,6 +268,12 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@tanstack/react-table':
+        specifier: ^8.21.3
+        version: 8.21.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@tanstack/react-virtual':
+        specifier: ^3.13.26
+        version: 3.13.26(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -283,6 +295,9 @@ importers:
       tailwind-merge:
         specifier: ^3.6.0
         version: 3.6.0
+      tailwindcss:
+        specifier: '>=4.0.0'
+        version: 4.3.0
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.3.0)
@@ -290,18 +305,9 @@ importers:
       '@sqlgui/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
-      '@tailwindcss/postcss':
-        specifier: ^4.3.0
-        version: 4.3.0
       '@types/react':
         specifier: ^19.2.15
         version: 19.2.15
-      postcss:
-        specifier: ^8.5.15
-        version: 8.5.15
-      tailwindcss:
-        specifier: ^4.3.0
-        version: 4.3.0
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1627,11 +1633,22 @@ packages:
   '@tailwindcss/postcss@4.3.0':
     resolution: {integrity: sha512-Jm05Tjx+9yCLGv5qw1c+84Psds8MnyrEQYCB+FFk2lgGiUjlRqdxke4mVTuYrj2xnVZqKim2Apr5ySuQRYAw/w==}
 
+  '@tanstack/react-table@8.21.3':
+    resolution: {integrity: sha512-5nNMTSETP4ykGegmVkhjcS8tTLW6Vl4axfEGQN3v0zdHYbK4UfoqfPChclTrJ4EoK9QynqAu9oUf8VEmrpZ5Ww==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+
   '@tanstack/react-virtual@3.13.26':
     resolution: {integrity: sha512-DosdgjOxCLahkn0o+ilmZYwEjo1glfMGuRT/j3PQ18yr5XqA8N/BCaL9IJ3B5TRl+nnzyK2IOFgAILwzN3a9xQ==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@tanstack/table-core@8.21.3':
+    resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
+    engines: {node: '>=12'}
 
   '@tanstack/virtual-core@3.16.0':
     resolution: {integrity: sha512-Er2N7q3WOiH6y2JLxsxNX+u2/sLqSsL0bxFgDjuiPiA7vKhZRm+IzcS17vRee3GNXr64UsesA5CAp9yTiIYw9A==}
@@ -5400,11 +5417,19 @@ snapshots:
       postcss: 8.5.15
       tailwindcss: 4.3.0
 
+  '@tanstack/react-table@8.21.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+    dependencies:
+      '@tanstack/table-core': 8.21.3
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
+
   '@tanstack/react-virtual@3.13.26(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@tanstack/virtual-core': 3.16.0
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
+
+  '@tanstack/table-core@8.21.3': {}
 
   '@tanstack/virtual-core@3.16.0': {}
 
