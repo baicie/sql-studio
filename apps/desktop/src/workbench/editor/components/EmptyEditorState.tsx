@@ -1,4 +1,5 @@
 import { Play } from 'lucide-react';
+import { Button } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
 import { editorService } from '../services/editorService';
@@ -18,14 +19,10 @@ export function EmptyEditorState() {
         <p className="mt-1 text-sm text-muted-foreground">{t('empty.description')}</p>
       </div>
 
-      <button
-        type="button"
-        className="flex items-center gap-1 rounded bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
-        onClick={handleNewQuery}
-      >
+      <Button onClick={handleNewQuery}>
         <Play className="h-3 w-3" />
         {t('newQuery')}
-      </button>
+      </Button>
 
       <div className="mt-4 text-xs text-muted-foreground">
         Press <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono">Ctrl+N</kbd> to create a new

@@ -7,7 +7,7 @@ export function MainArea() {
   const bottomPanelHeight = useWorkbenchStore((state) => state.bottomPanelHeight);
 
   return (
-    <main className="grid min-w-0 flex-1 grid-rows-[1fr_auto]">
+    <main className="grid min-h-0 min-w-0 flex-1 grid-rows-[1fr_auto]">
       <EditorArea />
 
       {bottomPanelVisible ? (

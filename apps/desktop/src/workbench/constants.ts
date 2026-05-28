@@ -35,7 +35,7 @@ export const BOTTOM_PANEL_ITEMS: BottomPanelItem[] = [
     titleKey: 'panel.problems',
   },
   {
-    id: 'logs',
-    titleKey: 'panel.logs',
+    id: 'terminal',
+    titleKey: 'panel.terminal',
   },
 ];

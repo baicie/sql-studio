@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button } from '@sqlgui/ui';
 import type { MarketplaceExtension } from '../types';
 import { useMarketplaceStore } from '../store/marketplaceStore';
 import { marketplaceInstallService } from '../services/marketplaceInstallService';
@@ -68,7 +69,6 @@ export function MarketplaceInstallButton(props: MarketplaceInstallButtonProps) {
       });
       await marketplaceInstallService.install(extension, { allowUntrusted: true });
     } catch {
-      // If trust fails, fall back to trying install
       await marketplaceInstallService.install(extension, { allowUntrusted: true });
     }
   }
@@ -88,13 +88,9 @@ export function MarketplaceInstallButton(props: MarketplaceInstallButtonProps) {
   if (installing) {
     return (
       <>
-        <button
-          type="button"
-          disabled
-          className="rounded-md bg-muted px-3 py-1.5 text-xs text-muted-foreground"
-        >
+        <Button variant="secondary" size="sm" disabled>
           Installing...
-        </button>
+        </Button>
         {dialog !== 'none' && renderDialog()}
       </>
     );
@@ -103,13 +99,9 @@ export function MarketplaceInstallButton(props: MarketplaceInstallButtonProps) {
   if (!installed) {
     return (
       <>
-        <button
-          type="button"
-          onClick={handleInstall}
-          className="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground hover:opacity-90"
-        >
+        <Button size="sm" onClick={handleInstall}>
           Install
-        </button>
+        </Button>
         {dialog !== 'none' && renderDialog()}
       </>
     );
@@ -118,22 +110,19 @@ export function MarketplaceInstallButton(props: MarketplaceInstallButtonProps) {
   return (
     <>
       <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={handleEnableDisable}
-          className="rounded-md border px-3 py-1.5 text-xs hover:bg-accent"
-        >
+        <Button variant="outline" size="sm" onClick={handleEnableDisable}>
           {enabled ? 'Disable' : 'Enable'}
-        </button>
+        </Button>
 
         {!compact ? (
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
             onClick={handleUninstall}
-            className="rounded-md border border-destructive bg-destructive/10 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/20"
           >
             Uninstall
-          </button>
+          </Button>
         ) : null}
       </div>
       {dialog !== 'none' && renderDialog()}

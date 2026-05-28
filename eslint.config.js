@@ -39,6 +39,8 @@ export default defineConfig(
     plugins: {
       'import-x': importX,
       prettier: prettier,
+      react: react,
+      'react-hooks': reactHooks,
     },
     rules: {
       'prettier/prettier': 'warn',
@@ -113,6 +115,13 @@ export default defineConfig(
     files: ['apps/desktop/src/**', 'packages/ui/**'],
     rules: {
       'no-restricted-globals': ['error', ...NodeGlobals],
+    },
+  },
+  // packages/ui is a component library where { ...props } spread in forwardRef is standard practice
+  {
+    files: ['packages/ui/src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': ['error', banConstEnum],
     },
   },
   // apps/desktop: forbid raw H5 elements in favor of @sqlgui/ui components

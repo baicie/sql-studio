@@ -1,7 +1,7 @@
 {
   "newQuery": "新建查询",
   "untitled": "未命名.sql",
-  "run": "运行 SQL",
+  "run": "运行",
   "runSelection": "运行选中 SQL",
   "saveDraft": "保存草稿",
   "closeEditor": "关闭编辑器",

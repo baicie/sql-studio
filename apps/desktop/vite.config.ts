@@ -20,6 +20,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@sqlgui/ui': path.resolve(__dirname, '../../packages/ui/src'),
       '@sqlgui/sdk': path.resolve(__dirname, '../../packages/sqlgui-sdk/src'),
     },
   },
@@ -27,6 +28,7 @@ export default defineConfig({
     format: 'es',
   },
   optimizeDeps: {
-    exclude: ['monaco-editor'],
+    include: ['react', 'react-dom'],
+    exclude: ['@sqlgui/ui', 'monaco-editor'],
   },
 });

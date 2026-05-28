@@ -49,10 +49,10 @@
     "typescript-eslint": "^8.60.0"
   },
   "dependencies": {
-    "@tanstack/react-virtual": "^3.13.25",
+    "@tanstack/react-virtual": "^3.13.26",
     "@tauri-apps/plugin-dialog": "^2.7.1",
     "@tauri-apps/plugin-fs": "^2.5.1",
-    "i18next": "^26.2.0",
+    "i18next": "^26.3.0",
     "react-i18next": "^17.0.8"
   }
 }

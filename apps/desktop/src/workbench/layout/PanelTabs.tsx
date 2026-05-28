@@ -1,49 +1,40 @@
 import { X } from 'lucide-react';
-
+import { IconButton, Tabs, TabsList, TabsTrigger } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import { BOTTOM_PANEL_ITEMS } from '../constants';
 import { useWorkbenchStore } from '../store/workbenchStore';
-import { cn } from '@/lib/cn';
 
 export function PanelTabs() {
   const activeBottomPanel = useWorkbenchStore((state) => state.activeBottomPanel);
   const setActiveBottomPanel = useWorkbenchStore((state) => state.setActiveBottomPanel);
   const toggleBottomPanel = useWorkbenchStore((state) => state.toggleBottomPanel);
   const { t } = useAppTranslation('workbench');
+  const panelValue = activeBottomPanel === 'logs' ? 'terminal' : activeBottomPanel;
 
   return (
     <div className="flex h-9 shrink-0 items-center border-b bg-muted/20">
-      <div className="flex h-full">
-        {BOTTOM_PANEL_ITEMS.map((item) => {
-          const active = item.id === activeBottomPanel;
-
-          return (
-            <button
+      <Tabs
+        value={panelValue}
+        onValueChange={(v) => setActiveBottomPanel(v as typeof activeBottomPanel)}
+      >
+        <TabsList className="h-full bg-transparent p-0">
+          {BOTTOM_PANEL_ITEMS.map((item) => (
+            <TabsTrigger
               key={item.id}
-              type="button"
-              className={cn(
-                'h-full px-3 text-xs font-medium uppercase tracking-wide',
-                active
-                  ? 'border-b-2 border-primary text-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-              onClick={() => setActiveBottomPanel(item.id)}
+              value={item.id}
+              className="h-full rounded-none border-b-2 border-transparent px-3 text-xs font-medium uppercase tracking-wide data-[state=active]:border-b-primary data-[state=active]:bg-transparent"
             >
               {item.titleKey ? t(item.titleKey) : item.title}
-            </button>
-          );
-        })}
-      </div>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       <div className="flex-1" />
 
-      <button
-        type="button"
-        className="mr-2 rounded p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-        onClick={toggleBottomPanel}
-      >
+      <IconButton variant="ghost" size="icon" className="mr-2" onClick={toggleBottomPanel}>
         <X className="h-4 w-4" />
-      </button>
+      </IconButton>
     </div>
   );
 }

@@ -1,7 +1,6 @@
-import { useSyncExternalStore } from 'react';
-
 import { Plus } from 'lucide-react';
-
+import { useSyncExternalStore } from 'react';
+import { IconButton } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
 import { getWorkbenchContext } from '@/services/context/workbench-context';
@@ -32,17 +31,17 @@ export function ConnectionsView() {
 
         <div className="flex items-center gap-1">
           {toolbarItems.map((item) => (
-            <button
+            <IconButton
               key={item.command}
-              type="button"
-              className="rounded p-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              variant="ghost"
+              size="icon"
               title={item.title ?? item.command}
               onClick={() => {
                 void connectionService.handleMenuCommand(item.command);
               }}
             >
               <Plus className="h-4 w-4" />
-            </button>
+            </IconButton>
           ))}
         </div>
       </header>

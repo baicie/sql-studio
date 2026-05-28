@@ -2,7 +2,7 @@ import type { ComponentType } from 'react';
 
 export type ActivityId = 'connections' | 'extensions' | 'history' | 'settings';
 
-export type BottomPanelId = 'results' | 'problems' | 'logs';
+export type BottomPanelId = 'results' | 'problems' | 'terminal' | 'logs';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 

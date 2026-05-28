@@ -1,3 +1,4 @@
+import { Button } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import { dialogService } from '@/services/dialogService';
 import { extensionService } from '@/services/extension/extension-service';
@@ -40,37 +41,21 @@ export function ExtensionDevelopmentView() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <button
-          type="button"
-          onClick={installPackage}
-          className="w-full rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
-        >
+        <Button variant="outline" onClick={installPackage}>
           {t('installFromPackage')}
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          onClick={installFolderCopy}
-          className="w-full rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
-        >
+        <Button variant="outline" onClick={installFolderCopy}>
           {t('installFromFolderCopy')}
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          onClick={installFolderLink}
-          className="w-full rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
-        >
+        <Button variant="outline" onClick={installFolderLink}>
           {t('installFromFolderLink')}
-        </button>
+        </Button>
 
-        <button
-          type="button"
-          onClick={reload}
-          className="w-full rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
-        >
+        <Button variant="outline" onClick={reload}>
           {t('reloadExtensions')}
-        </button>
+        </Button>
       </div>
     </div>
   );

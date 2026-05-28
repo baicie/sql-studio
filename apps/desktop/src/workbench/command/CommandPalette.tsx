@@ -1,5 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import i18n from 'i18next';
+import { Button, Input } from '@sqlgui/ui';
 
 import { useAppTranslation } from '@/i18n';
 import { executeCommand } from '@/services/command/execute-command';
@@ -55,12 +56,12 @@ export function CommandPalette() {
   return (
     <div className="fixed inset-0 z-50 flex justify-center bg-background/40 pt-24 backdrop-blur-sm">
       <div className="h-fit w-[640px] overflow-hidden rounded-lg border bg-popover shadow-xl">
-        <input
+        <Input
           autoFocus
           value={keyword}
-          onChange={(event) => setKeyword(event.target.value)}
+          onChange={(e) => setKeyword(e.target.value)}
           placeholder={t('commandPalette.placeholder')}
-          className="h-12 w-full border-b bg-transparent px-4 text-sm outline-none"
+          className="h-12 w-full rounded-none border-b border-x-0 border-t-0 bg-transparent px-4"
         />
 
         <div className="max-h-80 overflow-auto p-1">
@@ -73,10 +74,10 @@ export function CommandPalette() {
               const binding = keybindingService.getBindingForCommand(command.id);
 
               return (
-                <button
+                <Button
                   key={command.id}
-                  type="button"
-                  className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm hover:bg-accent"
+                  variant="ghost"
+                  className="flex w-full justify-between px-3 py-2"
                   onClick={async () => {
                     await executeCommand(command.id);
                     closeCommandPalette();
@@ -88,7 +89,7 @@ export function CommandPalette() {
                     {command.category ? <span>{command.category}</span> : null}
                     {binding ? <span>{formatKeybinding(binding)}</span> : null}
                   </span>
-                </button>
+                </Button>
               );
             })
           )}

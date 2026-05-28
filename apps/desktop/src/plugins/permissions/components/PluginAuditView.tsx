@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import { Button } from '@sqlgui/ui';
 import { pluginAuditService } from '../PluginAuditService';
 
 interface PluginAuditViewProps {
@@ -16,13 +17,13 @@ export function PluginAuditView(props: PluginAuditViewProps) {
       <div className="flex h-9 items-center justify-between border-b px-2">
         <div className="text-xs font-medium">Permission Audit</div>
 
-        <button
-          type="button"
-          className="rounded px-2 py-0.5 text-xs hover:bg-accent"
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => pluginAuditService.clear(props.extensionId)}
         >
           Clear
-        </button>
+        </Button>
       </div>
 
       <div className="flex-1 overflow-auto p-2 text-xs">

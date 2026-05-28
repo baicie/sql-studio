@@ -1,3 +1,4 @@
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
 
@@ -14,17 +15,17 @@ export function ConnectionSelector(props: ConnectionSelectorProps) {
   const profiles = connectionService.getProfiles();
 
   return (
-    <select
-      className="h-7 rounded-md border bg-background px-2 text-xs"
-      value={value ?? ''}
-      onChange={(e) => onChange(e.target.value || undefined)}
-    >
-      <option value="">{t('fields.name')}</option>
-      {profiles.map((profile) => (
-        <option key={profile.id} value={profile.id}>
-          {profile.name}
-        </option>
-      ))}
-    </select>
+    <Select value={value ?? ''} onValueChange={(v) => onChange(v || undefined)}>
+      <SelectTrigger className="h-7 w-auto min-w-[120px] text-xs">
+        <SelectValue placeholder={t('fields.name')} />
+      </SelectTrigger>
+      <SelectContent>
+        {profiles.map((profile) => (
+          <SelectItem key={profile.id} value={profile.id}>
+            {profile.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

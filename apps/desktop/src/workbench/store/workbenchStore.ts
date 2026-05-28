@@ -49,7 +49,7 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
       activeActivity: 'connections',
       sideBarVisible: true,
       bottomPanelVisible: true,
-      activeBottomPanel: 'results',
+      activeBottomPanel: 'terminal',
 
       sideBarWidth: 280,
       bottomPanelHeight: 240,
@@ -148,7 +148,18 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
     }),
     {
       name: 'sqlgui.workbench',
+      version: 1,
       storage: createJSONStorage(() => workbenchStorage),
+      migrate: (persistedState, version) => {
+        if (version >= 1 || !persistedState || typeof persistedState !== 'object') {
+          return persistedState;
+        }
+
+        return Object.assign({}, persistedState, {
+          bottomPanelVisible: true,
+          activeBottomPanel: 'terminal',
+        });
+      },
       partialize: (state) => ({
         activeActivity: state.activeActivity,
         sideBarVisible: state.sideBarVisible,

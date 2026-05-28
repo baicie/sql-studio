@@ -1,4 +1,5 @@
 import { type SupportedLanguage, languageOptions } from '@sqlgui/i18n';
+import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import { languageService } from '@/i18n/languageService';
 import { useLanguageStore } from '@/i18n/languageStore';
@@ -21,36 +22,44 @@ export function SettingsView() {
 
       <div className="space-y-3 p-3">
         <div>
-          <div className="text-sm font-medium">{t('appearance.theme')}</div>
-          <select
-            className="mt-1 w-full rounded-md border bg-background px-2 py-1 text-sm"
+          <Label className="text-sm font-medium">{t('appearance.theme')}</Label>
+          <Select
             value={theme}
-            onChange={(event) => {
-              setTheme(event.target.value as 'light' | 'dark' | 'system');
+            onValueChange={(value) => {
+              setTheme(value as 'light' | 'dark' | 'system');
             }}
           >
-            <option value="system">{t('appearance.system')}</option>
-            <option value="light">{t('appearance.light')}</option>
-            <option value="dark">{t('appearance.dark')}</option>
-          </select>
+            <SelectTrigger className="mt-1 w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="system">{t('appearance.system')}</SelectItem>
+              <SelectItem value="light">{t('appearance.light')}</SelectItem>
+              <SelectItem value="dark">{t('appearance.dark')}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div>
-          <div className="text-sm font-medium">{t('language.title')}</div>
+          <Label className="text-sm font-medium">{t('language.title')}</Label>
           <div className="text-xs text-muted-foreground">{t('language.description')}</div>
-          <select
-            className="mt-1 w-full rounded-md border bg-background px-2 py-1 text-sm"
+          <Select
             value={language}
-            onChange={(event) => {
-              languageService.setLanguage(event.target.value as SupportedLanguage);
+            onValueChange={(value) => {
+              languageService.setLanguage(value as SupportedLanguage);
             }}
           >
-            {languageOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.nativeLabel}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="mt-1 w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {languageOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.nativeLabel}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </section>

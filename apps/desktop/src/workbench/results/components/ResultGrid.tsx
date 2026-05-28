@@ -2,6 +2,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Copy, Download } from 'lucide-react';
+import { Toolbar, ToolbarButton } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import type { QueryResult } from '../../editor/types';
 
@@ -43,6 +44,7 @@ export function ResultGrid({ result }: ResultGridProps) {
     const { rowIndex, columnIndex } = selectedCell;
     const value = formatCell(rows[rowIndex]?.[columnIndex]);
     void navigator.clipboard.writeText(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCell, rows]);
 
   const toCSV = useCallback(() => {
@@ -57,7 +59,8 @@ export function ResultGrid({ result }: ResultGridProps) {
       .map((row) => row.map((cell) => escape(formatCell(cell))).join(','))
       .join('\n');
     return `${header}\n${body}`;
-  }, [columns, rows, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columns, rows]);
 
   const toJSON = useCallback(() => {
     const data = rows.map((row) => {
@@ -173,39 +176,23 @@ function ResultToolbar({
   const { t } = useAppTranslation('result');
 
   return (
-    <div className="flex shrink-0 items-center gap-1 border-b px-2 py-1">
-      <button
-        type="button"
-        className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40"
-        onClick={onCopyCell}
-        disabled={!selectedCell}
-        title={t('toolbar.copyCell')}
-      >
+    <Toolbar className="shrink-0 border-b px-2 py-1">
+      <ToolbarButton onClick={onCopyCell} disabled={!selectedCell} title={t('toolbar.copyCell')}>
         <Copy className="h-3 w-3" />
         {t('toolbar.copyCell')}
-      </button>
+      </ToolbarButton>
 
       <div className="mx-1 h-3 w-px bg-border" />
 
-      <button
-        type="button"
-        className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
-        onClick={onExportCSV}
-        title={t('toolbar.exportCsv')}
-      >
+      <ToolbarButton onClick={onExportCSV} title={t('toolbar.exportCsv')}>
         <Download className="h-3 w-3" />
         {t('toolbar.exportCsv')}
-      </button>
-      <button
-        type="button"
-        className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
-        onClick={onExportJSON}
-        title={t('toolbar.exportJson')}
-      >
+      </ToolbarButton>
+      <ToolbarButton onClick={onExportJSON} title={t('toolbar.exportJson')}>
         <Download className="h-3 w-3" />
         {t('toolbar.exportJson')}
-      </button>
-    </div>
+      </ToolbarButton>
+    </Toolbar>
   );
 }
 

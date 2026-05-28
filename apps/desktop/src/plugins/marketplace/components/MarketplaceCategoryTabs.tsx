@@ -1,3 +1,4 @@
+import { Button } from '@sqlgui/ui';
 import type { MarketplaceExtensionCategory } from '../types';
 import { useMarketplaceStore } from '../store/marketplaceStore';
 
@@ -19,19 +20,14 @@ export function MarketplaceCategoryTabs() {
   return (
     <div className="flex flex-wrap gap-1">
       {categories.map((category) => (
-        <button
+        <Button
           key={category}
-          type="button"
-          className={[
-            'rounded-md px-2 py-1 text-xs',
-            active === category
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:text-foreground',
-          ].join(' ')}
+          variant={active === category ? 'default' : 'ghost'}
+          size="sm"
           onClick={() => setCategory(category)}
         >
           {category}
-        </button>
+        </Button>
       ))}
     </div>
   );

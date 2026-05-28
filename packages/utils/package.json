@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@sqlgui/tsconfig": "workspace:*",
-    "rolldown": "1.0.2",
+    "rolldown": "1.0.3",
     "typescript": "^6.0.3"
   }
 }

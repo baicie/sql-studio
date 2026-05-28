@@ -16,7 +16,9 @@
     "paths": {
       "@/*": ["./src/*"],
       "@sqlgui/*": ["../../packages/*/src"],
-      "@sqlgui/sdk": ["../../packages/sqlgui-sdk/src"]
+      "@sqlgui/sdk": ["../../packages/sqlgui-sdk/src"],
+      "@/lib/utils": ["../../packages/ui/src/lib/utils"],
+      "@/components/ui/*": ["../../packages/ui/src/components/ui/*"]
     }
   },
   "include": ["src"]

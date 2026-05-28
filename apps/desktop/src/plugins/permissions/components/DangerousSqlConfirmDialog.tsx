@@ -1,4 +1,6 @@
 import { useSyncExternalStore } from 'react';
+import { Button } from '@sqlgui/ui';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@sqlgui/ui';
 import { permissionPromptService } from '../PermissionPromptService';
 import { useAppTranslation } from '@/i18n';
 
@@ -12,20 +14,16 @@ export function DangerousSqlConfirmDialog() {
   const open = Boolean(request);
 
   return (
-    <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-background/50 p-4 backdrop-blur-sm transition-opacity ${
-        open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-      }`}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          permissionPromptService.resolveDangerousSqlRequest(false);
-        }
-      }}
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) =>
+        !isOpen && permissionPromptService.resolveDangerousSqlRequest(false)
+      }
     >
-      <div className="w-full max-w-2xl rounded-lg border bg-popover p-4 shadow-xl">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-destructive">{t('dangerousSqlConfirm')}</h2>
-        </div>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="text-destructive">{t('dangerousSqlConfirm')}</DialogTitle>
+        </DialogHeader>
 
         {request ? (
           <div className="space-y-3">
@@ -45,28 +43,26 @@ export function DangerousSqlConfirmDialog() {
           </div>
         ) : null}
 
-        <div className="mt-5 flex justify-end gap-2">
-          <button
-            type="button"
-            className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
+        <DialogFooter>
+          <Button
+            variant="outline"
             onClick={() => {
               permissionPromptService.resolveDangerousSqlRequest(false);
             }}
           >
             {t('deny')}
-          </button>
+          </Button>
 
-          <button
-            type="button"
-            className="rounded-md bg-destructive px-3 py-1.5 text-sm text-destructive-foreground hover:opacity-90"
+          <Button
+            variant="destructive"
             onClick={() => {
               permissionPromptService.resolveDangerousSqlRequest(true);
             }}
           >
             {t('allowOnce')}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

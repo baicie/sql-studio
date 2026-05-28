@@ -1,5 +1,20 @@
 import { useState, useSyncExternalStore } from 'react';
 
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
 import type { ConnectionProfile, DbKind } from '@/services/connection/types';
@@ -90,142 +105,116 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
     }
   }
 
-  return (
-    <div className="w-full max-w-md rounded-lg border bg-popover p-4 shadow-xl">
-      <h2 className="text-lg font-semibold">
-        {mode === 'edit' ? t('editConnection') : t('newConnection')}
-      </h2>
-      <p className="mt-1 text-sm text-muted-foreground">{t('message.passwordInsecure')}</p>
+  function handleKindChange(value: string) {
+    const nextKind = value as DbKind;
+    setKind(nextKind);
+    setPort(nextKind === 'SQLite' ? '' : String(DEFAULT_PORTS[nextKind] ?? ''));
+  }
 
-      <div className="mt-4 space-y-3">
-        <label className="block text-sm">
-          <span className="mb-1 block text-xs text-muted-foreground">{t('fields.name')}</span>
-          <input
-            className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>{mode === 'edit' ? t('editConnection') : t('newConnection')}</DialogTitle>
+        <DialogDescription>{t('message.passwordInsecure')}</DialogDescription>
+      </DialogHeader>
+
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
+          <Label>{t('fields.name')}</Label>
+          <Input
             value={name}
-            onChange={(event) => setName(event.target.value)}
+            onChange={(e) => setName(e.target.value)}
             placeholder={t('fields.name')}
           />
-        </label>
+        </div>
 
-        <label className="block text-sm">
-          <span className="mb-1 block text-xs text-muted-foreground">{t('fields.type')}</span>
-          <select
-            className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
-            value={kind}
-            onChange={(event) => {
-              const nextKind = event.target.value as DbKind;
-              setKind(nextKind);
-              setPort(nextKind === 'SQLite' ? '' : String(DEFAULT_PORTS[nextKind] ?? ''));
-            }}
-          >
-            <option value="SQLite">{t('dbKind.sqlite')}</option>
-            <option value="PostgreSQL">{t('dbKind.postgres')}</option>
-            <option value="MySQL">{t('dbKind.mysql')}</option>
-          </select>
-        </label>
+        <div className="flex flex-col gap-1">
+          <Label>{t('fields.type')}</Label>
+          <Select value={kind} onValueChange={handleKindChange}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="SQLite">{t('dbKind.sqlite')}</SelectItem>
+              <SelectItem value="PostgreSQL">{t('dbKind.postgres')}</SelectItem>
+              <SelectItem value="MySQL">{t('dbKind.mysql')}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         {kind === 'SQLite' ? (
-          <label className="block text-sm">
-            <span className="mb-1 block text-xs text-muted-foreground">{t('fields.filePath')}</span>
-            <input
-              className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+          <div className="flex flex-col gap-1">
+            <Label>{t('fields.filePath')}</Label>
+            <Input
               value={filePath}
-              onChange={(event) => setFilePath(event.target.value)}
+              onChange={(e) => setFilePath(e.target.value)}
               placeholder={t('fields.filePath')}
             />
-          </label>
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-[1fr_100px] gap-2">
-              <label className="block text-sm">
-                <span className="mb-1 block text-xs text-muted-foreground">{t('fields.host')}</span>
-                <input
-                  className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+              <div className="flex flex-col gap-1">
+                <Label>{t('fields.host')}</Label>
+                <Input
                   value={host}
-                  onChange={(event) => setHost(event.target.value)}
+                  onChange={(e) => setHost(e.target.value)}
                   placeholder={t('fields.host')}
                 />
-              </label>
-
-              <label className="block text-sm">
-                <span className="mb-1 block text-xs text-muted-foreground">{t('fields.port')}</span>
-                <input
-                  className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+              </div>
+              <div className="flex flex-col gap-1">
+                <Label>{t('fields.port')}</Label>
+                <Input
                   value={port}
-                  onChange={(event) => setPort(event.target.value)}
+                  onChange={(e) => setPort(e.target.value)}
                   placeholder={String(DEFAULT_PORTS[kind] ?? '')}
                 />
-              </label>
+              </div>
             </div>
 
-            <label className="block text-sm">
-              <span className="mb-1 block text-xs text-muted-foreground">
-                {t('fields.username')}
-              </span>
-              <input
-                className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+            <div className="flex flex-col gap-1">
+              <Label>{t('fields.username')}</Label>
+              <Input
                 value={username}
-                onChange={(event) => setUsername(event.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder={t('fields.username')}
               />
-            </label>
+            </div>
 
-            <label className="block text-sm">
-              <span className="mb-1 block text-xs text-muted-foreground">
-                {t('fields.password')}
-              </span>
-              <input
-                className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+            <div className="flex flex-col gap-1">
+              <Label>{t('fields.password')}</Label>
+              <Input
                 type="password"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder={t('fields.password')}
               />
-            </label>
+            </div>
 
-            <label className="block text-sm">
-              <span className="mb-1 block text-xs text-muted-foreground">
-                {t('fields.database')}
-              </span>
-              <input
-                className="w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+            <div className="flex flex-col gap-1">
+              <Label>{t('fields.database')}</Label>
+              <Input
                 value={database}
-                onChange={(event) => setDatabase(event.target.value)}
+                onChange={(e) => setDatabase(e.target.value)}
                 placeholder={t('fields.database')}
               />
-            </label>
+            </div>
           </>
         )}
       </div>
 
-      <div className="mt-5 flex justify-end gap-2">
-        <button
-          type="button"
-          className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
-          onClick={onClose}
-          disabled={loading}
-        >
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={onClose} disabled={loading}>
           {tc('actions.cancel')}
-        </button>
-        <button
-          type="button"
-          className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
-          onClick={handleTest}
-          disabled={loading || !name.trim()}
-        >
+        </Button>
+        <Button variant="outline" onClick={handleTest} disabled={loading || !name.trim()}>
           {loading ? tc('status.loading') : t('testConnection')}
-        </button>
-        <button
-          type="button"
-          className="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:opacity-90"
-          onClick={handleSaveAndConnect}
-          disabled={loading || !name.trim()}
-        >
+        </Button>
+        <Button onClick={handleSaveAndConnect} disabled={loading || !name.trim()}>
           {loading ? tc('status.loading') : tc('actions.save')}
-        </button>
+        </Button>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -247,13 +236,15 @@ export function ConnectionDialog() {
   const formKey = `${snapshot.dialog.mode}-${snapshot.dialog.editingId ?? 'new'}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/50 p-4 backdrop-blur-sm">
-      <ConnectionDialogForm
-        key={formKey}
-        mode={snapshot.dialog.mode}
-        profile={profile}
-        onClose={() => connectionService.closeDialog()}
-      />
-    </div>
+    <Dialog open={snapshot.dialog.open} onOpenChange={() => connectionService.closeDialog()}>
+      <DialogContent>
+        <ConnectionDialogForm
+          key={formKey}
+          mode={snapshot.dialog.mode}
+          profile={profile}
+          onClose={() => connectionService.closeDialog()}
+        />
+      </DialogContent>
+    </Dialog>
   );
 }

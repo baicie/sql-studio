@@ -1,3 +1,4 @@
+import { IconButton } from '@sqlgui/ui';
 import { executeCommand } from '@/services/command/execute-command';
 import { workbenchService } from '@/services/workbench/workbench-service';
 import { useAppTranslation } from '@/i18n';
@@ -27,20 +28,19 @@ export function ActivityBar() {
           const active = item.id === activeActivity;
 
           return (
-            <button
+            <IconButton
               key={item.id}
-              type="button"
+              variant="ghost"
               title={item.titleKey ? t(item.titleKey) : item.title}
               className={cn(
-                'relative flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground',
-                active && 'bg-accent text-accent-foreground',
+                'relative flex h-10 w-10 items-center justify-center rounded-md',
+                active ? 'bg-accent text-accent-foreground' : 'text-muted-foreground',
               )}
               onClick={() => handleClick(item.id)}
             >
-              {active ? <span className="absolute left-0 h-5 w-0.5 rounded-r bg-primary" /> : null}
-
-              <Icon className="h-5 w-5" />
-            </button>
+              {active && <span className="absolute left-0 h-5 w-0.5 rounded-r bg-primary" />}
+              <Icon className="h-5 w-5 shrink-0" />
+            </IconButton>
           );
         })}
       </div>
@@ -50,18 +50,18 @@ export function ActivityBar() {
         const active = item.id === activeActivity;
 
         return (
-          <button
+          <IconButton
             key={item.id}
-            type="button"
+            variant="ghost"
             title={item.titleKey ? t(item.titleKey) : item.title}
             className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground',
-              active && 'bg-accent text-accent-foreground',
+              'flex h-10 w-10 items-center justify-center rounded-md',
+              active ? 'bg-accent text-accent-foreground' : 'text-muted-foreground',
             )}
             onClick={() => handleClick(item.id)}
           >
-            <Icon className="h-5 w-5" />
-          </button>
+            <Icon className="h-5 w-5 shrink-0" />
+          </IconButton>
         );
       })}
     </aside>

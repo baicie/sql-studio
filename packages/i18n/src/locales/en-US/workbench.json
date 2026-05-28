@@ -9,7 +9,9 @@
     "results": "Results",
     "messages": "Messages",
     "problems": "Problems",
-    "history": "Query History"
+    "history": "Query History",
+    "terminal": "Terminal",
+    "terminalEmpty": "No terminal output."
   },
   "commandPalette": {
     "open": "Open Command Palette",

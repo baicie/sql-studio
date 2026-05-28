@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import type { SqlEditorTab } from '../types';
 import { editorService } from '../services/editorService';
+import { IconButton } from '@sqlgui/ui';
 import { cn } from '@/lib/cn';
 
 interface EditorTabsProps {
@@ -37,8 +38,9 @@ export function EditorTabs(props: EditorTabsProps) {
                 {tab.title}
               </span>
 
-              <button
-                type="button"
+              <IconButton
+                variant="ghost"
+                size="icon"
                 className="ml-auto rounded p-0.5 opacity-0 hover:bg-accent group-hover:opacity-100"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -46,7 +48,7 @@ export function EditorTabs(props: EditorTabsProps) {
                 }}
               >
                 <X className="h-3 w-3" />
-              </button>
+              </IconButton>
             </div>
           );
         })}

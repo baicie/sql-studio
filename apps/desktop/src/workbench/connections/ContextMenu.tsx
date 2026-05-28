@@ -1,4 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from '@sqlgui/ui';
 
 interface ContextMenuItem {
   id: string;
@@ -15,28 +17,15 @@ interface ContextMenuProps {
 }
 
 export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        onClose();
-      }
-    }
-
     function handleEscape(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         onClose();
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleEscape);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
+    return () => document.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
   const visibleItems = items.filter((item) => !item.disabled);
@@ -45,25 +34,29 @@ export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
     return null;
   }
 
-  return (
-    <div
-      ref={ref}
-      className="fixed z-50 min-w-40 rounded-md border bg-popover py-1 shadow-lg"
-      style={{ left: x, top: y }}
-    >
-      {visibleItems.map((item) => (
-        <button
-          key={item.id}
-          type="button"
-          className="block w-full px-3 py-1.5 text-left text-sm hover:bg-accent disabled:opacity-50"
-          onClick={() => {
-            item.onClick();
-            onClose();
-          }}
-        >
-          {item.label}
-        </button>
-      ))}
-    </div>
+  const handleItemClick = (item: ContextMenuItem) => {
+    item.onClick();
+    onClose();
+  };
+
+  const menu = (
+    <DropdownMenu open onOpenChange={(open) => !open && onClose()}>
+      <DropdownMenuContent
+        style={{ left: x, top: y }}
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => {
+          e.preventDefault();
+          onClose();
+        }}
+      >
+        {visibleItems.map((item) => (
+          <DropdownMenuItem key={item.id} onSelect={() => handleItemClick(item)}>
+            {item.label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
+
+  return createPortal(menu, document.body);
 }

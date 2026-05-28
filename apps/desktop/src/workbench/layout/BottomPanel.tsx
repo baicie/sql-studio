@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
+import { Button } from '@sqlgui/ui';
 import { logService } from '@/services/log/log-service';
 import { useAppTranslation } from '@/i18n';
 import { PanelTabs } from './PanelTabs';
@@ -10,15 +11,16 @@ import { ResultGrid } from '../results/components/ResultGrid';
 
 export function BottomPanel() {
   const activeBottomPanel = useWorkbenchStore((state) => state.activeBottomPanel);
+  const panel = activeBottomPanel === 'logs' ? 'terminal' : activeBottomPanel;
 
   return (
     <section className="flex h-full min-h-0 flex-col bg-background">
       <PanelTabs />
 
       <div className="min-h-0 flex-1 overflow-auto">
-        {activeBottomPanel === 'results' ? <ResultsPanel /> : null}
-        {activeBottomPanel === 'problems' ? <ProblemsPanel /> : null}
-        {activeBottomPanel === 'logs' ? <LogsPanel /> : null}
+        {panel === 'results' ? <ResultsPanel /> : null}
+        {panel === 'problems' ? <ProblemsPanel /> : null}
+        {panel === 'terminal' ? <TerminalPanel /> : null}
       </div>
     </section>
   );
@@ -84,13 +86,14 @@ function ResultsPanel() {
         </span>
         <span>{latest.elapsedMs}ms</span>
         {result.truncated && <span className="text-yellow-600">{t('status.truncated')}</span>}
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="sm"
           className="ml-auto text-muted-foreground hover:text-foreground"
           onClick={() => resultService.clearResults()}
         >
           {tc('actions.clear')}
-        </button>
+        </Button>
       </div>
 
       <div className="min-h-0 flex-1 overflow-hidden">
@@ -106,14 +109,15 @@ function ProblemsPanel() {
   return <div className="p-3 text-sm text-muted-foreground">{t('tabs.problems')}</div>;
 }
 
-function LogsPanel() {
+function TerminalPanel() {
+  const { t } = useAppTranslation('workbench');
   const logs = useSyncExternalStore(
     logService.subscribe.bind(logService),
     logService.getSnapshot.bind(logService),
   );
 
   if (logs.length === 0) {
-    return <div className="p-3 text-sm text-muted-foreground">No logs.</div>;
+    return <div className="p-3 text-sm text-muted-foreground">{t('panel.terminalEmpty')}</div>;
   }
 
   return (

@@ -1,6 +1,7 @@
 import type { UseTranslationResponse } from 'react-i18next';
 import { useCallback, useState } from 'react';
 import { ChevronDown, ChevronRight, Columns3, Database, Loader2, Table } from 'lucide-react';
+import { IconButton } from '@sqlgui/ui';
 
 import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
@@ -117,6 +118,7 @@ export function ConnectionsTree() {
     const tableName = getTableDisplayName(contextMenu.node);
     void navigator.clipboard.writeText(tableName);
     notificationService.info(`${t('contextMenu.copyTableName')}: ${tableName}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextMenu]);
 
   const handleCopyFullName = useCallback(() => {
@@ -125,6 +127,7 @@ export function ConnectionsTree() {
     const fullName = contextMenu.node.table ?? contextMenu.node.name;
     void navigator.clipboard.writeText(fullName);
     notificationService.info(`${t('contextMenu.copyFullName')}: ${fullName}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contextMenu]);
 
   const handleShowColumns = useCallback(async () => {
@@ -186,19 +189,20 @@ export function ConnectionsTree() {
           style={{ paddingLeft: level * 16 + 4 }}
           onContextMenu={(e) => handleContextMenu(e, node)}
         >
-          <button
-            type="button"
-            className="flex h-4 w-4 items-center justify-center"
+          <IconButton
+            variant="ghost"
+            size="icon"
+            className="flex h-4 w-4 shrink-0 items-center justify-center"
             onClick={() => handleToggle(node)}
           >
             {isLoading ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
+              <Loader2 className="h-3 w-3 shrink-0 animate-spin" />
             ) : node.isLeaf ? null : isExpanded ? (
-              <ChevronDown className="h-3 w-3" />
+              <ChevronDown className="h-3 w-3 shrink-0" />
             ) : (
-              <ChevronRight className="h-3 w-3" />
+              <ChevronRight className="h-3 w-3 shrink-0" />
             )}
-          </button>
+          </IconButton>
 
           <NodeIcon node={node} />
 
@@ -241,21 +245,21 @@ export function ConnectionsTree() {
 function NodeIcon({ node }: { node: ConnectionTreeNode }) {
   switch (node.type) {
     case 'connection':
-      return <Database className="h-4 w-4 text-muted-foreground" />;
+      return <Database className="h-4 w-4 shrink-0 text-muted-foreground" />;
     case 'database':
-      return <Database className="h-4 w-4 text-blue-500" />;
+      return <Database className="h-4 w-4 shrink-0 text-blue-500" />;
     case 'schema':
-      return <Database className="h-4 w-4 text-purple-500" />;
+      return <Database className="h-4 w-4 shrink-0 text-purple-500" />;
     case 'tables':
-      return <Table className="h-4 w-4 text-muted-foreground" />;
+      return <Table className="h-4 w-4 shrink-0 text-muted-foreground" />;
     case 'table':
-      return <Table className="h-4 w-4 text-muted-foreground" />;
+      return <Table className="h-4 w-4 shrink-0 text-muted-foreground" />;
     case 'columns':
-      return <Columns3 className="h-4 w-4 text-muted-foreground" />;
+      return <Columns3 className="h-4 w-4 shrink-0 text-muted-foreground" />;
     case 'column':
-      return <Columns3 className="h-4 w-4 text-muted-foreground" />;
+      return <Columns3 className="h-4 w-4 shrink-0 text-muted-foreground" />;
     default:
-      return <Database className="h-4 w-4 text-muted-foreground" />;
+      return <Database className="h-4 w-4 shrink-0 text-muted-foreground" />;
   }
 }
 

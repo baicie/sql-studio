@@ -1,6 +1,7 @@
 import { Play, Save } from 'lucide-react';
 import type { SqlEditorTab } from '../types';
 import { ConnectionSelector } from './ConnectionSelector';
+import { Button } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import { sqlExecutionService } from '../services/sqlExecutionService';
 import { editorService } from '../services/editorService';
@@ -23,27 +24,29 @@ export function EditorToolbar(props: EditorToolbarProps) {
         }}
       />
 
-      <button
-        type="button"
-        className="flex items-center gap-1 rounded bg-primary px-2 py-1 text-xs text-primary-foreground hover:opacity-90"
+      <Button
+        variant="default"
+        size="sm"
+        className="h-6 gap-1 px-1.5 text-xs [&_[data-icon]]:size-3"
         onClick={() => {
           void sqlExecutionService.executeEditor(tab.id);
         }}
       >
-        <Play className="h-3 w-3" />
+        <Play data-icon="inline-start" />
         {t('run')}
-      </button>
+      </Button>
 
-      <button
-        type="button"
-        className="flex items-center gap-1 rounded px-2 py-1 text-xs hover:bg-accent"
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-6 gap-1 px-1.5 text-xs [&_[data-icon]]:size-3"
         onClick={() => {
           editorService.updateEditor(tab.id, { dirty: false });
         }}
       >
-        <Save className="h-3 w-3" />
+        <Save data-icon="inline-start" />
         {t('saveDraft')}
-      </button>
+      </Button>
 
       <div className="ml-auto text-xs text-muted-foreground">
         {tab.connectionId ? t('selectConnection') : t('noConnection')}

@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
-
 import { MenuButton } from '../menu/MenuButton';
 import { useWorkbenchStore } from '../store/workbenchStore';
+import { IconButton } from '@sqlgui/ui';
 import { cn } from '@/lib/cn';
 
 export function EditorTabs() {
@@ -36,11 +36,12 @@ export function EditorTabs() {
             >
               <span className="truncate">
                 {tab.title}
-                {tab.dirty ? ' •' : ''}
+                {tab.dirty ? ' \u2022' : ''}
               </span>
 
-              <button
-                type="button"
+              <IconButton
+                variant="ghost"
+                size="icon"
                 className="ml-auto rounded p-0.5 opacity-0 hover:bg-accent group-hover:opacity-100"
                 onClick={(event) => {
                   event.stopPropagation();
@@ -48,7 +49,7 @@ export function EditorTabs() {
                 }}
               >
                 <X className="h-3.5 w-3.5" />
-              </button>
+              </IconButton>
             </div>
           );
         })}

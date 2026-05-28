@@ -1,5 +1,7 @@
+import { ArrowLeft } from 'lucide-react';
 import type { InstalledExtension } from '@/services/extension/types';
 import { extensionService } from '@/services/extension/extension-service';
+import { Button, Checkbox } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import { ALLOWED_PERMISSIONS } from '@sqlgui/extension-schema';
 import { useExtensionPermissions } from '@/plugins/permissions/useExtensionPermissions';
@@ -28,21 +30,10 @@ export function ExtensionDetailView({ extension, onBack }: ExtensionDetailViewPr
   return (
     <section className="flex h-full flex-col">
       <header className="flex h-9 items-center justify-between border-b px-3">
-        <button
-          type="button"
-          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-          onClick={onBack}
-        >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
+        <Button variant="ghost" size="sm" onClick={onBack}>
+          <ArrowLeft className="h-4 w-4" />
           {t('back')}
-        </button>
+        </Button>
 
         <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           {t('extensionDetail')}
@@ -78,11 +69,10 @@ export function ExtensionDetailView({ extension, onBack }: ExtensionDetailViewPr
                 <span className="text-xs text-muted-foreground">
                   {extension.enabled ? t('enabled') : t('disabled')}
                 </span>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={extension.enabled}
-                  onChange={(event) => {
-                    extensionService.setEnabled(extension.id, event.target.checked);
+                  onCheckedChange={(checked) => {
+                    extensionService.setEnabled(extension.id, checked === true);
                   }}
                 />
               </label>
@@ -144,7 +134,9 @@ export function ExtensionDetailView({ extension, onBack }: ExtensionDetailViewPr
                   return (
                     <div
                       key={permission}
-                      className={`rounded border p-2 text-xs ${isAllowed ? 'bg-muted/50' : 'border-destructive bg-destructive/10'}`}
+                      className={`rounded border p-2 text-xs ${
+                        isAllowed ? 'bg-muted/50' : 'border-destructive bg-destructive/10'
+                      }`}
                     >
                       <div className="flex items-center gap-2">
                         <span className="font-mono">{permission}</span>
@@ -153,7 +145,11 @@ export function ExtensionDetailView({ extension, onBack }: ExtensionDetailViewPr
                         )}
                         {isAllowed && (
                           <span
-                            className={`rounded px-1 py-0.5 text-[10px] ${isGranted ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}
+                            className={`rounded px-1 py-0.5 text-[10px] ${
+                              isGranted
+                                ? 'bg-green-500/10 text-green-600'
+                                : 'bg-red-500/10 text-red-600'
+                            }`}
                           >
                             {isGranted ? 'Granted' : 'Not Granted'}
                           </span>
@@ -184,18 +180,18 @@ export function ExtensionDetailView({ extension, onBack }: ExtensionDetailViewPr
             <dl className="space-y-1 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <dt>ID:</dt>
-                <dd className="font-mono">{extension.id}</dd>
+                <dd className="max-w-[200px] truncate font-mono">{extension.id}</dd>
               </div>
               {extension.extensionPath && (
                 <div className="flex justify-between">
                   <dt>{t('path')}:</dt>
-                  <dd className="truncate max-w-[200px] font-mono">{extension.extensionPath}</dd>
+                  <dd className="max-w-[200px] truncate font-mono">{extension.extensionPath}</dd>
                 </div>
               )}
               {extension.manifestPath && (
                 <div className="flex justify-between">
                   <dt>{t('manifest')}:</dt>
-                  <dd className="truncate max-w-[200px] font-mono">{extension.manifestPath}</dd>
+                  <dd className="max-w-[200px] truncate font-mono">{extension.manifestPath}</dd>
                 </div>
               )}
               {manifest.main && (
@@ -208,20 +204,16 @@ export function ExtensionDetailView({ extension, onBack }: ExtensionDetailViewPr
           </div>
 
           <div className="flex gap-2 border-t pt-4">
-            <button
-              type="button"
+            <Button
+              variant="outline"
+              className="flex-1"
               onClick={() => extensionService.reloadExtensions()}
-              className="flex-1 rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
             >
               {t('reloadExtensions')}
-            </button>
-            <button
-              type="button"
-              onClick={handleUninstall}
-              className="flex-1 rounded-md border border-destructive bg-destructive/10 px-3 py-1.5 text-sm text-destructive hover:bg-destructive/20"
-            >
+            </Button>
+            <Button variant="destructive" className="flex-1" onClick={handleUninstall}>
               {t('uninstall')}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

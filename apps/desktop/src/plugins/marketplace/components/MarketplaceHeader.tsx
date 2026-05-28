@@ -1,6 +1,7 @@
 import { MarketplaceSearch } from './MarketplaceSearch';
 import { MarketplaceCategoryTabs } from './MarketplaceCategoryTabs';
 import { useMarketplaceStore } from '../store/marketplaceStore';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@sqlgui/ui';
 
 export function MarketplaceHeader() {
   const sortBy = useMarketplaceStore((state) => state.sortBy);
@@ -14,18 +15,22 @@ export function MarketplaceHeader() {
           <p className="text-xs text-muted-foreground">Discover and install SQL GUI extensions.</p>
         </div>
 
-        <select
-          className="h-8 w-36 rounded-md border bg-transparent px-2 text-xs text-foreground"
+        <Select
           value={sortBy}
-          onChange={(event) =>
-            setSortBy(event.target.value as 'relevance' | 'downloads' | 'updated' | 'name')
+          onValueChange={(value) =>
+            setSortBy(value as 'relevance' | 'downloads' | 'updated' | 'name')
           }
         >
-          <option value="relevance">Relevance</option>
-          <option value="downloads">Downloads</option>
-          <option value="updated">Updated</option>
-          <option value="name">Name</option>
-        </select>
+          <SelectTrigger className="h-8 w-36 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="relevance">Relevance</SelectItem>
+            <SelectItem value="downloads">Downloads</SelectItem>
+            <SelectItem value="updated">Updated</SelectItem>
+            <SelectItem value="name">Name</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <MarketplaceSearch />

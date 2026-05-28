@@ -9,7 +9,9 @@
     "results": "结果",
     "messages": "消息",
     "problems": "问题",
-    "history": "查询历史"
+    "history": "查询历史",
+    "terminal": "终端",
+    "terminalEmpty": "暂无终端输出。"
   },
   "commandPalette": {
     "open": "打开命令面板",
