@@ -110,15 +110,46 @@ export default defineConfig(
   },
   // Browser / React apps may use DOM globals
   {
-    files: [
-      'apps/web/**',
-      'apps/desktop/**',
-      'apps/browser-ext/**',
-      'apps/mobile/**',
-      'packages/ui/**',
-    ],
+    files: ['apps/desktop/src/**', 'packages/ui/**'],
     rules: {
       'no-restricted-globals': ['error', ...NodeGlobals],
+    },
+  },
+  // apps/desktop: forbid raw H5 elements in favor of @sqlgui/ui components
+  {
+    files: ['apps/desktop/src/**/*.{ts,tsx}'],
+    rules: {
+      'react/forbid-elements': [
+        'error',
+        {
+          forbid: [
+            {
+              element: 'button',
+              message: 'Use Button or IconButton from @sqlgui/ui instead.',
+            },
+            {
+              element: 'input',
+              message: 'Use Input from @sqlgui/ui instead.',
+            },
+            {
+              element: 'textarea',
+              message: 'Use Textarea from @sqlgui/ui instead.',
+            },
+            {
+              element: 'select',
+              message: 'Use Select from @sqlgui/ui instead.',
+            },
+            {
+              element: 'option',
+              message: 'Use Select from @sqlgui/ui instead.',
+            },
+            {
+              element: 'dialog',
+              message: 'Use Dialog from @sqlgui/ui instead.',
+            },
+          ],
+        },
+      ],
     },
   },
   // Config files and scripts
