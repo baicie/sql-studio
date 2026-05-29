@@ -1,0 +1,27 @@
+{
+  "entries": {
+    "@sqlgui/desktop": {
+      "raw": "20 MB",
+      "gzip": "4 MB",
+      "brotli": "3 MB"
+    },
+    "@sqlgui/utils": {
+      "raw": "100 KB",
+      "gzip": "40 KB",
+      "brotli": "35 KB"
+    },
+    "dist-packages": {
+      "raw": "10 MB"
+    },
+    "sqlgui-extension-basic": {
+      "raw": "10 KB",
+      "gzip": "5 KB",
+      "brotli": "4 KB"
+    },
+    "sqlgui-extension-sql-formatter-demo": {
+      "raw": "10 KB",
+      "gzip": "5 KB",
+      "brotli": "4 KB"
+    }
+  }
+}

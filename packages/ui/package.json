@@ -33,10 +33,10 @@
     "@tanstack/react-virtual": "^3.13.26",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-react": "^1.16.0",
+    "lucide-react": "^1.17.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "shadcn": "^4.8.2",
+    "shadcn": "^4.8.3",
     "tailwind-merge": "^3.6.0",
     "tailwindcss-animate": "^1.0.7"
   },
