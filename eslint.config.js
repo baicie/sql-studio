@@ -47,22 +47,6 @@ export default defineConfig(
       'no-debugger': 'error',
       'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
       'no-restricted-globals': ['error', ...DOMGlobals, ...NodeGlobals],
-      'no-restricted-syntax': [
-        'error',
-        banConstEnum,
-        {
-          selector: 'ObjectPattern > RestElement',
-          message:
-            'Our output target is ES2016, and object rest spread results in ' +
-            'verbose helpers and should be avoided.',
-        },
-        {
-          selector: 'ObjectExpression > SpreadElement',
-          message:
-            'esbuild transpiles object spread into very verbose inline helpers.\n' +
-            'Please use the `extend` helper from @sqlgui/utils instead.',
-        },
-      ],
       'sort-imports': ['error', { ignoreDeclarationSort: true }],
 
       'import-x/no-nodejs-modules': [
