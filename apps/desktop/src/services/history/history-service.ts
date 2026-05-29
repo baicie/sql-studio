@@ -40,7 +40,7 @@ function createHistoryService(): HistoryService {
 
   return {
     getHistory() {
-      return _history.slice().reverse();
+      return _history.slice();
     },
 
     addEntry(entry: Omit<HistoryEntry, 'id'>) {

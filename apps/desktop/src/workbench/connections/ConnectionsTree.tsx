@@ -101,8 +101,7 @@ export function ConnectionsTree() {
     if (!contextMenu?.node) return;
     const profile = profiles.find((p) => p.id === contextMenu.node.connectionId);
     if (profile && window.confirm(`Delete connection "${profile.name}"?`)) {
-      connectionService.disconnect();
-      connectionService.getProfiles();
+      void connectionService.deleteConnection(profile.id);
     }
   }, [contextMenu, profiles]);
 
@@ -334,7 +333,7 @@ function getContextMenuItems(
     const isConnected = connectionService.getActiveConnectionId() === node.connectionId;
     items.push({
       id: 'connect',
-      label: isConnected ? t('openConnection') : t('closeConnection'),
+      label: isConnected ? t('closeConnection') : t('openConnection'),
       onClick: isConnected ? handlers.onDisconnect : handlers.onConnect,
     });
     items.push({

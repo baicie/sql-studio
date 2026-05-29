@@ -23,7 +23,14 @@ export function HistoryView() {
   });
 
   const handleRestore = useCallback((entry: HistoryEntry) => {
-    editorService.newQuery(entry.sql);
+    editorService.openSql({
+      title: 'history.sql',
+      content: entry.sql,
+      connectionId: entry.connectionId,
+      source: {
+        type: 'history',
+      },
+    });
     notificationService.info(
       `Restored: ${entry.sql.slice(0, 50)}${entry.sql.length > 50 ? '...' : ''}`,
     );

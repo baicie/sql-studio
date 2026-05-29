@@ -9,7 +9,7 @@ import { getSelectedSqlOrFullText, isDangerousSql } from './sqlSelection';
 
 export const sqlExecutionService = {
   async executeEditor(editorId: string, monacoEditor?: monaco.editor.IStandaloneCodeEditor | null) {
-    const tab = editorService.getActiveEditor();
+    const tab = editorService.getEditorById(editorId) ?? editorService.getActiveEditor();
 
     if (!tab) {
       throw new Error('No active editor.');

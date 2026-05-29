@@ -380,6 +380,17 @@ export class ConnectionService {
     }
   }
 
+  async deleteConnection(id: string) {
+    if (this._activeConnectionId === id) {
+      await this.disconnect();
+    }
+    credentialStore.delete(id);
+    this._profiles = this._profiles.filter((profile) => profile.id !== id);
+    this._persist();
+    this._refreshSnapshot();
+    this._subscription.emit();
+  }
+
   private _persist() {
     const profilesToSave = this._profiles.map((profile) => ({
       id: profile.id,
