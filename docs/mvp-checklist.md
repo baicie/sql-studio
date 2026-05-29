@@ -79,6 +79,6 @@
 
 ## Verification Record
 
-| Date       | Commit              | Verifier     | Result |
-| ---------- | ------------------- | ------------ | ------ |
-| 2026-05-29 | MVP completion pass | Cursor agent | PASS   |
+| Date       | Commit         | Verifier     | Result | Notes                                                    |
+| ---------- | -------------- | ------------ | ------ | -------------------------------------------------------- |
+| 2026-05-29 | MVP final pass | Cursor agent | PASS   | SQLite smoke test; CI green; final CI/verification fixes |

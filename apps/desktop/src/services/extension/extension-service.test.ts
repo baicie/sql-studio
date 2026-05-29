@@ -76,15 +76,21 @@ describe('ExtensionService', () => {
     vi.restoreAllMocks();
   });
 
-  it('awaits scan before activating extensions on reload', async () => {
+  it('awaits scan before loading and activating extensions on reload', async () => {
     const { ExtensionService } = await import('./extension-service');
 
     const service = new ExtensionService();
 
+    vi.spyOn(service as any, '_loadStoredExtensions').mockImplementation(() => {
+      callLog.push('load-stored');
+    });
+
+    vi.spyOn(service as any, '_activateAll').mockImplementation(() => {
+      callLog.push('activate');
+    });
+
     await service.reloadExtensions();
 
-    expect(callLog).toContain('scan:start');
-    expect(callLog).toContain('scan:end');
-    expect(callLog.indexOf('scan:start')).toBeLessThan(callLog.indexOf('scan:end'));
+    expect(callLog).toEqual(['scan:start', 'scan:end', 'load-stored', 'activate']);
   });
 });

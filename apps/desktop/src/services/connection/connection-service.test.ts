@@ -64,6 +64,7 @@ describe('ConnectionService security', () => {
   afterEach(() => {
     // Restore so other tests aren't affected
     vi.restoreAllMocks();
+    vi.resetModules();
   });
 
   it('addProfile persists profile WITHOUT password field', async () => {
@@ -165,6 +166,7 @@ describe('ConnectionService snapshot immutability', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.resetModules();
   });
 
   it('returns a new snapshot object after addProfile', async () => {
