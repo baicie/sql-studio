@@ -51,5 +51,5 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           body: |
-            For stable releases, please refer to [CHANGELOG.md](https://github.com/baicie/zeus/blob/main/CHANGELOG.md) for details.
-            For pre-releases, please refer to [CHANGELOG.md](https://github.com/baicie/zeus/blob/minor/CHANGELOG.md) of the `minor` branch.
+            SQL Studio v0.1.0 MVP - first release.
+            See the project at https://github.com/baicie/sql-studio.
