@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use async_trait::async_trait;
 use sqlx::{Column, PgPool, Row, TypeInfo};
@@ -7,11 +7,14 @@ use sqlx::postgres::PgPoolOptions;
 use crate::connector::DbConnector;
 use crate::error::{DbError, DbResult};
 use crate::pool::{AnyDbPool, ManagedConnection, PoolManager};
+use crate::query_helper::{apply_limit, is_dml_statement};
 use crate::types::{
     CellValue, ColumnMeta, ColumnSchema, ConnectionConfig, DatabaseMeta,
     DbKind, OpenConnectionResult, QueryRequest, QueryResult, SchemaMeta,
     TableMeta,
 };
+
+const DEFAULT_TIMEOUT_MS: u64 = 30_000;
 
 #[derive(Clone)]
 pub struct PostgresConnector {
@@ -54,6 +57,166 @@ impl PostgresConnector {
                 "connection is not postgresql".to_string(),
             )),
         }
+    }
+
+    async fn execute_with_timeout(
+        &self,
+        pool: &PgPool,
+        sql: &str,
+        timeout_ms: Option<u64>,
+    ) -> DbResult<QueryResult> {
+        let start = Instant::now();
+        let timeout = Duration::from_millis(timeout_ms.unwrap_or(DEFAULT_TIMEOUT_MS));
+        let sql = sql.to_string();
+        let pool = pool.clone();
+
+        let dml = is_dml_statement(&sql);
+
+        if dml {
+            let result = tokio::time::timeout(timeout, async move {
+                sqlx::query(&sql).execute(&pool).await
+            })
+            .await
+            .map_err(|_| DbError::Timeout)?
+            .map_err(|e| DbError::QueryFailed(e.to_string()))?;
+
+            Ok(QueryResult {
+                columns: Vec::new(),
+                rows: Vec::new(),
+                affected_rows: Some(result.rows_affected()),
+                elapsed_ms: start.elapsed().as_millis() as u64,
+                truncated: false,
+                message: None,
+            })
+        } else {
+            let limit = self.extract_limit(&sql);
+            let sql_with_limit = apply_limit(&sql, limit.unwrap_or(1000));
+
+            let rows = tokio::time::timeout(timeout, async move {
+                sqlx::query(&sql_with_limit).fetch_all(&pool).await
+            })
+            .await
+            .map_err(|_| DbError::Timeout)?
+            .map_err(|e| DbError::QueryFailed(e.to_string()))?;
+
+            let row_count = rows.len();
+            let columns = if let Some(first_row) = rows.first() {
+                first_row
+                    .columns()
+                    .iter()
+                    .map(|col| ColumnMeta {
+                        name: col.name().to_string(),
+                        database_type: col.type_info().name().to_string(),
+                        nullable: None,
+                    })
+                    .collect()
+            } else {
+                self.extract_columns_from_select(&sql).unwrap_or_default()
+            };
+
+            let result_rows = rows
+                .into_iter()
+                .map(|row| {
+                    (0..row.len())
+                        .map(|idx| read_pg_cell(&row, idx))
+                        .collect()
+                })
+                .collect();
+
+            Ok(QueryResult {
+                columns,
+                rows: result_rows,
+                affected_rows: None,
+                elapsed_ms: start.elapsed().as_millis() as u64,
+                truncated: row_count >= limit.unwrap_or(1000) as usize && limit.is_some(),
+                message: None,
+            })
+        }
+    }
+
+    fn extract_limit(&self, sql: &str) -> Option<u32> {
+        let lower = sql.to_lowercase();
+        if let Some(idx) = lower.rfind("limit") {
+            let rest = lower[idx..].trim();
+            if let Some(space_idx) = rest.find(' ') {
+                let num_str = rest[space_idx..].trim();
+                num_str.parse::<u32>().ok()
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    fn extract_columns_from_select(&self, sql: &str) -> Option<Vec<ColumnMeta>> {
+        let sql = sql.trim().to_uppercase();
+        if !sql.starts_with("SELECT") {
+            return None;
+        }
+
+        let mut cols_end = sql.len();
+        for keyword in [" ORDER BY", " GROUP BY", " HAVING", " LIMIT"] {
+            if let Some(idx) = sql.find(keyword) {
+                if idx < cols_end {
+                    cols_end = idx;
+                }
+            }
+        }
+
+        let col_str = &sql[6..cols_end].trim();
+        if col_str.is_empty() || *col_str == "*" {
+            return None;
+        }
+
+        let mut columns = Vec::new();
+        let mut depth = 0isize;
+        let mut start = 0;
+
+        for (i, ch) in col_str.char_indices() {
+            match ch {
+                '(' => depth += 1,
+                ')' => depth -= 1,
+                ',' if depth == 0 => {
+                    let col = col_str[start..i].trim();
+                    if !col.is_empty() {
+                        columns.push(ColumnMeta {
+                            name: self.alias_or_name(col),
+                            database_type: "TEXT".to_string(),
+                            nullable: None,
+                        });
+                    }
+                    start = i + 1;
+                }
+                _ => {}
+            }
+        }
+
+        let col = col_str[start..].trim();
+        if !col.is_empty() {
+            columns.push(ColumnMeta {
+                name: self.alias_or_name(col),
+                database_type: "TEXT".to_string(),
+                nullable: None,
+            });
+        }
+
+        if columns.is_empty() {
+            None
+        } else {
+            Some(columns)
+        }
+    }
+
+    fn alias_or_name(&self, expr: &str) -> String {
+        let expr = expr.trim();
+        if let Some(idx) = expr.to_uppercase().rfind(" AS ") {
+            return expr[idx + 4..].trim().to_string();
+        }
+        if let Some(idx) = expr.rfind('.') {
+            return expr[idx + 1..].trim().to_string();
+        }
+        expr.to_string()
     }
 }
 
@@ -120,46 +283,8 @@ impl DbConnector for PostgresConnector {
 
     async fn query(&self, request: QueryRequest) -> DbResult<QueryResult> {
         let pool = self.get_pool(&request.connection_id)?;
-        let start = Instant::now();
-
-        let sql = apply_limit_if_needed(&request.sql, request.limit);
-
-        let rows = sqlx::query(&sql)
-            .fetch_all(&pool)
+        self.execute_with_timeout(&pool, &request.sql, request.timeout_ms)
             .await
-            .map_err(|err| DbError::QueryFailed(err.to_string()))?;
-
-        let mut columns = Vec::new();
-        let mut result_rows = Vec::new();
-
-        if let Some(first_row) = rows.first() {
-            for column in first_row.columns() {
-                columns.push(ColumnMeta {
-                    name: column.name().to_string(),
-                    database_type: column.type_info().name().to_string(),
-                    nullable: None,
-                });
-            }
-        }
-
-        for row in rows {
-            let mut result_row = Vec::new();
-
-            for index in 0..row.len() {
-                result_row.push(read_pg_cell(&row, index));
-            }
-
-            result_rows.push(result_row);
-        }
-
-        Ok(QueryResult {
-            columns,
-            rows: result_rows,
-            affected_rows: None,
-            elapsed_ms: start.elapsed().as_millis() as u64,
-            truncated: false,
-            message: None,
-        })
     }
 
     async fn list_databases(&self, connection_id: String) -> DbResult<Vec<DatabaseMeta>> {
@@ -296,22 +421,6 @@ impl DbConnector for PostgresConnector {
             })
             .collect())
     }
-}
-
-fn apply_limit_if_needed(sql: &str, limit: Option<u32>) -> String {
-    let trimmed = sql.trim();
-    let lower = trimmed.to_lowercase();
-
-    if !lower.starts_with("select") {
-        return trimmed.to_string();
-    }
-
-    if lower.contains(" limit ") {
-        return trimmed.to_string();
-    }
-
-    let limit = limit.unwrap_or(1000);
-    format!("{trimmed} LIMIT {limit}")
 }
 
 fn read_pg_cell(row: &sqlx::postgres::PgRow, index: usize) -> CellValue {

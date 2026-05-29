@@ -126,18 +126,19 @@ export class ExtensionService {
     return this._hostState;
   }
 
-  reloadExtensions() {
+  async reloadExtensions() {
     this._deactivateAll();
     activationRegistry.clear();
-    this._scanAndLoadExtensions();
+    await this._scanAndLoadExtensions();
     this._loadStoredExtensions();
     this._activateAll();
-    notificationService.info('Extensions reloaded.');
+    this._refreshSnapshot();
     this._subscription.emit();
+    notificationService.info('Extensions reloaded.');
   }
 
   reload() {
-    this.reloadExtensions();
+    void this.reloadExtensions();
   }
 
   setEnabled(id: string, enabled: boolean) {
@@ -172,7 +173,7 @@ export class ExtensionService {
         security,
       });
 
-      this.reloadExtensions();
+      await this.reloadExtensions();
     } catch (error) {
       const msg = normalizeExtensionInstallError(error);
       notificationService.error(`Install failed: ${msg}`);
@@ -188,7 +189,7 @@ export class ExtensionService {
         overwrite: true,
       });
 
-      this.reloadExtensions();
+      await this.reloadExtensions();
     } catch (error) {
       const msg = normalizeExtensionInstallError(error);
       notificationService.error(`Install failed: ${msg}`);
@@ -204,7 +205,7 @@ export class ExtensionService {
         overwrite: true,
       });
 
-      this.reloadExtensions();
+      await this.reloadExtensions();
     } catch (error) {
       const msg = normalizeExtensionInstallError(error);
       notificationService.error(`Install failed: ${msg}`);

@@ -24,6 +24,18 @@
   "bottomPanel": {
     "toggle": "Toggle Bottom Panel"
   },
+  "history": {
+    "empty": "No query history yet. Execute a query to see it here.",
+    "clear": "Clear history",
+    "filterAll": "All",
+    "filterSuccess": "Success",
+    "filterError": "Error",
+    "noMatch": "No matching entries",
+    "restoreToEditor": "Click to restore to editor",
+    "copy": "Copy SQL",
+    "delete": "Delete entry",
+    "allConnections": "All connections"
+  },
   "statusBar": {
     "ready": "Ready",
     "checking": "Checking",

@@ -9,11 +9,13 @@ export interface ConnectionProfile {
   host?: string;
   port?: number;
   username?: string;
-  password?: string;
   database?: string;
   filePath?: string;
   createdAt?: number;
   updatedAt?: number;
+  /** @deprecated Use CredentialStore instead. This field is no longer persisted. */
+  password?: string;
+  rememberPassword?: boolean;
 }
 
 export type ConnectionTreeNodeType =

@@ -16,12 +16,17 @@
     "password": "Password",
     "database": "Database",
     "filePath": "Database File",
-    "ssl": "Use SSL"
+    "ssl": "Use SSL",
+    "rememberPassword": "Remember password"
   },
   "dbKind": {
     "sqlite": "SQLite",
     "postgres": "PostgreSQL",
     "mysql": "MySQL"
+  },
+  "sqlite": {
+    "browse": "Browse for existing file",
+    "create": "Create new file"
   },
   "tree": {
     "tables": "Tables",

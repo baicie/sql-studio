@@ -16,12 +16,17 @@
     "password": "密码",
     "database": "数据库",
     "filePath": "数据库文件",
-    "ssl": "使用 SSL"
+    "ssl": "使用 SSL",
+    "rememberPassword": "记住密码"
   },
   "dbKind": {
     "sqlite": "SQLite",
     "postgres": "PostgreSQL",
     "mysql": "MySQL"
+  },
+  "sqlite": {
+    "browse": "浏览现有文件",
+    "create": "新建数据库文件"
   },
   "tree": {
     "tables": "表",

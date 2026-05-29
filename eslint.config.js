@@ -60,7 +60,7 @@ export default defineConfig(
           selector: 'ObjectExpression > SpreadElement',
           message:
             'esbuild transpiles object spread into very verbose inline helpers.\n' +
-            'Please use the `extend` helper from @zeus-js/shared instead.',
+            'Please use the `extend` helper from @sqlgui/utils instead.',
         },
       ],
       'sort-imports': ['error', { ignoreDeclarationSort: true }],

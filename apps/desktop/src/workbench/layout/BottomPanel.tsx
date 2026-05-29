@@ -75,13 +75,14 @@ function ResultsPanel() {
 
   const { result } = latest;
   const rowCount = result.rows.length;
+  const isDml = result.affectedRows !== undefined;
 
   return (
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center gap-3 border-b px-3 py-1.5 text-xs text-muted-foreground">
         <span className="text-foreground">
-          {result.affectedRows !== undefined
-            ? t('summary.affectedRows', { count: result.affectedRows })
+          {isDml
+            ? t('summary.affectedRows', { count: result.affectedRows! })
             : t('summary.rowsColumns', { rows: rowCount, columns: result.columns.length })}
         </span>
         <span>{latest.elapsedMs}ms</span>
@@ -96,9 +97,18 @@ function ResultsPanel() {
         </Button>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-hidden">
-        <ResultGrid result={result} />
-      </div>
+      {isDml ? (
+        <div className="flex flex-1 items-center justify-center">
+          <div className="text-center">
+            <div className="mb-1 text-2xl font-semibold text-foreground">{result.affectedRows}</div>
+            <div className="text-xs text-muted-foreground">{t('summary.rowsAffected')}</div>
+          </div>
+        </div>
+      ) : (
+        <div className="min-h-0 flex-1 overflow-hidden">
+          <ResultGrid result={result} />
+        </div>
+      )}
     </div>
   );
 }

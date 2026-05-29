@@ -3,6 +3,7 @@ import type {
   ConnectionProfile,
   ConnectionTreeNode,
   ConnectionTreeNodeType,
+  DbKind,
 } from '@/services/connection/types';
 
 export function createNodeId(...parts: Array<string | undefined>): string {
@@ -41,28 +42,30 @@ export function createRootNode(profile: ConnectionProfile): ConnectionTreeNode {
 
 export async function loadNodeChildren(node: ConnectionTreeNode): Promise<ConnectionTreeNode[]> {
   const { type, connectionId, database, schema, table } = parseNodeId(node.id);
+  const kind = node.meta?.kind as DbKind | undefined;
 
   switch (type) {
     case 'connection':
-      return loadDatabases(connectionId);
+      return loadConnectionChildren(connectionId, kind);
 
     case 'database':
       if (!database) return [];
-      return loadSchemasOrTables(connectionId, database);
+      return loadDatabaseChildren(connectionId, database, kind);
 
-    case 'schema':
+    case 'schema': {
+      if (!schema) return [];
+      const ctx = database ?? schema;
+      return loadTables(connectionId, ctx, schema);
+    }
+
+    case 'tables': {
       if (!database || !schema) return [];
       return loadTables(connectionId, database, schema);
-
-    case 'tables':
-      return [];
+    }
 
     case 'table':
       if (!database || !schema || !table) return [];
       return loadColumns(connectionId, database, schema, table);
-
-    case 'columns':
-      return [];
 
     case 'column':
       return [];
@@ -72,52 +75,106 @@ export async function loadNodeChildren(node: ConnectionTreeNode): Promise<Connec
   }
 }
 
-async function loadDatabases(connectionId: string): Promise<ConnectionTreeNode[]> {
+async function loadConnectionChildren(
+  connectionId: string,
+  kind?: DbKind,
+): Promise<ConnectionTreeNode[]> {
   try {
-    const databases = await dbService.listDatabases(connectionId);
+    switch (kind) {
+      case 'SQLite':
+        return loadTables(connectionId, 'main', 'main');
 
-    return databases.map((db) => ({
-      id: createNodeId('database', connectionId, db.name),
-      type: 'database' as const,
-      name: db.name,
-      connectionId,
-      database: db.name,
-      isLeaf: false,
-    }));
+      case 'PostgreSQL': {
+        const schemas = await dbService.listSchemas(connectionId);
+        if (schemas.length === 0) {
+          return loadTables(connectionId, 'public', 'public');
+        }
+        return schemas.map((s) => ({
+          id: createNodeId('schema', connectionId, s.name),
+          type: 'schema' as const,
+          name: s.name,
+          connectionId,
+          database: undefined,
+          schema: s.name,
+          isLeaf: false,
+        }));
+      }
+
+      case 'MySQL':
+      default: {
+        const databases = await dbService.listDatabases(connectionId);
+        if (databases.length === 0) {
+          return [];
+        }
+        return databases.map((db) => ({
+          id: createNodeId('database', connectionId, db.name),
+          type: 'database' as const,
+          name: db.name,
+          connectionId,
+          database: db.name,
+          isLeaf: false,
+        }));
+      }
+    }
   } catch {
     return [];
   }
 }
 
-async function loadSchemasOrTables(
+async function loadDatabaseChildren(
   connectionId: string,
   database: string,
+  kind?: DbKind,
 ): Promise<ConnectionTreeNode[]> {
   try {
-    const schemas = await dbService.listSchemas(connectionId);
+    switch (kind) {
+      case 'SQLite':
+        return loadTables(connectionId, database, 'main');
 
-    if (schemas.length === 0) {
-      return [
-        {
-          id: createNodeId('tables', connectionId, database),
-          type: 'tables' as const,
-          name: 'Tables',
+      case 'PostgreSQL': {
+        const schemas = await dbService.listSchemas(connectionId);
+        if (schemas.length === 0) {
+          return loadTables(connectionId, database, 'public');
+        }
+        return schemas.map((s) => ({
+          id: createNodeId('schema', connectionId, s.name),
+          type: 'schema' as const,
+          name: s.name,
           connectionId,
           database,
+          schema: s.name,
           isLeaf: false,
-        },
-      ];
-    }
+        }));
+      }
 
-    return schemas.map((s) => ({
-      id: createNodeId('schema', connectionId, database, s.name),
-      type: 'schema' as const,
-      name: s.name,
-      connectionId,
-      database,
-      schema: s.name,
-      isLeaf: false,
-    }));
+      case 'MySQL':
+      default: {
+        const tables = await dbService.listTables(connectionId, database);
+        if (tables.length === 0) {
+          return [];
+        }
+        return [
+          {
+            id: createNodeId('tables', connectionId, database),
+            type: 'tables' as const,
+            name: 'Tables',
+            connectionId,
+            database,
+            isLeaf: false,
+          },
+          ...tables.map((t) => ({
+            id: createNodeId('table', connectionId, database, t.name),
+            type: 'table' as const,
+            name: t.name,
+            connectionId,
+            database,
+            table: t.name,
+            isLeaf: false,
+            meta: { tableType: t.tableType } as Record<string, unknown>,
+          })),
+        ];
+      }
+    }
   } catch {
     return [];
   }
@@ -150,9 +207,7 @@ async function loadTables(
         schema,
         table: t.name,
         isLeaf: false,
-        meta: {
-          tableType: t.tableType,
-        },
+        meta: { tableType: t.tableType } as Record<string, unknown>,
       })),
     ];
   } catch {
@@ -187,7 +242,7 @@ async function loadColumns(
         connectionId,
         database,
         schema,
-        table: c.table,
+        table,
         isLeaf: true,
         meta: { name: c.name, databaseType: c.databaseType } as Record<string, unknown>,
       })),

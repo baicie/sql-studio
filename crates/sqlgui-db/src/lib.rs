@@ -4,6 +4,7 @@ pub mod manager;
 pub mod mysql;
 pub mod pool;
 pub mod postgres;
+pub mod query_helper;
 pub mod sqlite;
 pub mod sql_safety;
 pub mod types;

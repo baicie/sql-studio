@@ -24,7 +24,8 @@
   "summary": {
     "rowsColumns": "{{rows}} rows × {{columns}} columns",
     "elapsed": "{{elapsed}}ms",
-    "affectedRows": "{{count}} affected"
+    "affectedRows": "{{count}} affected",
+    "rowsAffected": "rows affected"
   },
   "cell": {
     "null": "NULL",

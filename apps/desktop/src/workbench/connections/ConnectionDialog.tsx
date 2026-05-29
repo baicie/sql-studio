@@ -1,4 +1,5 @@
 import { useState, useSyncExternalStore } from 'react';
+import { FilePlus, FolderOpen } from 'lucide-react';
 
 import {
   Button,
@@ -7,6 +8,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  IconButton,
   Input,
   Label,
   Select,
@@ -14,6 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
 } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import { connectionService } from '@/services/connection/connection-service';
@@ -44,6 +47,7 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
   const [password, setPassword] = useState(profile?.password ?? '');
   const [filePath, setFilePath] = useState(profile?.filePath ?? '');
   const [loading, setLoading] = useState(false);
+  const [rememberPassword, setRememberPassword] = useState(profile?.rememberPassword ?? false);
 
   async function handleTest() {
     if (!name.trim()) {
@@ -88,6 +92,7 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
         password: kind === 'SQLite' ? undefined : password || undefined,
         database: kind === 'SQLite' ? undefined : database.trim() || undefined,
         filePath: kind === 'SQLite' ? filePath.trim() || undefined : undefined,
+        rememberPassword: kind === 'SQLite' ? undefined : rememberPassword,
       };
 
       if (mode === 'edit' && profile) {
@@ -109,6 +114,68 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
     const nextKind = value as DbKind;
     setKind(nextKind);
     setPort(nextKind === 'SQLite' ? '' : String(DEFAULT_PORTS[nextKind] ?? ''));
+  }
+
+  async function handleBrowseFile() {
+    try {
+      const { open } = await import('@tauri-apps/plugin-dialog');
+      const selected = await open({
+        multiple: false,
+        filters: [
+          {
+            name: 'SQLite Database',
+            extensions: ['db', 'sqlite', 'sqlite3', 'db3'],
+          },
+          {
+            name: 'All Files',
+            extensions: ['*'],
+          },
+        ],
+      });
+
+      if (selected && typeof selected === 'string') {
+        setFilePath(selected);
+        if (!name.trim()) {
+          const fileName =
+            selected
+              .split('/')
+              .pop()
+              ?.replace(/\.[^/.]+$/, '') ?? selected;
+          setName(fileName);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to open file dialog:', err);
+    }
+  }
+
+  async function handleCreateFile() {
+    try {
+      const { save } = await import('@tauri-apps/plugin-dialog');
+      const selected = await save({
+        filters: [
+          {
+            name: 'SQLite Database',
+            extensions: ['db', 'sqlite', 'sqlite3'],
+          },
+        ],
+        defaultPath: name.trim() ? `${name.trim()}.db` : 'database.db',
+      });
+
+      if (selected) {
+        setFilePath(selected);
+        if (!name.trim()) {
+          const fileName =
+            selected
+              .split('/')
+              .pop()
+              ?.replace(/\.[^/.]+$/, '') ?? selected;
+          setName(fileName);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to open save dialog:', err);
+    }
   }
 
   return (
@@ -145,11 +212,30 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
         {kind === 'SQLite' ? (
           <div className="flex flex-col gap-1">
             <Label>{t('fields.filePath')}</Label>
-            <Input
-              value={filePath}
-              onChange={(e) => setFilePath(e.target.value)}
-              placeholder={t('fields.filePath')}
-            />
+            <div className="flex gap-2">
+              <Input
+                value={filePath}
+                onChange={(e) => setFilePath(e.target.value)}
+                placeholder={t('fields.filePath')}
+                className="flex-1"
+              />
+              <IconButton
+                variant="outline"
+                size="icon"
+                onClick={handleBrowseFile}
+                title={t('sqlite.browse')}
+              >
+                <FolderOpen className="h-4 w-4" />
+              </IconButton>
+              <IconButton
+                variant="outline"
+                size="icon"
+                onClick={handleCreateFile}
+                title={t('sqlite.create')}
+              >
+                <FilePlus className="h-4 w-4" />
+              </IconButton>
+            </div>
           </div>
         ) : (
           <>
@@ -189,6 +275,17 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t('fields.password')}
               />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={rememberPassword}
+                onCheckedChange={(checked) => setRememberPassword(checked === true)}
+                id="remember-password"
+              />
+              <Label htmlFor="remember-password" className="cursor-pointer text-sm font-normal">
+                {t('fields.rememberPassword')}
+              </Label>
             </div>
 
             <div className="flex flex-col gap-1">

@@ -75,6 +75,37 @@ export function ConnectionsTree() {
     setContextMenu({ x: event.clientX, y: event.clientY, node });
   }, []);
 
+  const handleConnect = useCallback(async () => {
+    if (!contextMenu?.node) return;
+    const node = contextMenu.node;
+    try {
+      await connectionService.connect(node.connectionId);
+    } catch {
+      // error already handled in service
+    }
+  }, [contextMenu]);
+
+  const handleDisconnect = useCallback(async () => {
+    await connectionService.disconnect();
+  }, []);
+
+  const handleEdit = useCallback(() => {
+    if (!contextMenu?.node) return;
+    const profile = profiles.find((p) => p.id === contextMenu.node.connectionId);
+    if (profile) {
+      connectionService.openEditDialog(profile.id);
+    }
+  }, [contextMenu, profiles]);
+
+  const handleDelete = useCallback(() => {
+    if (!contextMenu?.node) return;
+    const profile = profiles.find((p) => p.id === contextMenu.node.connectionId);
+    if (profile && window.confirm(`Delete connection "${profile.name}"?`)) {
+      connectionService.disconnect();
+      connectionService.getProfiles();
+    }
+  }, [contextMenu, profiles]);
+
   const handleRefresh = useCallback(async () => {
     const activeConnectionId = connectionService.getActiveConnectionId();
 
@@ -162,6 +193,7 @@ export function ConnectionsTree() {
             schema: node.schema,
             table: node.table,
             isLeaf: node.isLeaf,
+            meta: node.meta,
           });
           setLoadedChildren((prev) => new Map(prev).set(tableNodeId, children));
         } catch (error) {
@@ -229,6 +261,10 @@ export function ConnectionsTree() {
           x={contextMenu.x}
           y={contextMenu.y}
           items={getContextMenuItems(contextMenu.node, t, {
+            onConnect: handleConnect,
+            onDisconnect: handleDisconnect,
+            onEdit: handleEdit,
+            onDelete: handleDelete,
             onSelectTop1000: handleSelectTop1000,
             onShowColumns: handleShowColumns,
             onCopyTableName: handleCopyTableName,
@@ -281,6 +317,10 @@ function getContextMenuItems(
   node: ConnectionTreeNode,
   t: UseTranslationResponse<'connection', undefined>['t'],
   handlers: {
+    onConnect: () => void;
+    onDisconnect: () => void;
+    onEdit: () => void;
+    onDelete: () => void;
     onSelectTop1000: () => void;
     onShowColumns: () => void;
     onCopyTableName: () => void;
@@ -289,6 +329,25 @@ function getContextMenuItems(
   },
 ) {
   const items: Array<{ id: string; label: string; onClick: () => void }> = [];
+
+  if (node.type === 'connection') {
+    const isConnected = connectionService.getActiveConnectionId() === node.connectionId;
+    items.push({
+      id: 'connect',
+      label: isConnected ? t('openConnection') : t('closeConnection'),
+      onClick: isConnected ? handlers.onDisconnect : handlers.onConnect,
+    });
+    items.push({
+      id: 'edit',
+      label: t('editConnection'),
+      onClick: handlers.onEdit,
+    });
+    items.push({
+      id: 'delete',
+      label: t('deleteConnection'),
+      onClick: handlers.onDelete,
+    });
+  }
 
   if (node.type === 'table') {
     items.push(

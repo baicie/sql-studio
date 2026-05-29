@@ -3,11 +3,13 @@ import i18n from 'i18next';
 import { dbService } from '@/services/db/dbService';
 import { editorService } from './editorService';
 import { resultService } from '@/workbench/results/services/resultService';
+import { historyService } from '@/services/history/history-service';
+import { connectionService } from '@/services/connection/connection-service';
 import { getSelectedSqlOrFullText, isDangerousSql } from './sqlSelection';
 
 export const sqlExecutionService = {
   async executeEditor(editorId: string, monacoEditor?: monaco.editor.IStandaloneCodeEditor | null) {
-    const tab = editorService.getEditorById(editorId) ?? editorService.getActiveEditor();
+    const tab = editorService.getActiveEditor();
 
     if (!tab) {
       throw new Error('No active editor.');
@@ -34,6 +36,8 @@ export const sqlExecutionService = {
 
     const queryId = crypto.randomUUID();
     const startedAt = Date.now();
+    const connectionProfile = connectionService.getProfile(tab.connectionId);
+    const connectionName = connectionProfile?.name ?? tab.connectionId;
 
     resultService.startQuery({
       queryId,
@@ -51,28 +55,55 @@ export const sqlExecutionService = {
         timeoutMs: 30_000,
       });
 
+      const finishedAt = Date.now();
+
       resultService.finishQuery({
         queryId,
         editorId: tab.id,
         connectionId: tab.connectionId,
         sql,
         startedAt,
-        finishedAt: Date.now(),
+        finishedAt,
         elapsedMs: result.elapsedMs,
         success: true,
         result,
       });
+
+      historyService.addEntry({
+        connectionId: tab.connectionId,
+        connectionName,
+        sql,
+        status: 'success',
+        elapsedMs: result.elapsedMs,
+        startedAt,
+        finishedAt,
+      });
     } catch (err) {
+      const finishedAt = Date.now();
+      const elapsedMs = finishedAt - startedAt;
+      const errorMessage = err instanceof Error ? err.message : String(err);
+
       resultService.finishQuery({
         queryId,
         editorId: tab.id,
         connectionId: tab.connectionId,
         sql,
         startedAt,
-        finishedAt: Date.now(),
-        elapsedMs: Date.now() - startedAt,
+        finishedAt,
+        elapsedMs,
         success: false,
-        error: err instanceof Error ? err.message : String(err),
+        error: errorMessage,
+      });
+
+      historyService.addEntry({
+        connectionId: tab.connectionId,
+        connectionName,
+        sql,
+        status: 'error',
+        elapsedMs,
+        startedAt,
+        finishedAt,
+        errorMessage,
       });
     }
   },
@@ -85,6 +116,8 @@ export const sqlExecutionService = {
 
     const queryId = crypto.randomUUID();
     const startedAt = Date.now();
+    const connectionProfile = connectionService.getProfile(connectionId);
+    const connectionName = connectionProfile?.name ?? connectionId;
 
     resultService.startQuery({
       queryId,
@@ -102,28 +135,55 @@ export const sqlExecutionService = {
         timeoutMs: 30_000,
       });
 
+      const finishedAt = Date.now();
+
       resultService.finishQuery({
         queryId,
         editorId: editorId ?? '',
         connectionId,
         sql,
         startedAt,
-        finishedAt: Date.now(),
+        finishedAt,
         elapsedMs: result.elapsedMs,
         success: true,
         result,
       });
+
+      historyService.addEntry({
+        connectionId,
+        connectionName,
+        sql,
+        status: 'success',
+        elapsedMs: result.elapsedMs,
+        startedAt,
+        finishedAt,
+      });
     } catch (err) {
+      const finishedAt = Date.now();
+      const elapsedMs = finishedAt - startedAt;
+      const errorMessage = err instanceof Error ? err.message : String(err);
+
       resultService.finishQuery({
         queryId,
         editorId: editorId ?? '',
         connectionId,
         sql,
         startedAt,
-        finishedAt: Date.now(),
-        elapsedMs: Date.now() - startedAt,
+        finishedAt,
+        elapsedMs,
         success: false,
-        error: err instanceof Error ? err.message : String(err),
+        error: errorMessage,
+      });
+
+      historyService.addEntry({
+        connectionId,
+        connectionName,
+        sql,
+        status: 'error',
+        elapsedMs,
+        startedAt,
+        finishedAt,
+        errorMessage,
       });
     }
   },

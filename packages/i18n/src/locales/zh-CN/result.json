@@ -24,7 +24,8 @@
   "summary": {
     "rowsColumns": "{{rows}} 行 × {{columns}} 列",
     "elapsed": "耗时 {{elapsed}}ms",
-    "affectedRows": "影响 {{count}} 行"
+    "affectedRows": "影响 {{count}} 行",
+    "rowsAffected": "行受影响"
   },
   "cell": {
     "null": "NULL",

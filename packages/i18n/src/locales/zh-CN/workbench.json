@@ -24,6 +24,18 @@
   "bottomPanel": {
     "toggle": "切换底部面板"
   },
+  "history": {
+    "empty": "暂无查询历史。执行查询后会在这里显示。",
+    "clear": "清空历史",
+    "filterAll": "全部",
+    "filterSuccess": "成功",
+    "filterError": "失败",
+    "noMatch": "没有匹配的记录",
+    "restoreToEditor": "点击恢复到编辑器",
+    "copy": "复制 SQL",
+    "delete": "删除记录",
+    "allConnections": "所有连接"
+  },
   "statusBar": {
     "ready": "就绪",
     "checking": "检查中",

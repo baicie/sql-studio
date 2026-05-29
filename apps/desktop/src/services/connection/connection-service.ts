@@ -4,6 +4,7 @@ import { createSubscription } from '../common/subscription';
 import { dbService } from '../db/dbService';
 import { notificationService } from '../notification/notification-service';
 import { logService } from '../log/log-service';
+import { credentialStore } from './credential-store';
 import type {
   ConnectionDialogState,
   ConnectionProfile,
@@ -76,6 +77,8 @@ export class ConnectionService {
     try {
       logService.info('connection', `Restoring connection: ${profile.name}`);
 
+      const password = profile.rememberPassword ? credentialStore.get(profile.id) : null;
+
       const result = await dbService.openConnection({
         id: profile.id,
         name: profile.name,
@@ -84,7 +87,7 @@ export class ConnectionService {
         host: profile.host,
         port: profile.port,
         username: profile.username,
-        password: profile.password,
+        password: password ?? undefined,
         database: profile.database,
       });
 
@@ -138,16 +141,52 @@ export class ConnectionService {
   }
 
   addProfile(profile: ConnectionProfile) {
-    this._profiles = this._profiles.concat(profile);
+    const { password, rememberPassword } = profile;
+    if (rememberPassword && password) {
+      credentialStore.save(profile.id, password);
+    } else {
+      credentialStore.delete(profile.id);
+    }
+    this._profiles = this._profiles.concat({
+      id: profile.id,
+      name: profile.name,
+      kind: profile.kind,
+      host: profile.host,
+      port: profile.port,
+      username: profile.username,
+      database: profile.database,
+      filePath: profile.filePath,
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt,
+      rememberPassword: profile.rememberPassword,
+    });
     this._persist();
     this._refreshSnapshot();
     this._subscription.emit();
   }
 
   updateConnection(profile: ConnectionProfile) {
+    const { password, rememberPassword } = profile;
+    if (rememberPassword && password) {
+      credentialStore.save(profile.id, password);
+    } else {
+      credentialStore.delete(profile.id);
+    }
     this._profiles = this._profiles.map((item) => {
       if (item.id === profile.id) {
-        return profile;
+        return {
+          id: profile.id,
+          name: profile.name,
+          kind: profile.kind,
+          host: profile.host,
+          port: profile.port,
+          username: profile.username,
+          database: profile.database,
+          filePath: profile.filePath,
+          createdAt: profile.createdAt,
+          updatedAt: profile.updatedAt,
+          rememberPassword: profile.rememberPassword,
+        };
       }
       return item;
     });
@@ -251,6 +290,8 @@ export class ConnectionService {
     try {
       logService.info('connection', `Opening connection: ${profile.name}`);
 
+      const password = profile.rememberPassword ? credentialStore.get(profile.id) : undefined;
+
       await dbService.openConnection({
         id: profile.id,
         name: profile.name,
@@ -259,7 +300,7 @@ export class ConnectionService {
         host: profile.host,
         port: profile.port,
         username: profile.username,
-        password: profile.password,
+        password: password ?? undefined,
         database: profile.database,
       });
 
@@ -315,6 +356,8 @@ export class ConnectionService {
       throw new Error(`Connection not found: ${id}`);
     }
 
+    const password = profile.rememberPassword ? credentialStore.get(profile.id) : undefined;
+
     await this.testConnection({
       name: profile.name,
       kind: profile.kind,
@@ -322,7 +365,7 @@ export class ConnectionService {
       host: profile.host,
       port: profile.port,
       username: profile.username,
-      password: profile.password,
+      password: password ?? undefined,
       database: profile.database,
     });
   }
@@ -338,7 +381,20 @@ export class ConnectionService {
   }
 
   private _persist() {
-    appStorage.setJSON(CONNECTIONS_KEY, this._profiles);
+    const profilesToSave = this._profiles.map((profile) => ({
+      id: profile.id,
+      name: profile.name,
+      kind: profile.kind,
+      host: profile.host,
+      port: profile.port,
+      username: profile.username,
+      database: profile.database,
+      filePath: profile.filePath,
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt,
+      rememberPassword: profile.rememberPassword,
+    }));
+    appStorage.setJSON(CONNECTIONS_KEY, profilesToSave);
   }
 
   private _persistActiveConnection() {
