@@ -1,21 +1,25 @@
 import { createSubscription } from '../common/subscription';
-import { useLogStore } from './log-store';
 import type { LogItem, LogLevel } from './types';
+
+const MAX_LOG_ITEMS = 1000;
 
 export class LogService {
   private _subscription = createSubscription();
   private _nextId = 1;
+  private _items: LogItem[] = [];
+  private _cachedSnapshot: LogItem[] = [];
 
   subscribe(listener: () => void) {
     return this._subscription.subscribe(listener);
   }
 
   getSnapshot(): LogItem[] {
-    return useLogStore.getState().items;
+    return this._cachedSnapshot;
   }
 
   clear() {
-    useLogStore.getState().clear();
+    this._items = [];
+    this._cachedSnapshot = [];
     this._subscription.emit();
   }
 
@@ -45,7 +49,8 @@ export class LogService {
       data,
     };
 
-    useLogStore.getState().push(item);
+    this._items = this._items.concat(item).slice(-MAX_LOG_ITEMS);
+    this._cachedSnapshot = this._items;
     this._subscription.emit();
 
     const text = `[${scope}] ${message}`;

@@ -1,16 +1,17 @@
+import { useState } from 'react';
 import { X } from 'lucide-react';
+import { cn } from '@/lib/cn';
+import { IconButton } from '@sqlgui/ui';
 import type { SqlEditorTab } from '../types';
 import { editorService } from '../services/editorService';
-import { IconButton } from '@sqlgui/ui';
-import { cn } from '@/lib/cn';
 
 interface EditorTabsProps {
   tabs: SqlEditorTab[];
   activeEditorId?: string;
 }
 
-export function EditorTabs(props: EditorTabsProps) {
-  const { tabs, activeEditorId } = props;
+export function EditorTabs({ tabs, activeEditorId }: EditorTabsProps) {
+  const [draggingId, setDraggingId] = useState<string | null>(null);
 
   if (tabs.length === 0) {
     return null;
@@ -25,13 +26,25 @@ export function EditorTabs(props: EditorTabsProps) {
           return (
             <div
               key={tab.id}
+              draggable
               className={cn(
                 'group flex h-full min-w-32 max-w-52 cursor-pointer items-center gap-2 border-r px-3 text-sm',
                 active
                   ? 'bg-background text-foreground'
                   : 'text-muted-foreground hover:bg-muted/40',
+                draggingId === tab.id && 'opacity-50',
               )}
               onClick={() => editorService.setActiveEditor(tab.id)}
+              onDragStart={() => setDraggingId(tab.id)}
+              onDragEnd={() => setDraggingId(null)}
+              onDragOver={(event) => {
+                event.preventDefault();
+              }}
+              onDrop={() => {
+                if (!draggingId || draggingId === tab.id) return;
+                editorService.moveTab(draggingId, tab.id);
+                setDraggingId(null);
+              }}
             >
               <span className="truncate">
                 {tab.dirty ? '* ' : ''}

@@ -7,6 +7,7 @@ import type { QueryResult } from '../../editor/types';
 
 export interface ResultGridProps {
   result: QueryResult;
+  elapsedMs?: number;
   onClose?: () => void;
 }
 
@@ -15,7 +16,28 @@ interface ResultRow {
   __cells: unknown[];
 }
 
-export function ResultGrid({ result }: ResultGridProps) {
+interface ResultSummaryBarProps {
+  rowCount: number;
+  columnCount: number;
+  elapsedMs?: number;
+  truncated?: boolean;
+}
+
+function ResultSummaryBar({ rowCount, columnCount, elapsedMs, truncated }: ResultSummaryBarProps) {
+  const { t } = useAppTranslation('result');
+
+  return (
+    <div className="flex h-8 shrink-0 items-center gap-3 border-b bg-muted/20 px-3 text-xs">
+      <span className="font-medium text-foreground">Result</span>
+      <span className="text-muted-foreground">{rowCount} rows</span>
+      <span className="text-muted-foreground">{columnCount} columns</span>
+      {elapsedMs != null && <span className="text-muted-foreground">{elapsedMs}ms</span>}
+      {truncated && <span className="text-yellow-600">{t('status.truncated')}</span>}
+    </div>
+  );
+}
+
+export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
   const { t } = useAppTranslation('result');
 
   const [selectedCell, setSelectedCell] = useState<{
@@ -131,10 +153,16 @@ export function ResultGrid({ result }: ResultGridProps) {
 
   return (
     <div className="flex h-full flex-col">
+      <ResultSummaryBar
+        rowCount={rows.length}
+        columnCount={columns.length}
+        elapsedMs={elapsedMs ?? result.elapsedMs}
+        truncated={result.truncated}
+      />
+
       {result.truncated ? (
         <div className="shrink-0 border-b border-yellow-200 bg-yellow-50 px-3 py-1.5 text-xs text-yellow-700 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-500">
-          Returned {result.rows.length} rows. Result may be truncated. Refine your query or increase
-          the limit.
+          Returned {result.rows.length} rows. Result may be truncated.
         </div>
       ) : null}
 

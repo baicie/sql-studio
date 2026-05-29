@@ -18,6 +18,8 @@ export default function App() {
     bootstrapApp();
 
     callNative<HealthCheckResponse>('system_health_check').then(setHealth).catch(console.error);
+
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
   }, []);
 
   return (

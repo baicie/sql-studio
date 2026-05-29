@@ -79,6 +79,87 @@ export function registerCoreCommands() {
   });
 
   commandService.register({
+    id: 'workbench.resetLayout',
+    title: 'Reset Layout',
+    category: 'Workbench',
+    source: 'core',
+    handler: () => {
+      workbenchService.resetLayout();
+      notificationService.info('Layout reset.');
+    },
+  });
+
+  commandService.register({
+    id: 'workbench.toggleBottomPanelMaximized',
+    title: 'Toggle Bottom Panel Maximized',
+    category: 'Workbench',
+    source: 'core',
+    handler: () => {
+      workbenchService.toggleBottomPanelMaximized();
+    },
+  });
+
+  commandService.register({
+    id: 'workbench.toggleRightPanel',
+    title: 'Toggle Right Panel',
+    category: 'Workbench',
+    source: 'core',
+    handler: () => {
+      workbenchService.toggleRightPanel();
+    },
+  });
+
+  commandService.register({
+    id: 'workbench.layout.default',
+    title: 'Layout: Default',
+    category: 'Workbench',
+    source: 'core',
+    handler: () => {
+      workbenchService.applyLayoutPreset('default');
+    },
+  });
+
+  commandService.register({
+    id: 'workbench.layout.compact',
+    title: 'Layout: Compact',
+    category: 'Workbench',
+    source: 'core',
+    handler: () => {
+      workbenchService.applyLayoutPreset('compact');
+    },
+  });
+
+  commandService.register({
+    id: 'workbench.layout.focus',
+    title: 'Layout: Focus',
+    category: 'Workbench',
+    source: 'core',
+    handler: () => {
+      workbenchService.applyLayoutPreset('focus');
+    },
+  });
+
+  commandService.register({
+    id: 'workbench.layout.analysis',
+    title: 'Layout: Analysis',
+    category: 'Workbench',
+    source: 'core',
+    handler: () => {
+      workbenchService.applyLayoutPreset('analysis');
+    },
+  });
+
+  commandService.register({
+    id: 'workbench.layout.agent',
+    title: 'Layout: SQL Agent',
+    category: 'Workbench',
+    source: 'core',
+    handler: () => {
+      workbenchService.applyLayoutPreset('agent');
+    },
+  });
+
+  commandService.register({
     id: 'editor.newQuery',
     titleKey: 'editor.newQuery',
     category: 'Editor',

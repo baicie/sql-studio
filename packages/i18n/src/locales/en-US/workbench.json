@@ -11,7 +11,9 @@
     "problems": "Problems",
     "history": "Query History",
     "terminal": "Terminal",
-    "terminalEmpty": "No terminal output."
+    "terminalEmpty": "No terminal output.",
+    "maximize": "Maximize",
+    "restore": "Restore"
   },
   "commandPalette": {
     "open": "Open Command Palette",

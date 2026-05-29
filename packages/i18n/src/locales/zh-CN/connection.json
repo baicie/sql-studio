@@ -38,7 +38,8 @@
     "showColumns": "查看字段",
     "copyTableName": "复制表名",
     "copyFullName": "复制完整名称",
-    "refresh": "刷新"
+    "refresh": "刷新",
+    "searchPlaceholder": "搜索..."
   },
   "status": {
     "connected": "已连接",

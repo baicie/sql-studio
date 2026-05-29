@@ -2,7 +2,26 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { workbenchStorage } from '../../services/storage/localStorage';
-import type { ActivityId, BottomPanelId, EditorTab, ThemeMode } from '../types';
+import type {
+  ActivityId,
+  BottomPanelId,
+  EditorTab,
+  LayoutPreset,
+  RightPanelId,
+  ThemeMode,
+} from '../types';
+
+export const DEFAULT_SIDE_BAR_WIDTH = 280;
+export const MIN_SIDE_BAR_WIDTH = 220;
+export const MAX_SIDE_BAR_WIDTH = 520;
+
+export const DEFAULT_BOTTOM_PANEL_HEIGHT = 240;
+export const MIN_BOTTOM_PANEL_HEIGHT = 160;
+export const MAX_BOTTOM_PANEL_HEIGHT = 520;
+
+export const DEFAULT_RIGHT_PANEL_WIDTH = 360;
+export const MIN_RIGHT_PANEL_WIDTH = 280;
+export const MAX_RIGHT_PANEL_WIDTH = 640;
 
 interface WorkbenchStore {
   activeActivity: ActivityId;
@@ -12,6 +31,13 @@ interface WorkbenchStore {
 
   sideBarWidth: number;
   bottomPanelHeight: number;
+  bottomPanelMaximized: boolean;
+
+  rightPanelVisible: boolean;
+  activeRightPanel: RightPanelId;
+  rightPanelWidth: number;
+
+  layoutPreset: LayoutPreset;
 
   editorTabs: EditorTab[];
   activeEditorTabId: string | null;
@@ -26,10 +52,19 @@ interface WorkbenchStore {
 
   setSideBarWidth: (width: number) => void;
   setBottomPanelHeight: (height: number) => void;
+  toggleBottomPanelMaximized: () => void;
+  resetLayout: () => void;
+
+  setActiveRightPanel: (panel: RightPanelId) => void;
+  toggleRightPanel: () => void;
+  setRightPanelWidth: (width: number) => void;
+
+  applyLayoutPreset: (preset: LayoutPreset) => void;
 
   openEditorTab: (tab: EditorTab) => void;
   closeEditorTab: (id: string) => void;
   setActiveEditorTab: (id: string) => void;
+  moveTab: (sourceId: string, targetId: string) => void;
 
   openCommandPalette: () => void;
   closeCommandPalette: () => void;
@@ -43,6 +78,17 @@ const initialWelcomeTab: EditorTab = {
   kind: 'welcome',
 };
 
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(value, max));
+}
+
+function moveItem<T>(items: T[], from: number, to: number) {
+  const next = items.slice();
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  return next;
+}
+
 export const useWorkbenchStore = create<WorkbenchStore>()(
   persist(
     (set) => ({
@@ -51,8 +97,15 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
       bottomPanelVisible: true,
       activeBottomPanel: 'terminal',
 
-      sideBarWidth: 280,
-      bottomPanelHeight: 240,
+      sideBarWidth: DEFAULT_SIDE_BAR_WIDTH,
+      bottomPanelHeight: DEFAULT_BOTTOM_PANEL_HEIGHT,
+      bottomPanelMaximized: false,
+
+      rightPanelVisible: false,
+      activeRightPanel: 'agent',
+      rightPanelWidth: DEFAULT_RIGHT_PANEL_WIDTH,
+
+      layoutPreset: 'default',
 
       editorTabs: [initialWelcomeTab],
       activeEditorTabId: 'welcome',
@@ -76,6 +129,7 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
       toggleBottomPanel: () => {
         set((state) => ({
           bottomPanelVisible: !state.bottomPanelVisible,
+          bottomPanelMaximized: false,
         }));
       },
 
@@ -88,14 +142,119 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
 
       setSideBarWidth: (width) => {
         set({
-          sideBarWidth: Math.max(220, Math.min(width, 520)),
+          sideBarWidth: clamp(width, MIN_SIDE_BAR_WIDTH, MAX_SIDE_BAR_WIDTH),
         });
       },
 
       setBottomPanelHeight: (height) => {
         set({
-          bottomPanelHeight: Math.max(160, Math.min(height, 520)),
+          bottomPanelHeight: clamp(height, MIN_BOTTOM_PANEL_HEIGHT, MAX_BOTTOM_PANEL_HEIGHT),
+          bottomPanelMaximized: false,
         });
+      },
+
+      toggleBottomPanelMaximized: () => {
+        set((state) => ({
+          bottomPanelVisible: true,
+          bottomPanelMaximized: !state.bottomPanelMaximized,
+        }));
+      },
+
+      resetLayout: () => {
+        set({
+          sideBarVisible: true,
+          bottomPanelVisible: true,
+          bottomPanelMaximized: false,
+          rightPanelVisible: false,
+          sideBarWidth: DEFAULT_SIDE_BAR_WIDTH,
+          bottomPanelHeight: DEFAULT_BOTTOM_PANEL_HEIGHT,
+          layoutPreset: 'default',
+        });
+      },
+
+      setActiveRightPanel: (panel) => {
+        set({
+          activeRightPanel: panel,
+          rightPanelVisible: true,
+        });
+      },
+
+      toggleRightPanel: () => {
+        set((state) => ({
+          rightPanelVisible: !state.rightPanelVisible,
+        }));
+      },
+
+      setRightPanelWidth: (width) => {
+        set({
+          rightPanelWidth: clamp(width, MIN_RIGHT_PANEL_WIDTH, MAX_RIGHT_PANEL_WIDTH),
+        });
+      },
+
+      applyLayoutPreset: (preset) => {
+        if (preset === 'default') {
+          set({
+            sideBarVisible: true,
+            bottomPanelVisible: true,
+            rightPanelVisible: false,
+            sideBarWidth: DEFAULT_SIDE_BAR_WIDTH,
+            bottomPanelHeight: DEFAULT_BOTTOM_PANEL_HEIGHT,
+            bottomPanelMaximized: false,
+            layoutPreset: 'default',
+          });
+          return;
+        }
+
+        if (preset === 'compact') {
+          set({
+            sideBarVisible: true,
+            bottomPanelVisible: true,
+            rightPanelVisible: false,
+            sideBarWidth: 240,
+            bottomPanelHeight: 180,
+            bottomPanelMaximized: false,
+            layoutPreset: 'compact',
+          });
+          return;
+        }
+
+        if (preset === 'focus') {
+          set({
+            sideBarVisible: false,
+            bottomPanelVisible: false,
+            rightPanelVisible: false,
+            bottomPanelMaximized: false,
+            layoutPreset: 'focus',
+          });
+          return;
+        }
+
+        if (preset === 'analysis') {
+          set({
+            sideBarVisible: true,
+            bottomPanelVisible: true,
+            rightPanelVisible: false,
+            sideBarWidth: DEFAULT_SIDE_BAR_WIDTH,
+            bottomPanelHeight: 420,
+            bottomPanelMaximized: false,
+            activeBottomPanel: 'results',
+            layoutPreset: 'analysis',
+          });
+          return;
+        }
+
+        if (preset === 'agent') {
+          set({
+            sideBarVisible: true,
+            bottomPanelVisible: true,
+            rightPanelVisible: true,
+            activeRightPanel: 'agent',
+            sideBarWidth: DEFAULT_SIDE_BAR_WIDTH,
+            rightPanelWidth: 380,
+            bottomPanelHeight: DEFAULT_BOTTOM_PANEL_HEIGHT,
+            layoutPreset: 'agent',
+          });
+        }
       },
 
       openEditorTab: (tab) => {
@@ -134,6 +293,21 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
         set({ activeEditorTabId: id });
       },
 
+      moveTab: (sourceId, targetId) => {
+        set((state) => {
+          const from = state.editorTabs.findIndex((tab) => tab.id === sourceId);
+          const to = state.editorTabs.findIndex((tab) => tab.id === targetId);
+
+          if (from < 0 || to < 0 || from === to) {
+            return state;
+          }
+
+          return {
+            editorTabs: moveItem(state.editorTabs, from, to),
+          };
+        });
+      },
+
       openCommandPalette: () => {
         set({ commandPaletteOpen: true });
       },
@@ -148,17 +322,36 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
     }),
     {
       name: 'sqlgui.workbench',
-      version: 1,
+      version: 3,
       storage: createJSONStorage(() => workbenchStorage),
       migrate: (persistedState, version) => {
-        if (version >= 1 || !persistedState || typeof persistedState !== 'object') {
+        if (!persistedState || typeof persistedState !== 'object') {
           return persistedState;
         }
 
-        return Object.assign({}, persistedState, {
-          bottomPanelVisible: true,
-          activeBottomPanel: 'terminal',
-        });
+        if (version < 1) {
+          return Object.assign({}, persistedState, {
+            bottomPanelVisible: true,
+            activeBottomPanel: 'terminal',
+          });
+        }
+
+        if (version < 2) {
+          return Object.assign({}, persistedState, {
+            bottomPanelMaximized: false,
+          });
+        }
+
+        if (version < 3) {
+          return Object.assign({}, persistedState, {
+            rightPanelVisible: false,
+            activeRightPanel: 'agent',
+            rightPanelWidth: DEFAULT_RIGHT_PANEL_WIDTH,
+            layoutPreset: 'default',
+          });
+        }
+
+        return persistedState;
       },
       partialize: (state) => ({
         activeActivity: state.activeActivity,
@@ -167,6 +360,11 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
         activeBottomPanel: state.activeBottomPanel,
         sideBarWidth: state.sideBarWidth,
         bottomPanelHeight: state.bottomPanelHeight,
+        bottomPanelMaximized: state.bottomPanelMaximized,
+        rightPanelVisible: state.rightPanelVisible,
+        activeRightPanel: state.activeRightPanel,
+        rightPanelWidth: state.rightPanelWidth,
+        layoutPreset: state.layoutPreset,
         theme: state.theme,
       }),
     },

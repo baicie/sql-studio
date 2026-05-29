@@ -51,6 +51,8 @@ interface EditorStore {
 
   getActiveEditor: () => SqlEditorTab | undefined;
   getEditorById: (editorId: string) => SqlEditorTab | undefined;
+
+  moveTab: (sourceId: string, targetId: string) => void;
 }
 
 export const useEditorStore = create<EditorStore>()(
@@ -126,6 +128,23 @@ export const useEditorStore = create<EditorStore>()(
 
       getEditorById: (editorId) => {
         return get().tabs.find((tab) => tab.id === editorId);
+      },
+
+      moveTab: (sourceId, targetId) => {
+        set((state) => {
+          const from = state.tabs.findIndex((tab) => tab.id === sourceId);
+          const to = state.tabs.findIndex((tab) => tab.id === targetId);
+
+          if (from < 0 || to < 0 || from === to) {
+            return state;
+          }
+
+          const next = state.tabs.slice();
+          const [item] = next.splice(from, 1);
+          next.splice(to, 0, item);
+
+          return { tabs: next };
+        });
       },
     }),
     {

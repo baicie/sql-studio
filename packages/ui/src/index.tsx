@@ -118,3 +118,22 @@ export {
   DataTableViewOptions,
   type DataTableProps,
 } from './components/ui/data-table';
+
+// Workbench
+export {
+  ResizablePanel,
+  type ResizablePanelProps,
+  type ResizeDirection,
+  type ResizeHandlePosition,
+} from './components/workbench/resizable-panel';
+
+export {
+  PanelShell,
+  PanelHeader,
+  PanelBody,
+  PanelFooter,
+  type PanelShellProps,
+  type PanelHeaderProps,
+  type PanelBodyProps,
+  type PanelFooterProps,
+} from './components/workbench/panel-shell';

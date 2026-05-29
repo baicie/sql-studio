@@ -38,7 +38,8 @@
     "showColumns": "Show Columns",
     "copyTableName": "Copy Table Name",
     "copyFullName": "Copy Full Name",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "searchPlaceholder": "Search..."
   },
   "status": {
     "connected": "Connected",

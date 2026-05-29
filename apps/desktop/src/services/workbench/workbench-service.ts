@@ -1,5 +1,5 @@
 import { useWorkbenchStore } from '../../workbench/store/workbenchStore';
-import type { ActivityId, BottomPanelId } from '../../workbench/types';
+import type { ActivityId, BottomPanelId, LayoutPreset, RightPanelId } from '../../workbench/types';
 
 export class WorkbenchService {
   showActivity(activity: ActivityId) {
@@ -14,8 +14,28 @@ export class WorkbenchService {
     useWorkbenchStore.getState().toggleBottomPanel();
   }
 
+  toggleBottomPanelMaximized() {
+    useWorkbenchStore.getState().toggleBottomPanelMaximized();
+  }
+
   showBottomPanel(panel: BottomPanelId) {
     useWorkbenchStore.getState().setActiveBottomPanel(panel);
+  }
+
+  resetLayout() {
+    useWorkbenchStore.getState().resetLayout();
+  }
+
+  setActiveRightPanel(panel: RightPanelId) {
+    useWorkbenchStore.getState().setActiveRightPanel(panel);
+  }
+
+  toggleRightPanel() {
+    useWorkbenchStore.getState().toggleRightPanel();
+  }
+
+  applyLayoutPreset(preset: LayoutPreset) {
+    useWorkbenchStore.getState().applyLayoutPreset(preset);
   }
 
   openCommandPalette() {

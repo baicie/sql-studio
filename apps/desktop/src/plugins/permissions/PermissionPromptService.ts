@@ -24,6 +24,7 @@ class PermissionPromptService {
   private grantRequest?: PermissionGrantRequest;
   private dangerousSqlRequest?: DangerousSqlConfirmRequest;
   private listeners = new Set<Listener>();
+  private _cachedRequest: PermissionGrantRequest | undefined = undefined;
 
   requestPermissionGrant(input: {
     extension: InstalledExtension;
@@ -38,7 +39,7 @@ class PermissionPromptService {
         },
         input,
       );
-
+      this._cachedRequest = this.grantRequest;
       this.emit();
     });
   }
@@ -57,13 +58,12 @@ class PermissionPromptService {
         },
         input,
       );
-
       this.emit();
     });
   }
 
   getGrantRequest() {
-    return this.grantRequest;
+    return this._cachedRequest;
   }
 
   getDangerousSqlRequest() {
@@ -73,6 +73,7 @@ class PermissionPromptService {
   resolveGrantRequest(value: boolean) {
     this.grantRequest?.resolve(value);
     this.grantRequest = undefined;
+    this._cachedRequest = undefined;
     this.emit();
   }
 

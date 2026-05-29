@@ -1,32 +1,10 @@
-import { useSyncExternalStore } from 'react';
-
-import { Button } from '@sqlgui/ui';
-import { logService } from '@/services/log/log-service';
 import { useAppTranslation } from '@/i18n';
-import { PanelTabs } from './PanelTabs';
-import { useWorkbenchStore } from '../store/workbenchStore';
-import { useResultStore } from '../results/store/resultStore';
-import { resultService } from '../results/services/resultService';
-import { ResultGrid } from '../results/components/ResultGrid';
+import { useResultStore } from '../../results/store/resultStore';
+import { resultService } from '../../results/services/resultService';
+import { ResultGrid } from '../../results/components/ResultGrid';
+import { Button } from '@sqlgui/ui';
 
-export function BottomPanel() {
-  const activeBottomPanel = useWorkbenchStore((state) => state.activeBottomPanel);
-  const panel = activeBottomPanel === 'logs' ? 'terminal' : activeBottomPanel;
-
-  return (
-    <section className="flex h-full min-h-0 flex-col bg-background">
-      <PanelTabs />
-
-      <div className="min-h-0 flex-1 overflow-auto">
-        {panel === 'results' ? <ResultsPanel /> : null}
-        {panel === 'problems' ? <ProblemsPanel /> : null}
-        {panel === 'terminal' ? <TerminalPanel /> : null}
-      </div>
-    </section>
-  );
-}
-
-function ResultsPanel() {
+export function ResultsPanel() {
   const { t } = useAppTranslation('result');
   const { t: tc } = useAppTranslation('common');
 
@@ -109,37 +87,6 @@ function ResultsPanel() {
           <ResultGrid result={result} />
         </div>
       )}
-    </div>
-  );
-}
-
-function ProblemsPanel() {
-  const { t } = useAppTranslation('result');
-
-  return <div className="p-3 text-sm text-muted-foreground">{t('tabs.problems')}</div>;
-}
-
-function TerminalPanel() {
-  const { t } = useAppTranslation('workbench');
-  const logs = useSyncExternalStore(
-    logService.subscribe.bind(logService),
-    logService.getSnapshot.bind(logService),
-  );
-
-  if (logs.length === 0) {
-    return <div className="p-3 text-sm text-muted-foreground">{t('panel.terminalEmpty')}</div>;
-  }
-
-  return (
-    <div className="h-full overflow-auto p-3 font-mono text-xs">
-      {logs.map((item) => (
-        <div key={item.id} className="whitespace-pre-wrap py-0.5">
-          <span className="text-muted-foreground">
-            {new Date(item.timestamp).toLocaleTimeString()}
-          </span>{' '}
-          <span>[{item.level}]</span> <span>[{item.scope}]</span> <span>{item.message}</span>
-        </div>
-      ))}
     </div>
   );
 }

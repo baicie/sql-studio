@@ -7,6 +7,7 @@ type Listener = () => void;
 
 class PermissionStorage {
   private listeners = new Set<Listener>();
+  private _cachedGrants: Record<string, ExtensionPermissionGrant> = {};
 
   loadAll(): Record<string, ExtensionPermissionGrant> {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -20,7 +21,10 @@ class PermissionStorage {
   }
 
   getGrant(extensionId: string) {
-    return this.loadAll()[extensionId];
+    if (Object.keys(this._cachedGrants).length === 0) {
+      this._cachedGrants = this.loadAll();
+    }
+    return this._cachedGrants[extensionId];
   }
 
   getGrantedPermissions(extensionId: string): ExtensionPermission[] {
@@ -31,6 +35,7 @@ class PermissionStorage {
     const all = this.loadAll();
     all[grant.extensionId] = grant;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    this._cachedGrants = all;
     this.emit();
   }
 
@@ -38,6 +43,7 @@ class PermissionStorage {
     const all = this.loadAll();
     delete all[extensionId];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    this._cachedGrants = all;
     this.emit();
   }
 

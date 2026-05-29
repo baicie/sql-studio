@@ -15,6 +15,8 @@ type Listener = () => void;
 class PluginAuditService {
   private items: PluginAuditItem[] = [];
   private listeners = new Set<Listener>();
+  private _cachedItems: PluginAuditItem[] = [];
+  private _cachedFiltered: Map<string, PluginAuditItem[]> = new Map();
 
   record(item: Omit<PluginAuditItem, 'id'>) {
     this.items.push(
@@ -27,21 +29,38 @@ class PluginAuditService {
       this.items = this.items.slice(-2000);
     }
 
+    this._cachedItems = this.items;
+    this._cachedFiltered = new Map();
     this.emit();
   }
 
   getItems(extensionId?: string) {
-    if (!extensionId) return this.items;
-    return this.items.filter((item) => item.extensionId === extensionId);
+    if (extensionId === undefined) {
+      if (this._cachedItems.length === 0 && this.items.length > 0) {
+        this._cachedItems = this.items;
+      }
+      return this._cachedItems;
+    }
+
+    if (!this._cachedFiltered.has(extensionId)) {
+      this._cachedFiltered.set(
+        extensionId,
+        this.items.filter((item) => item.extensionId === extensionId),
+      );
+    }
+    return this._cachedFiltered.get(extensionId)!;
   }
 
   clear(extensionId?: string) {
     if (!extensionId) {
       this.items = [];
+      this._cachedItems = [];
     } else {
       this.items = this.items.filter((item) => item.extensionId !== extensionId);
+      this._cachedFiltered.delete(extensionId);
     }
 
+    this._cachedFiltered = new Map();
     this.emit();
   }
 

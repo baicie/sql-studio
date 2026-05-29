@@ -4,6 +4,15 @@ export type ActivityId = 'connections' | 'extensions' | 'history' | 'settings';
 
 export type BottomPanelId = 'results' | 'problems' | 'terminal' | 'logs';
 
+export type RightPanelId =
+  | 'agent'
+  | 'cell-detail'
+  | 'schema-detail'
+  | 'sync-task'
+  | 'plugin-inspector';
+
+export type LayoutPreset = 'default' | 'compact' | 'focus' | 'analysis' | 'agent';
+
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export type SqlEditorKind2 = 'welcome' | 'query' | 'readonly';

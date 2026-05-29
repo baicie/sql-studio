@@ -18,12 +18,11 @@ import { generateSelectTopSql, getTableDisplayName } from '@/services/connection
 import { ContextMenu } from './ContextMenu';
 import type { ConnectionProfile, ConnectionTreeNode } from '@/services/connection/types';
 
-export function ConnectionsTree() {
+export function ConnectionsTree({ keyword }: { keyword?: string }) {
   const { t } = useAppTranslation('connection');
 
   const connectionSnapshot = useSyncExternalStore(
     connectionService.subscribe.bind(connectionService),
-    connectionService.getSnapshot.bind(connectionService),
     connectionService.getSnapshot.bind(connectionService),
   );
 
@@ -339,7 +338,9 @@ export function ConnectionsTree() {
     );
   }
 
-  const rootNodes = profiles.map((profile) => createRootNode(profile));
+  const rootNodes = profiles
+    .map((profile) => createRootNode(profile))
+    .filter((node) => matchNode(node, keyword ?? ''));
 
   return (
     <>
@@ -365,6 +366,16 @@ export function ConnectionsTree() {
       )}
     </>
   );
+}
+
+function matchNode(node: ConnectionTreeNode, keyword: string) {
+  if (!keyword.trim()) return true;
+
+  const normalized = keyword.trim().toLowerCase();
+
+  return [node.name, node.database, node.schema, node.table]
+    .filter(Boolean)
+    .some((item) => item!.toLowerCase().includes(normalized));
 }
 
 function NodeIcon({ node }: { node: ConnectionTreeNode }) {

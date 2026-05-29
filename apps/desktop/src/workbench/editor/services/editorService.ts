@@ -86,4 +86,8 @@ export const editorService = {
   updateEditor(editorId: string, patch: Partial<SqlEditorTab>) {
     useEditorStore.getState().updateEditor(editorId, patch);
   },
+
+  moveTab(sourceId: string, targetId: string) {
+    useEditorStore.getState().moveTab(sourceId, targetId);
+  },
 };

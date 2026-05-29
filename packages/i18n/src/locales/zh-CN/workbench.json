@@ -11,7 +11,9 @@
     "problems": "问题",
     "history": "查询历史",
     "terminal": "终端",
-    "terminalEmpty": "暂无终端输出。"
+    "terminalEmpty": "暂无终端输出。",
+    "maximize": "最大化",
+    "restore": "还原"
   },
   "commandPalette": {
     "open": "打开命令面板",

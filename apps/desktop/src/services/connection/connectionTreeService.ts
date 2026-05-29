@@ -59,8 +59,16 @@ export async function loadNodeChildren(node: ConnectionTreeNode): Promise<Connec
     }
 
     case 'tables': {
-      if (!database || !schema) return [];
-      return loadTables(connectionId, database, schema);
+      // The tables folder is a grouping node; its children (table nodes) are
+      // already returned by loadDatabaseChildren / loadTables as siblings.
+      return [];
+    }
+
+    case 'columns': {
+      // The columns folder is a grouping node; its children (column nodes) are
+      // already returned by loadColumns as siblings. Return empty so the
+      // grouping folder itself cannot be further expanded.
+      return [];
     }
 
     case 'table':
@@ -160,7 +168,7 @@ async function loadDatabaseChildren(
             name: 'Tables',
             connectionId,
             database,
-            isLeaf: false,
+            isLeaf: true,
           },
           ...tables.map((t) => ({
             id: createNodeId('table', connectionId, database, t.name),
@@ -196,7 +204,7 @@ async function loadTables(
         connectionId,
         database,
         schema,
-        isLeaf: false,
+        isLeaf: true,
       },
       ...tables.map((t) => ({
         id: createNodeId('table', connectionId, database, schema, t.name),
@@ -233,7 +241,7 @@ async function loadColumns(
         database,
         schema,
         table,
-        isLeaf: false,
+        isLeaf: true,
       },
       ...columns.map((c) => ({
         id: createNodeId('column', connectionId, database, schema, table, c.name),

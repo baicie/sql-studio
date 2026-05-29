@@ -34,6 +34,7 @@ type Listener = () => void;
 export function createHistoryService(storage: HistoryStorage = appStorage): HistoryService {
   let _history: HistoryEntry[] = storage.getJSON<HistoryEntry[]>(HISTORY_KEY) ?? [];
   const listeners = new Set<Listener>();
+  let _cachedSnapshot: HistoryEntry[] = _history.slice();
 
   function notify() {
     listeners.forEach((l) => l());
@@ -45,7 +46,7 @@ export function createHistoryService(storage: HistoryStorage = appStorage): Hist
 
   return {
     getHistory() {
-      return _history.slice();
+      return _cachedSnapshot;
     },
 
     addEntry(entry: Omit<HistoryEntry, 'id'>) {
@@ -53,18 +54,21 @@ export function createHistoryService(storage: HistoryStorage = appStorage): Hist
         id: `hist-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       });
       _history = [newEntry, ..._history].slice(0, MAX_HISTORY);
+      _cachedSnapshot = _history.slice();
       persist();
       notify();
     },
 
     clearHistory() {
       _history = [];
+      _cachedSnapshot = [];
       persist();
       notify();
     },
 
     deleteEntry(id: string) {
       _history = _history.filter((e) => e.id !== id);
+      _cachedSnapshot = _history.slice();
       persist();
       notify();
     },

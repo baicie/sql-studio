@@ -26,6 +26,7 @@ export class ExtensionService {
     extensions: this._extensions,
     hostState: this._hostState,
   };
+  private _cachedSnapshot: ExtensionSnapshot = this._snapshot;
   private _subscription = createSubscription();
 
   subscribe(listener: () => void) {
@@ -33,7 +34,7 @@ export class ExtensionService {
   }
 
   getSnapshot(): ExtensionSnapshot {
-    return this._snapshot;
+    return this._cachedSnapshot;
   }
 
   async initialize() {
@@ -268,9 +269,10 @@ export class ExtensionService {
 
   private _refreshSnapshot() {
     this._snapshot = {
-      extensions: this._extensions,
+      extensions: this._extensions.slice(),
       hostState: this._hostState,
     };
+    this._cachedSnapshot = this._snapshot;
   }
 }
 
