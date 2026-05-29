@@ -288,6 +288,12 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
               </Label>
             </div>
 
+            {rememberPassword ? (
+              <div className="rounded-md border border-yellow-500/30 bg-yellow-500/10 p-2 text-xs text-yellow-700 dark:text-yellow-500">
+                {t('passwordInsecure')}
+              </div>
+            ) : null}
+
             <div className="flex flex-col gap-1">
               <Label>{t('fields.database')}</Label>
               <Input

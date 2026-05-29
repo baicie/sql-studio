@@ -16,6 +16,22 @@ import type {
 const CONNECTIONS_KEY = 'connections';
 const ACTIVE_CONNECTION_KEY = 'active_connection';
 
+function stripConnectionPassword(profile: ConnectionProfile): ConnectionProfile {
+  return {
+    id: profile.id,
+    name: profile.name,
+    kind: profile.kind,
+    host: profile.host,
+    port: profile.port,
+    username: profile.username,
+    database: profile.database,
+    filePath: profile.filePath,
+    createdAt: profile.createdAt,
+    updatedAt: profile.updatedAt,
+    rememberPassword: profile.rememberPassword,
+  };
+}
+
 export class ConnectionService {
   private _profiles: ConnectionProfile[] = [];
   private _activeConnectionId: string | null = null;
@@ -148,19 +164,7 @@ export class ConnectionService {
     } else {
       await credentialStore.delete(profile.id);
     }
-    this._profiles.push({
-      id: profile.id,
-      name: profile.name,
-      kind: profile.kind,
-      host: profile.host,
-      port: profile.port,
-      username: profile.username,
-      database: profile.database,
-      filePath: profile.filePath,
-      createdAt: profile.createdAt,
-      updatedAt: profile.updatedAt,
-      rememberPassword: profile.rememberPassword,
-    });
+    this._profiles = this._profiles.concat(stripConnectionPassword(profile));
     this._persist();
     this._refreshSnapshot();
     this._subscription.emit();
@@ -173,22 +177,8 @@ export class ConnectionService {
     } else {
       await credentialStore.delete(profile.id);
     }
-    const idx = this._profiles.findIndex((item) => item.id === profile.id);
-    if (idx >= 0) {
-      this._profiles[idx] = {
-        id: profile.id,
-        name: profile.name,
-        kind: profile.kind,
-        host: profile.host,
-        port: profile.port,
-        username: profile.username,
-        database: profile.database,
-        filePath: profile.filePath,
-        createdAt: profile.createdAt,
-        updatedAt: profile.updatedAt,
-        rememberPassword: profile.rememberPassword,
-      };
-    }
+    const nextProfile = stripConnectionPassword(profile);
+    this._profiles = this._profiles.map((item) => (item.id === profile.id ? nextProfile : item));
     this._persist();
     this._refreshSnapshot();
     this._subscription.emit();
@@ -384,10 +374,7 @@ export class ConnectionService {
       await this.disconnect();
     }
     await credentialStore.delete(id);
-    const idx = this._profiles.findIndex((p) => p.id === id);
-    if (idx >= 0) {
-      this._profiles.splice(idx, 1);
-    }
+    this._profiles = this._profiles.filter((profile) => profile.id !== id);
     this._persist();
     this._refreshSnapshot();
     this._subscription.emit();
@@ -419,10 +406,12 @@ export class ConnectionService {
   }
 
   private _refreshSnapshot() {
-    this._snapshot.profiles = this._profiles;
-    this._snapshot.activeConnectionId = this._activeConnectionId;
-    this._snapshot.status = this._status;
-    this._snapshot.dialog = this._dialog;
+    this._snapshot = {
+      profiles: this._profiles.slice(),
+      activeConnectionId: this._activeConnectionId,
+      status: this._status,
+      dialog: { ...this._dialog },
+    };
   }
 }
 

@@ -151,3 +151,71 @@ describe('ConnectionService security', () => {
     expect(stored).toHaveLength(0);
   });
 });
+
+describe('ConnectionService snapshot immutability', () => {
+  beforeEach(() => {
+    fakeStorage.clear();
+    setItemCalls.length = 0;
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: fakeLocalStorage,
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('returns a new snapshot object after addProfile', async () => {
+    const { ConnectionService } = await import('./connection-service');
+
+    const service = new ConnectionService();
+    service.initialize();
+
+    const before = service.getSnapshot();
+
+    await service.addProfile({
+      id: 'conn-1',
+      name: 'Test SQLite',
+      kind: 'SQLite',
+      filePath: '/tmp/test.db',
+      password: 'super-secret',
+      rememberPassword: true,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    const after = service.getSnapshot();
+
+    expect(after).not.toBe(before);
+    expect(after.profiles).not.toBe(before.profiles);
+    expect(after.profiles).toHaveLength(1);
+  });
+
+  it('returns a new snapshot object after deleteConnection', async () => {
+    const { ConnectionService } = await import('./connection-service');
+
+    const service = new ConnectionService();
+    service.initialize();
+
+    await service.addProfile({
+      id: 'conn-1',
+      name: 'Test SQLite',
+      kind: 'SQLite',
+      filePath: '/tmp/test.db',
+      rememberPassword: false,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    const before = service.getSnapshot();
+
+    await service.deleteConnection('conn-1');
+
+    const after = service.getSnapshot();
+
+    expect(after).not.toBe(before);
+    expect(after.profiles).toHaveLength(0);
+  });
+});

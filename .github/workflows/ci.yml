@@ -1,42 +1,64 @@
-name: 'ci'
+name: ci
+
 on:
   push:
     branches:
-      - '**'
-    tags:
-      - '!**'
+      - main
+      - mvp
+      - 'feat/**'
+      - 'fix/**'
+      - 'refactor/**'
   pull_request:
     branches:
       - main
-      - minor
+      - mvp
+
+permissions:
+  contents: read
 
 jobs:
   test:
-    if: ${{ ! startsWith(github.event.head_commit.message, 'release:') && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository) }}
     uses: ./.github/workflows/test.yml
 
-  continuous-release:
-    # if: github.repository == 'baicie/xxx'
+  build:
     runs-on: ubuntu-latest
+    needs:
+      - test
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: 'true'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+
+      - name: Install Linux deps for Tauri
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v4.1.0
 
       - name: Install Node.js
         uses: actions/setup-node@v5
         with:
           node-version-file: '.node-version'
-          registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
-      - name: Install deps
-        run: pnpm install
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build
-
-      # - name: Release
-      #   run: pnpx pkg-pr-new publish --compact --pnpm './packages/*'

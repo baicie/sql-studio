@@ -102,7 +102,7 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
       bottomPanelMaximized: false,
 
       rightPanelVisible: false,
-      activeRightPanel: 'agent',
+      activeRightPanel: 'cell-detail',
       rightPanelWidth: DEFAULT_RIGHT_PANEL_WIDTH,
 
       layoutPreset: 'default',
@@ -248,7 +248,7 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
             sideBarVisible: true,
             bottomPanelVisible: true,
             rightPanelVisible: true,
-            activeRightPanel: 'agent',
+            activeRightPanel: 'cell-detail',
             sideBarWidth: DEFAULT_SIDE_BAR_WIDTH,
             rightPanelWidth: 380,
             bottomPanelHeight: DEFAULT_BOTTOM_PANEL_HEIGHT,
@@ -322,7 +322,7 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
     }),
     {
       name: 'sqlgui.workbench',
-      version: 3,
+      version: 4,
       storage: createJSONStorage(() => workbenchStorage),
       migrate: (persistedState, version) => {
         if (!persistedState || typeof persistedState !== 'object') {
@@ -348,6 +348,13 @@ export const useWorkbenchStore = create<WorkbenchStore>()(
             activeRightPanel: 'agent',
             rightPanelWidth: DEFAULT_RIGHT_PANEL_WIDTH,
             layoutPreset: 'default',
+          });
+        }
+
+        if (version < 4) {
+          const p = persistedState as Partial<WorkbenchStore>;
+          return Object.assign({}, persistedState, {
+            activeRightPanel: p.activeRightPanel === 'agent' ? 'cell-detail' : p.activeRightPanel,
           });
         }
 
