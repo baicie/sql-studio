@@ -15,6 +15,9 @@
     "extension:sign": "tsx scripts/sign-extension.ts",
     "lint": "pnpm -r --if-present lint",
     "format": "prettier --write .",
+    "test": "pnpm -r --if-present test",
+    "test:unit": "pnpm -r --if-present test:unit",
+    "test:rust": "cargo test --workspace",
     "clean": "rimraf node_modules apps/*/node_modules packages/*/node_modules extensions/*/node_modules target",
     "postinstall": "simple-git-hooks"
   },
@@ -46,7 +49,8 @@
     "simple-git-hooks": "^2.13.1",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.60.0"
+    "typescript-eslint": "^8.60.0",
+    "vitest": "^3.0.0"
   },
   "dependencies": {
     "@tanstack/react-virtual": "^3.13.26",

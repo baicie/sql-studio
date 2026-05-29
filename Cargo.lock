@@ -3615,6 +3615,7 @@ dependencies = [
  "serde_json",
  "sqlgui-common",
  "sqlx",
+ "tempfile",
  "thiserror 2.0.18",
  "tokio",
  "urlencoding",

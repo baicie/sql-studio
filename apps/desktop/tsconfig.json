@@ -21,5 +21,6 @@
       "@/components/ui/*": ["../../packages/ui/src/components/ui/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
 }

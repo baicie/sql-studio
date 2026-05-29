@@ -16,6 +16,11 @@ export interface HistoryEntry {
   errorMessage?: string;
 }
 
+export interface HistoryStorage {
+  getJSON<T>(key: string): T | null;
+  setJSON<T>(key: string, value: T): void;
+}
+
 export interface HistoryService {
   getHistory(): HistoryEntry[];
   addEntry(entry: Omit<HistoryEntry, 'id'>): void;
@@ -26,8 +31,8 @@ export interface HistoryService {
 
 type Listener = () => void;
 
-function createHistoryService(): HistoryService {
-  let _history: HistoryEntry[] = appStorage.getJSON<HistoryEntry[]>(HISTORY_KEY) ?? [];
+export function createHistoryService(storage: HistoryStorage = appStorage): HistoryService {
+  let _history: HistoryEntry[] = storage.getJSON<HistoryEntry[]>(HISTORY_KEY) ?? [];
   const listeners = new Set<Listener>();
 
   function notify() {
@@ -35,7 +40,7 @@ function createHistoryService(): HistoryService {
   }
 
   function persist() {
-    appStorage.setJSON(HISTORY_KEY, _history);
+    storage.setJSON(HISTORY_KEY, _history);
   }
 
   return {
@@ -71,4 +76,29 @@ function createHistoryService(): HistoryService {
   };
 }
 
-export const historyService = createHistoryService();
+let _singleton: HistoryService | null = null;
+
+function getSingleton(): HistoryService {
+  if (!_singleton) {
+    _singleton = createHistoryService();
+  }
+  return _singleton;
+}
+
+export const historyService: HistoryService = {
+  get getHistory() {
+    return getSingleton().getHistory;
+  },
+  get addEntry() {
+    return getSingleton().addEntry;
+  },
+  get clearHistory() {
+    return getSingleton().clearHistory;
+  },
+  get deleteEntry() {
+    return getSingleton().deleteEntry;
+  },
+  get subscribe() {
+    return getSingleton().subscribe;
+  },
+};

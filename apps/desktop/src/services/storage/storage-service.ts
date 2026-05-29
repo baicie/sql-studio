@@ -92,4 +92,29 @@ export class StorageService {
 
 export const storageService = new StorageService();
 
-export const appStorage = storageService.scope('app');
+let _appStorage: ReturnType<typeof storageService.scope> | null = null;
+
+function getAppStorage(): ReturnType<typeof storageService.scope> {
+  if (!_appStorage) {
+    _appStorage = storageService.scope('app');
+  }
+  return _appStorage;
+}
+
+export const appStorage = {
+  get getItem() {
+    return getAppStorage().getItem;
+  },
+  get setItem() {
+    return getAppStorage().setItem;
+  },
+  get removeItem() {
+    return getAppStorage().removeItem;
+  },
+  get getJSON() {
+    return getAppStorage().getJSON;
+  },
+  get setJSON() {
+    return getAppStorage().setJSON;
+  },
+};

@@ -96,9 +96,9 @@ function ConnectionDialogForm({ mode, profile, onClose }: ConnectionDialogFormPr
       };
 
       if (mode === 'edit' && profile) {
-        connectionService.updateConnection(profileData);
+        await connectionService.updateConnection(profileData);
       } else {
-        connectionService.addProfile(profileData);
+        await connectionService.addProfile(profileData);
       }
 
       await connectionService.connect(profileData.id);

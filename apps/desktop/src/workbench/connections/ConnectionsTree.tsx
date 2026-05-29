@@ -1,5 +1,5 @@
 import type { UseTranslationResponse } from 'react-i18next';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ChevronDown, ChevronRight, Columns3, Database, Loader2, Table } from 'lucide-react';
 import { IconButton } from '@sqlgui/ui';
 
@@ -9,6 +9,7 @@ import {
   createNodeId,
   createRootNode,
   loadNodeChildren,
+  parseNodeId,
 } from '@/services/connection/connectionTreeService';
 import { editorService } from '@/workbench/editor/services/editorService';
 import { logService } from '@/services/log/log-service';
@@ -19,6 +20,15 @@ import type { ConnectionProfile, ConnectionTreeNode } from '@/services/connectio
 
 export function ConnectionsTree() {
   const { t } = useAppTranslation('connection');
+
+  const connectionSnapshot = useSyncExternalStore(
+    connectionService.subscribe.bind(connectionService),
+    connectionService.getSnapshot.bind(connectionService),
+    connectionService.getSnapshot.bind(connectionService),
+  );
+
+  const profiles = connectionSnapshot.profiles;
+  const activeConnectionId = connectionSnapshot.activeConnectionId;
 
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [loadedChildren, setLoadedChildren] = useState<Map<string, ConnectionTreeNode[]>>(
@@ -31,7 +41,49 @@ export function ConnectionsTree() {
     node: ConnectionTreeNode;
   } | null>(null);
 
-  const profiles = connectionService.getProfiles();
+  const expandedNodesRef = useRef(expandedNodes);
+  const loadedChildrenRef = useRef(loadedChildren);
+
+  // Keep refs in sync with state
+  // eslint-disable-next-line react-hooks/refs
+  expandedNodesRef.current = expandedNodes;
+  // eslint-disable-next-line react-hooks/refs
+  loadedChildrenRef.current = loadedChildren;
+
+  // Clean up stale nodes when profiles change.
+  // Intentionally syncs internal tree state with external profile list.
+  useEffect(() => {
+    const validConnectionIds = new Set(profiles.map((profile) => profile.id));
+
+    const nextExpanded = new Set<string>();
+    for (const nodeId of expandedNodesRef.current) {
+      const parsed = parseNodeId(nodeId);
+      if (parsed.connectionId && validConnectionIds.has(parsed.connectionId)) {
+        nextExpanded.add(nodeId);
+      }
+    }
+
+    const nextLoaded = new Map<string, ConnectionTreeNode[]>();
+    for (const [nodeId, children] of loadedChildrenRef.current) {
+      const parsed = parseNodeId(nodeId);
+      if (parsed.connectionId && validConnectionIds.has(parsed.connectionId)) {
+        nextLoaded.set(
+          nodeId,
+          children.filter(
+            (child) => !child.connectionId || validConnectionIds.has(child.connectionId),
+          ),
+        );
+      }
+    }
+
+    setExpandedNodes(nextExpanded);
+    setLoadedChildren(nextLoaded);
+  }, [profiles]);
+
+  const getProfileById = useCallback(
+    (id: string) => profiles.find((profile) => profile.id === id),
+    [profiles],
+  );
 
   const handleToggle = useCallback(
     async (node: ConnectionTreeNode) => {
@@ -91,34 +143,32 @@ export function ConnectionsTree() {
 
   const handleEdit = useCallback(() => {
     if (!contextMenu?.node) return;
-    const profile = profiles.find((p) => p.id === contextMenu.node.connectionId);
+    const profile = getProfileById(contextMenu.node.connectionId);
     if (profile) {
       connectionService.openEditDialog(profile.id);
     }
-  }, [contextMenu, profiles]);
+  }, [contextMenu, getProfileById]);
 
   const handleDelete = useCallback(() => {
     if (!contextMenu?.node) return;
-    const profile = profiles.find((p) => p.id === contextMenu.node.connectionId);
+    const profile = getProfileById(contextMenu.node.connectionId);
     if (profile && window.confirm(`Delete connection "${profile.name}"?`)) {
       void connectionService.deleteConnection(profile.id);
     }
-  }, [contextMenu, profiles]);
+  }, [contextMenu, getProfileById]);
 
   const handleRefresh = useCallback(async () => {
-    const activeConnectionId = connectionService.getActiveConnectionId();
+    if (!activeConnectionId) return;
 
-    if (activeConnectionId) {
-      setExpandedNodes(new Set());
-      setLoadedChildren(new Map());
+    setExpandedNodes(new Set());
+    setLoadedChildren(new Map());
 
-      const profile = profiles.find((p) => p.id === activeConnectionId);
-      if (profile) {
-        const rootNode = createRootNode(profile);
-        await handleToggle(rootNode);
-      }
+    const profile = getProfileById(activeConnectionId);
+    if (profile) {
+      const rootNode = createRootNode(profile);
+      await handleToggle(rootNode);
     }
-  }, [profiles, handleToggle]);
+  }, [activeConnectionId, getProfileById, handleToggle]);
 
   const handleSelectTop1000 = useCallback(() => {
     if (!contextMenu?.node) return;
@@ -240,7 +290,10 @@ export function ConnectionsTree() {
           <span className="truncate text-sm">{node.name}</span>
 
           {node.type === 'connection' && (
-            <ConnectionStatusBadge profile={profiles.find((p) => p.id === node.connectionId)} />
+            <ConnectionStatusBadge
+              profile={getProfileById(node.connectionId)}
+              activeConnectionId={activeConnectionId}
+            />
           )}
         </div>
 
@@ -259,7 +312,7 @@ export function ConnectionsTree() {
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
-          items={getContextMenuItems(contextMenu.node, t, {
+          items={getContextMenuItems(contextMenu.node, t, activeConnectionId, {
             onConnect: handleConnect,
             onDisconnect: handleDisconnect,
             onEdit: handleEdit,
@@ -298,12 +351,18 @@ function NodeIcon({ node }: { node: ConnectionTreeNode }) {
   }
 }
 
-function ConnectionStatusBadge({ profile }: { profile?: ConnectionProfile }) {
+function ConnectionStatusBadge({
+  profile,
+  activeConnectionId,
+}: {
+  profile?: ConnectionProfile;
+  activeConnectionId: string | null;
+}) {
   const { t } = useAppTranslation('connection');
 
   if (!profile) return null;
 
-  const isConnected = connectionService.getActiveConnectionId() === profile.id;
+  const isConnected = activeConnectionId === profile.id;
 
   return (
     <span className={`ml-auto text-xs ${isConnected ? 'text-green-500' : 'text-muted-foreground'}`}>
@@ -315,6 +374,7 @@ function ConnectionStatusBadge({ profile }: { profile?: ConnectionProfile }) {
 function getContextMenuItems(
   node: ConnectionTreeNode,
   t: UseTranslationResponse<'connection', undefined>['t'],
+  activeConnectionId: string | null,
   handlers: {
     onConnect: () => void;
     onDisconnect: () => void;
@@ -330,7 +390,7 @@ function getContextMenuItems(
   const items: Array<{ id: string; label: string; onClick: () => void }> = [];
 
   if (node.type === 'connection') {
-    const isConnected = connectionService.getActiveConnectionId() === node.connectionId;
+    const isConnected = activeConnectionId === node.connectionId;
     items.push({
       id: 'connect',
       label: isConnected ? t('closeConnection') : t('openConnection'),

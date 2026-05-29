@@ -21,6 +21,7 @@ export interface SqlEditorTab {
   source?: {
     type: 'connection-tree' | 'history' | 'manual' | 'plugin';
     nodeId?: string;
+    historyId?: string;
   };
 }
 

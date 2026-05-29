@@ -6,6 +6,7 @@ import { resultService } from '@/workbench/results/services/resultService';
 import { historyService } from '@/services/history/history-service';
 import { connectionService } from '@/services/connection/connection-service';
 import { getSelectedSqlOrFullText, isDangerousSql } from './sqlSelection';
+import { normalizeErrorMessage } from '@sqlgui/utils';
 
 export const sqlExecutionService = {
   async executeEditor(editorId: string, monacoEditor?: monaco.editor.IStandaloneCodeEditor | null) {
@@ -81,7 +82,7 @@ export const sqlExecutionService = {
     } catch (err) {
       const finishedAt = Date.now();
       const elapsedMs = finishedAt - startedAt;
-      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorMessage = normalizeErrorMessage(err);
 
       resultService.finishQuery({
         queryId,
@@ -161,7 +162,7 @@ export const sqlExecutionService = {
     } catch (err) {
       const finishedAt = Date.now();
       const elapsedMs = finishedAt - startedAt;
-      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorMessage = normalizeErrorMessage(err);
 
       resultService.finishQuery({
         queryId,

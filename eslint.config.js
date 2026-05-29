@@ -145,6 +145,13 @@ export default defineConfig(
       ],
     },
   },
+  // ConnectionsTree: intentionally syncs internal tree state with external profile list
+  {
+    files: ['apps/desktop/src/workbench/connections/ConnectionsTree.tsx'],
+    rules: {
+      'react-hooks/set-state-in-effect': 'off',
+    },
+  },
   // Config files and scripts
   {
     files: [

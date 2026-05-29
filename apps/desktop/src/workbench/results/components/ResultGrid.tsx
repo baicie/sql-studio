@@ -131,6 +131,13 @@ export function ResultGrid({ result }: ResultGridProps) {
 
   return (
     <div className="flex h-full flex-col">
+      {result.truncated ? (
+        <div className="shrink-0 border-b border-yellow-200 bg-yellow-50 px-3 py-1.5 text-xs text-yellow-700 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-500">
+          Returned {result.rows.length} rows. Result may be truncated. Refine your query or increase
+          the limit.
+        </div>
+      ) : null}
+
       <ResultToolbar
         onCopyCell={handleCopyCell}
         onExportCSV={() => downloadFile(csvContent, 'result.csv', 'text/csv')}

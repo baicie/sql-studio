@@ -29,6 +29,7 @@ export function HistoryView() {
       connectionId: entry.connectionId,
       source: {
         type: 'history',
+        historyId: entry.id,
       },
     });
     notificationService.info(

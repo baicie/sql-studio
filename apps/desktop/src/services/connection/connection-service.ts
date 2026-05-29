@@ -5,6 +5,7 @@ import { dbService } from '../db/dbService';
 import { notificationService } from '../notification/notification-service';
 import { logService } from '../log/log-service';
 import { credentialStore } from './credential-store';
+import { normalizeErrorMessage } from '@sqlgui/utils';
 import type {
   ConnectionDialogState,
   ConnectionProfile,
@@ -77,7 +78,7 @@ export class ConnectionService {
     try {
       logService.info('connection', `Restoring connection: ${profile.name}`);
 
-      const password = profile.rememberPassword ? credentialStore.get(profile.id) : null;
+      const password = profile.rememberPassword ? await credentialStore.get(profile.id) : null;
 
       const result = await dbService.openConnection({
         id: profile.id,
@@ -109,7 +110,7 @@ export class ConnectionService {
       this._refreshSnapshot();
       this._subscription.emit();
 
-      const message = error instanceof Error ? error.message : String(error);
+      const message = normalizeErrorMessage(error);
       notificationService.warning(`Failed to restore connection: ${message}`);
       logService.error('connection', `Failed to restore connection: ${profile.name}`, error);
       return null;
@@ -140,12 +141,12 @@ export class ConnectionService {
     return this._activeConnectionId;
   }
 
-  addProfile(profile: ConnectionProfile) {
+  async addProfile(profile: ConnectionProfile) {
     const { password, rememberPassword } = profile;
     if (rememberPassword && password) {
-      credentialStore.save(profile.id, password);
+      await credentialStore.save(profile.id, password);
     } else {
-      credentialStore.delete(profile.id);
+      await credentialStore.delete(profile.id);
     }
     this._profiles = this._profiles.concat({
       id: profile.id,
@@ -165,12 +166,12 @@ export class ConnectionService {
     this._subscription.emit();
   }
 
-  updateConnection(profile: ConnectionProfile) {
+  async updateConnection(profile: ConnectionProfile) {
     const { password, rememberPassword } = profile;
     if (rememberPassword && password) {
-      credentialStore.save(profile.id, password);
+      await credentialStore.save(profile.id, password);
     } else {
-      credentialStore.delete(profile.id);
+      await credentialStore.delete(profile.id);
     }
     this._profiles = this._profiles.map((item) => {
       if (item.id === profile.id) {
@@ -269,7 +270,7 @@ export class ConnectionService {
       notificationService.success('Connection successful.');
       logService.info('connection', `Connection test succeeded: ${config.name}`);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
+      const message = normalizeErrorMessage(error);
       notificationService.error(`Connection failed: ${message}`);
       logService.error('connection', `Connection test failed: ${config.name}`, error);
       throw error;
@@ -290,7 +291,7 @@ export class ConnectionService {
     try {
       logService.info('connection', `Opening connection: ${profile.name}`);
 
-      const password = profile.rememberPassword ? credentialStore.get(profile.id) : undefined;
+      const password = profile.rememberPassword ? await credentialStore.get(profile.id) : undefined;
 
       await dbService.openConnection({
         id: profile.id,
@@ -318,7 +319,7 @@ export class ConnectionService {
       this._refreshSnapshot();
       this._subscription.emit();
 
-      const message = error instanceof Error ? error.message : String(error);
+      const message = normalizeErrorMessage(error);
       notificationService.error(`Connection failed: ${message}`);
       logService.error('connection', `Connection failed: ${profile.name}`, error);
       throw error;
@@ -356,7 +357,7 @@ export class ConnectionService {
       throw new Error(`Connection not found: ${id}`);
     }
 
-    const password = profile.rememberPassword ? credentialStore.get(profile.id) : undefined;
+    const password = profile.rememberPassword ? await credentialStore.get(profile.id) : undefined;
 
     await this.testConnection({
       name: profile.name,
@@ -384,7 +385,7 @@ export class ConnectionService {
     if (this._activeConnectionId === id) {
       await this.disconnect();
     }
-    credentialStore.delete(id);
+    await credentialStore.delete(id);
     this._profiles = this._profiles.filter((profile) => profile.id !== id);
     this._persist();
     this._refreshSnapshot();

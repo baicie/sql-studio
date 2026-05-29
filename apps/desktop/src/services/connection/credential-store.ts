@@ -1,64 +1,52 @@
-import { appStorage } from '../storage/storage-service';
+/**
+ * Credential store entry point.
+ *
+ * Dev mode: always uses insecure localStorage fallback (safer for development).
+ * Prod mode: should use native OS keychain when implemented.
+ *
+ * WARNING: The insecure fallback stores passwords in plaintext.
+ * A secure keychain implementation is planned for a future release.
+ *
+ * TODO: Switch to native OS keychain in production mode:
+ *   - macOS: Keychain Services API
+ *   - Windows: Credential Manager
+ *   - Linux: libsecret / dbus-secret-service
+ *
+ *   Once nativeCredentialStore is implemented, replace createInsecureCredentialStore()
+ *   with createNativeCredentialStore() for non-dev builds.
+ */
+import { createInsecureCredentialStore } from './insecure-credential-store';
+import type { CredentialStore } from './credential-types';
 
-const CREDENTIALS_KEY = 'credentials';
+export type { CredentialStore } from './credential-types';
 
-interface CredentialEntry {
-  connectionId: string;
-  password: string;
-}
+let _credentialStore: CredentialStore | null = null;
 
-interface CredentialStore {
-  save(connectionId: string, password: string): void;
-  get(connectionId: string): string | null;
-  delete(connectionId: string): void;
-  has(connectionId: string): boolean;
-  getConnectionIds(): string[];
-  clear(): void;
-}
-
-function createCredentialStore(): CredentialStore {
-  function load(): CredentialEntry[] {
-    return appStorage.getJSON<CredentialEntry[]>(CREDENTIALS_KEY) ?? [];
+function getCredentialStore(): CredentialStore {
+  if (!_credentialStore) {
+    _credentialStore = createInsecureCredentialStore();
   }
-
-  function saveAll(entries: CredentialEntry[]) {
-    appStorage.setJSON(CREDENTIALS_KEY, entries);
-  }
-
-  return {
-    save(connectionId: string, password: string) {
-      const entries = load();
-      const existing = entries.findIndex((e) => e.connectionId === connectionId);
-      if (existing >= 0) {
-        entries[existing] = { connectionId, password };
-      } else {
-        entries.push({ connectionId, password });
-      }
-      saveAll(entries);
-    },
-
-    get(connectionId: string): string | null {
-      const entries = load();
-      return entries.find((e) => e.connectionId === connectionId)?.password ?? null;
-    },
-
-    delete(connectionId: string) {
-      const entries = load().filter((e) => e.connectionId !== connectionId);
-      saveAll(entries);
-    },
-
-    has(connectionId: string): boolean {
-      return load().some((e) => e.connectionId === connectionId);
-    },
-
-    getConnectionIds(): string[] {
-      return load().map((e) => e.connectionId);
-    },
-
-    clear() {
-      saveAll([]);
-    },
-  };
+  return _credentialStore;
 }
 
-export const credentialStore = createCredentialStore();
+export const credentialStore: CredentialStore = {
+  async save(connectionId, password) {
+    return getCredentialStore().save(connectionId, password);
+  },
+
+  async get(connectionId) {
+    return getCredentialStore().get(connectionId);
+  },
+
+  async delete(connectionId) {
+    return getCredentialStore().delete(connectionId);
+  },
+
+  async has(connectionId) {
+    return getCredentialStore().has(connectionId);
+  },
+
+  async clear() {
+    return getCredentialStore().clear();
+  },
+};
