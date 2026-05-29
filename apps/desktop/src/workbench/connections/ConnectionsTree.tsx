@@ -158,17 +158,54 @@ export function ConnectionsTree() {
   }, [contextMenu, getProfileById]);
 
   const handleRefresh = useCallback(async () => {
-    if (!activeConnectionId) return;
+    if (!contextMenu?.node) return;
+    const node = contextMenu.node;
 
-    setExpandedNodes(new Set());
-    setLoadedChildren(new Map());
+    // Collapse and reload the subtree rooted at the target node.
+    setExpandedNodes((prev) => {
+      const next = new Set<string>();
+      for (const id of prev) {
+        if (!id.startsWith(node.id + ':') && id !== node.id) {
+          next.add(id);
+        }
+      }
+      return next;
+    });
+    setLoadedChildren((prev) => {
+      const next = new Map(prev);
+      next.delete(node.id);
+      return next;
+    });
 
-    const profile = getProfileById(activeConnectionId);
-    if (profile) {
-      const rootNode = createRootNode(profile);
-      await handleToggle(rootNode);
+    if (node.type === 'connection') {
+      setExpandedNodes((prev) => new Set(prev).add(node.id));
+    } else if (!expandedNodes.has(node.id)) {
+      setExpandedNodes((prev) => new Set(prev).add(node.id));
     }
-  }, [activeConnectionId, getProfileById, handleToggle]);
+
+    const profile = getProfileById(node.connectionId);
+    if (profile) {
+      const tempNode: ConnectionTreeNode = {
+        ...node,
+        isLeaf: false,
+      };
+      setLoadingNodes((prev) => new Set(prev).add(tempNode.id));
+
+      try {
+        const children = await loadNodeChildren(tempNode);
+        setLoadedChildren((prev) => new Map(prev).set(tempNode.id, children));
+      } catch (error) {
+        logService.error('connection', `Failed to refresh ${node.name}`, error);
+        setLoadedChildren((prev) => new Map(prev).set(tempNode.id, []));
+      } finally {
+        setLoadingNodes((prev) => {
+          const next = new Set(prev);
+          next.delete(tempNode.id);
+          return next;
+        });
+      }
+    }
+  }, [contextMenu, expandedNodes, getProfileById]);
 
   const handleSelectTop1000 = useCallback(() => {
     if (!contextMenu?.node) return;
@@ -408,6 +445,18 @@ function getContextMenuItems(
     });
   }
 
+  if (node.type === 'database') {
+    items.push({ id: 'refresh', label: t('contextMenu.refresh'), onClick: handlers.onRefresh });
+  }
+
+  if (node.type === 'schema') {
+    items.push({ id: 'refresh', label: t('contextMenu.refresh'), onClick: handlers.onRefresh });
+  }
+
+  if (node.type === 'tables') {
+    items.push({ id: 'refresh', label: t('contextMenu.refresh'), onClick: handlers.onRefresh });
+  }
+
   if (node.type === 'table') {
     items.push(
       {
@@ -417,9 +466,14 @@ function getContextMenuItems(
       },
       { id: 'show-columns', label: t('contextMenu.showColumns'), onClick: handlers.onShowColumns },
     );
+    items.push({ id: 'refresh', label: t('contextMenu.refresh'), onClick: handlers.onRefresh });
   }
 
-  if (node.type === 'table' || node.type === 'column') {
+  if (node.type === 'columns') {
+    items.push({ id: 'refresh', label: t('contextMenu.refresh'), onClick: handlers.onRefresh });
+  }
+
+  if (node.type === 'column') {
     items.push(
       {
         id: 'copy-table-name',
@@ -432,9 +486,8 @@ function getContextMenuItems(
         onClick: handlers.onCopyFullName,
       },
     );
+    items.push({ id: 'refresh', label: t('contextMenu.refresh'), onClick: handlers.onRefresh });
   }
-
-  items.push({ id: 'refresh', label: t('contextMenu.refresh'), onClick: handlers.onRefresh });
 
   return items;
 }

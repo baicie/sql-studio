@@ -75,7 +75,7 @@ function ResultsPanel() {
 
   const { result } = latest;
   const rowCount = result.rows.length;
-  const isDml = result.affectedRows !== undefined;
+  const isDml = result.affectedRows != null;
 
   return (
     <div className="flex h-full flex-col">

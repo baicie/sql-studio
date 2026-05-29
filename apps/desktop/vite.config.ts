@@ -21,7 +21,11 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@sqlgui/ui': path.resolve(__dirname, '../../packages/ui/src'),
+      '@sqlgui/utils': path.resolve(__dirname, '../../packages/utils/src'),
       '@sqlgui/sdk': path.resolve(__dirname, '../../packages/sqlgui-sdk/src'),
+      '@sqlgui/api': path.resolve(__dirname, '../../packages/sqlgui-api/src'),
+      '@sqlgui/i18n': path.resolve(__dirname, '../../packages/i18n/src'),
+      '@sqlgui/extension-schema': path.resolve(__dirname, '../../packages/extension-schema/src'),
     },
   },
   worker: {
@@ -29,6 +33,6 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
-    exclude: ['@sqlgui/ui', 'monaco-editor'],
+    exclude: ['monaco-editor'],
   },
 });

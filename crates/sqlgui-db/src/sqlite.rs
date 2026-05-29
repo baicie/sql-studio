@@ -55,6 +55,7 @@ impl SqliteConnector {
         pool: &SqlitePool,
         sql: &str,
         timeout_ms: Option<u64>,
+        request_limit: Option<u32>,
     ) -> DbResult<QueryResult> {
         let start = Instant::now();
         let timeout = Duration::from_millis(timeout_ms.unwrap_or(DEFAULT_TIMEOUT_MS));
@@ -117,12 +118,16 @@ impl SqliteConnector {
                 })
                 .collect();
 
+            // Use request_limit for truncated detection; if user already specified a LIMIT
+            // in their SQL, auto-limit was not applied and request_limit is None.
+            let limit_for_truncated = request_limit.unwrap_or(1000);
+
             Ok(QueryResult {
                 columns,
                 rows: result_rows,
                 affected_rows: None,
                 elapsed_ms: start.elapsed().as_millis() as u64,
-                truncated: row_count >= limit.unwrap_or(1000) as usize && limit.is_some(),
+                truncated: row_count >= limit_for_truncated as usize,
                 message: None,
             })
         }
@@ -284,7 +289,7 @@ impl DbConnector for SqliteConnector {
 
     async fn query(&self, request: QueryRequest) -> DbResult<QueryResult> {
         let pool = self.get_pool(&request.connection_id)?;
-        self.execute_with_timeout(&pool, &request.sql, request.timeout_ms)
+        self.execute_with_timeout(&pool, &request.sql, request.timeout_ms, request.limit)
             .await
     }
 

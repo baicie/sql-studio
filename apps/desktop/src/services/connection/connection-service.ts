@@ -148,7 +148,7 @@ export class ConnectionService {
     } else {
       await credentialStore.delete(profile.id);
     }
-    this._profiles = this._profiles.concat({
+    this._profiles.push({
       id: profile.id,
       name: profile.name,
       kind: profile.kind,
@@ -173,24 +173,22 @@ export class ConnectionService {
     } else {
       await credentialStore.delete(profile.id);
     }
-    this._profiles = this._profiles.map((item) => {
-      if (item.id === profile.id) {
-        return {
-          id: profile.id,
-          name: profile.name,
-          kind: profile.kind,
-          host: profile.host,
-          port: profile.port,
-          username: profile.username,
-          database: profile.database,
-          filePath: profile.filePath,
-          createdAt: profile.createdAt,
-          updatedAt: profile.updatedAt,
-          rememberPassword: profile.rememberPassword,
-        };
-      }
-      return item;
-    });
+    const idx = this._profiles.findIndex((item) => item.id === profile.id);
+    if (idx >= 0) {
+      this._profiles[idx] = {
+        id: profile.id,
+        name: profile.name,
+        kind: profile.kind,
+        host: profile.host,
+        port: profile.port,
+        username: profile.username,
+        database: profile.database,
+        filePath: profile.filePath,
+        createdAt: profile.createdAt,
+        updatedAt: profile.updatedAt,
+        rememberPassword: profile.rememberPassword,
+      };
+    }
     this._persist();
     this._refreshSnapshot();
     this._subscription.emit();
@@ -386,7 +384,10 @@ export class ConnectionService {
       await this.disconnect();
     }
     await credentialStore.delete(id);
-    this._profiles = this._profiles.filter((profile) => profile.id !== id);
+    const idx = this._profiles.findIndex((p) => p.id === id);
+    if (idx >= 0) {
+      this._profiles.splice(idx, 1);
+    }
     this._persist();
     this._refreshSnapshot();
     this._subscription.emit();
@@ -418,12 +419,10 @@ export class ConnectionService {
   }
 
   private _refreshSnapshot() {
-    this._snapshot = {
-      profiles: this._profiles,
-      activeConnectionId: this._activeConnectionId,
-      status: this._status,
-      dialog: this._dialog,
-    };
+    this._snapshot.profiles = this._profiles;
+    this._snapshot.activeConnectionId = this._activeConnectionId;
+    this._snapshot.status = this._status;
+    this._snapshot.dialog = this._dialog;
   }
 }
 

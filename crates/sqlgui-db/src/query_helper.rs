@@ -1,8 +1,12 @@
 /// Check if the SQL is simple enough for auto-limit injection.
-/// Only allows single-statement SELECTs without complex clauses.
+/// Only allows single-statement SELECTs without complex clauses or existing LIMIT.
 pub fn can_auto_limit(sql: &str) -> bool {
     let trimmed = sql.trim().to_uppercase();
     if !trimmed.starts_with("SELECT") {
+        return false;
+    }
+    // Don't auto-apply limit if user already specified one
+    if trimmed.rsplit_once("LIMIT").is_some() {
         return false;
     }
     if trimmed.contains(';') {
