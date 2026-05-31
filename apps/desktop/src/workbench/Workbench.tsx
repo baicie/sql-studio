@@ -1,6 +1,5 @@
 import { useSyncExternalStore } from 'react';
 import { ResizablePanel } from '@sqlgui/ui';
-
 import { useKeybindingListener } from '@/services/keybinding/use-keybinding-listener';
 import { ConnectionDialog } from './connections/ConnectionDialog';
 import { connectionService } from '@/services/connection/connection-service';
@@ -29,6 +28,11 @@ interface WorkbenchProps {
   } | null;
 }
 
+/**
+ * Flux Workbench — Fixed grid desktop layout.
+ * Activity Bar (48px) + Sidebar (240px, resizable) + Main Stage + Right Panel.
+ * All panels separated by 1px border (no heavy shadows).
+ */
 export function Workbench({ health }: WorkbenchProps) {
   useApplyTheme();
   useKeybindingListener();
@@ -47,9 +51,12 @@ export function Workbench({ health }: WorkbenchProps) {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
+      {/* Main content row: ActivityBar + SideBar + MainArea + RightPanel */}
       <div className="flex min-h-0 flex-1">
+        {/* Flux Activity Bar */}
         <ActivityBar />
 
+        {/* Flux Sidebar */}
         {sideBarVisible ? (
           <ResizablePanel
             value={sideBarWidth}
@@ -59,14 +66,16 @@ export function Workbench({ health }: WorkbenchProps) {
             direction="horizontal"
             handlePosition="right"
             onResize={setSideBarWidth}
-            className="border-r bg-sidebar"
+            className="flex h-full flex-col border-r border-outline-variant bg-surface"
           >
             <SideBar />
           </ResizablePanel>
         ) : null}
 
+        {/* Main Stage */}
         <MainArea />
 
+        {/* Right Panel */}
         {rightPanelVisible ? (
           <ResizablePanel
             value={rightPanelWidth}
@@ -76,15 +85,17 @@ export function Workbench({ health }: WorkbenchProps) {
             direction="horizontal"
             handlePosition="left"
             onResize={setRightPanelWidth}
-            className="bg-background"
+            className="flex h-full flex-col border-l border-outline-variant bg-surface"
           >
             <RightPanel />
           </ResizablePanel>
         ) : null}
       </div>
 
+      {/* Flux Status Bar */}
       <StatusBar health={health} />
 
+      {/* Overlays */}
       <CommandPalette />
       {connectionDialogOpen ? <ConnectionDialog /> : null}
       <NotificationCenter />

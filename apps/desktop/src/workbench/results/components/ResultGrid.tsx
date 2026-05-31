@@ -1,9 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Copy, Download } from 'lucide-react';
-import { DataTable, DataTableColumnHeader, Toolbar, ToolbarButton } from '@sqlgui/ui';
+import { DataTable, Toolbar, ToolbarButton } from '@sqlgui/ui';
 import { useAppTranslation } from '@/i18n';
 import type { QueryResult } from '../../editor/types';
+import { cn } from '@/lib/cn';
 
 export interface ResultGridProps {
   result: QueryResult;
@@ -23,23 +24,63 @@ interface ResultSummaryBarProps {
   truncated?: boolean;
 }
 
+/**
+ * Flux Result Summary Bar — Slim bar above the result table.
+ * Shows: result label, row count, column count, execution time, truncation warning.
+ */
 function ResultSummaryBar({ rowCount, columnCount, elapsedMs, truncated }: ResultSummaryBarProps) {
-  const { t } = useAppTranslation('result');
-
   return (
-    <div className="flex h-8 shrink-0 items-center gap-3 border-b bg-muted/20 px-3 text-xs">
-      <span className="font-medium text-foreground">Result</span>
-      <span className="text-muted-foreground">{rowCount} rows</span>
-      <span className="text-muted-foreground">{columnCount} columns</span>
-      {elapsedMs != null && <span className="text-muted-foreground">{elapsedMs}ms</span>}
-      {truncated && <span className="text-yellow-600">{t('status.truncated')}</span>}
+    <div className="flex h-8 shrink-0 items-center gap-3 border-b border-outline-variant bg-surface-container px-3 text-[11px] text-on-surface-variant">
+      {/* Result label */}
+      <span className="flex items-center gap-1.5 font-medium text-on-surface">
+        {/* Table icon */}
+        <svg
+          className="h-3.5 w-3.5 text-secondary"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18" />
+        </svg>
+        Result
+      </span>
+
+      <span className="h-3 w-px bg-outline-variant" />
+
+      <span>{rowCount.toLocaleString()} rows</span>
+      <span>{columnCount} columns</span>
+
+      {elapsedMs != null && (
+        <>
+          <span className="h-3 w-px bg-outline-variant" />
+          <span className="flex items-center gap-1 font-mono tabular-nums">
+            {/* Timer icon */}
+            <svg
+              className="h-3 w-3"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            {elapsedMs}ms
+          </span>
+        </>
+      )}
+
+      {truncated && (
+        <span className="ml-auto rounded-[4px] bg-amber-500/20 px-1.5 py-0.5 text-amber-400">
+          Truncated
+        </span>
+      )}
     </div>
   );
 }
 
 export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
-  const { t } = useAppTranslation('result');
-
   const [selectedCell, setSelectedCell] = useState<{
     rowIndex: number;
     columnIndex: number;
@@ -48,7 +89,8 @@ export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
   const { columns, rows } = result;
 
   const formatCell = (cell: unknown): string => {
-    if (cell === null) return t('cell.null');
+    if (cell === null) return 'NULL';
+    if (typeof cell === 'boolean') return cell ? 'true' : 'false';
     if (typeof cell === 'object') return JSON.stringify(cell);
     return String(cell);
   };
@@ -67,7 +109,6 @@ export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
     const { rowIndex, columnIndex } = selectedCell;
     const value = formatCell(rows[rowIndex]?.[columnIndex]);
     void navigator.clipboard.writeText(value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCell, rows]);
 
   const toCSV = useCallback(() => {
@@ -82,7 +123,6 @@ export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
       .map((row) => row.map((cell) => escape(formatCell(cell))).join(','))
       .join('\n');
     return `${header}\n${body}`;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columns, rows]);
 
   const toJSON = useCallback(() => {
@@ -106,7 +146,7 @@ export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
         size: 48,
         header: '#',
         cell: ({ row }) => (
-          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+          <div className="flex h-full w-full items-center justify-center font-mono text-[11px] text-on-surface-variant">
             {row.original.__rowIndex + 1}
           </div>
         ),
@@ -119,8 +159,15 @@ export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
       cols.push({
         id: col.name,
         size: 160,
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title={`${col.name}\n(${col.databaseType})`} />
+        header: () => (
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-on-surface">
+              {col.name}
+            </span>
+            <span className="text-[10px] font-mono text-on-surface-variant">
+              {col.databaseType}
+            </span>
+          </div>
         ),
         cell: ({ row }) => {
           const cell = row.original.__cells[colIndex];
@@ -129,17 +176,18 @@ export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
             selectedCell?.columnIndex === colIndex;
           return (
             <div
-              className={`flex h-full w-full cursor-pointer items-center overflow-hidden px-2 ${
-                isSelected ? 'bg-primary/20' : ''
-              }`}
+              className={cn(
+                'flex h-full w-full cursor-pointer items-center overflow-hidden px-2 font-mono text-[12px]',
+                isSelected
+                  ? 'bg-primary-container/30 text-on-primary-container'
+                  : cell === null
+                    ? 'italic text-on-surface-variant'
+                    : 'text-on-surface',
+              )}
               onClick={() => handleCellClick(row.original.__rowIndex, colIndex)}
               title={formatCell(cell)}
             >
-              {cell === null ? (
-                <span className="truncate italic text-muted-foreground">{t('cell.null')}</span>
-              ) : (
-                <span className="truncate">{formatCell(cell)}</span>
-              )}
+              <span className="truncate">{formatCell(cell)}</span>
             </div>
           );
         },
@@ -148,11 +196,11 @@ export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
     });
 
     return cols;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [columns, selectedCell, handleCellClick, t]);
+  }, [columns, selectedCell, handleCellClick]);
 
   return (
     <div className="flex h-full flex-col">
+      {/* Summary bar */}
       <ResultSummaryBar
         rowCount={rows.length}
         columnCount={columns.length}
@@ -160,12 +208,14 @@ export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
         truncated={result.truncated}
       />
 
+      {/* Truncation warning */}
       {result.truncated ? (
-        <div className="shrink-0 border-b border-yellow-200 bg-yellow-50 px-3 py-1.5 text-xs text-yellow-700 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-500">
-          Returned {result.rows.length} rows. Result may be truncated.
+        <div className="shrink-0 border-b border-amber-500/30 bg-amber-500/10 px-3 py-1 text-[11px] text-amber-400">
+          Returned {rows.length.toLocaleString()} rows. Result may be truncated.
         </div>
       ) : null}
 
+      {/* Toolbar */}
       <ResultToolbar
         onCopyCell={handleCopyCell}
         onExportCSV={() => downloadFile(csvContent, 'result.csv', 'text/csv')}
@@ -173,7 +223,8 @@ export function ResultGrid({ result, elapsedMs }: ResultGridProps) {
         selectedCell={selectedCell}
       />
 
-      <div className="min-h-0 flex-1 overflow-auto">
+      {/* Data table */}
+      <div className="min-h-0 flex-1 overflow-auto flux-scrollbar">
         <DataTable
           columns={tableColumns}
           data={data}
@@ -204,21 +255,21 @@ function ResultToolbar({
   const { t } = useAppTranslation('result');
 
   return (
-    <Toolbar className="shrink-0 border-b px-2 py-1">
+    <Toolbar className="shrink-0 px-2 py-1">
       <ToolbarButton onClick={onCopyCell} disabled={!selectedCell} title={t('toolbar.copyCell')}>
         <Copy className="h-3 w-3" />
-        {t('toolbar.copyCell')}
+        <span className="text-[11px]">{t('toolbar.copyCell')}</span>
       </ToolbarButton>
 
-      <div className="mx-1 h-3 w-px bg-border" />
+      <div className="mx-0.5 h-3 w-px bg-outline-variant" />
 
       <ToolbarButton onClick={onExportCSV} title={t('toolbar.exportCsv')}>
         <Download className="h-3 w-3" />
-        {t('toolbar.exportCsv')}
+        <span className="text-[11px]">CSV</span>
       </ToolbarButton>
       <ToolbarButton onClick={onExportJSON} title={t('toolbar.exportJson')}>
         <Download className="h-3 w-3" />
-        {t('toolbar.exportJson')}
+        <span className="text-[11px]">JSON</span>
       </ToolbarButton>
     </Toolbar>
   );

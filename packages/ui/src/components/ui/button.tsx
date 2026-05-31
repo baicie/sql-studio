@@ -3,23 +3,36 @@ import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps, cva } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
+/**
+ * Flux Button — Low-profile, 1px border style.
+ * Primary = accent color fill, Ghost = outline style.
+ * 6px radius, 32px height for standard actions.
+ */
 const buttonVariants = cva(
-  'inline-flex flex-row items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_[data-icon]]:size-4 [&_[data-icon]]:shrink-0',
+  'inline-flex flex-row items-center justify-center gap-1.5 whitespace-nowrap transition-colors ' +
+    'disabled:pointer-events-none disabled:opacity-50 ' +
+    '[&_[data-icon]]:size-4 [&_[data-icon]]:shrink-0',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:opacity-90',
-        destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',
-        outline: 'border bg-background hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
+        default: 'bg-primary text-on-primary hover:opacity-90 active:opacity-80',
+        primary: 'bg-primary text-on-primary hover:opacity-90 active:opacity-80',
+        secondary: 'bg-secondary text-on-secondary hover:opacity-90 active:opacity-80',
+        ghost:
+          'border border-transparent hover:bg-surface-container-high hover:text-on-surface ' +
+          'active:bg-surface-container-highest',
+        outline:
+          'border border-outline-variant text-on-surface hover:bg-surface-container-high ' +
+          'hover:border-outline active:bg-surface-container-highest',
+        destructive: 'bg-error text-on-error hover:opacity-90 active:opacity-80',
         link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {
-        default: 'h-8 px-3 py-1.5',
-        sm: 'h-7 px-2 text-xs [&_[data-icon]]:size-3',
-        lg: 'h-9 px-4',
-        icon: 'h-7 w-7',
+        default: 'h-8 px-3 text-sm font-medium rounded-[6px]',
+        sm: 'h-7 px-2.5 text-xs font-medium rounded-[4px] [&_[data-icon]]:size-3',
+        lg: 'h-9 px-4 text-sm font-medium rounded-[6px]',
+        icon: 'h-8 w-8 text-sm rounded-[6px]',
+        'icon-sm': 'h-7 w-7 text-xs rounded-[4px] [&_[data-icon]]:size-3.5',
       },
     },
     defaultVariants: {

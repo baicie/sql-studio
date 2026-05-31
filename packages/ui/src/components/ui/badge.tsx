@@ -3,25 +3,50 @@ import { cva } from 'class-variance-authority';
 import type { VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
+/**
+ * Flux Badge — Small, caps-heavy labels for data types (VARCHAR, INT, etc.).
+ * High contrast between text and background for quick scanning.
+ */
 const badgeVariants = cva(
-  'inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  'inline-flex items-center font-semibold tracking-wider uppercase transition-colors ' +
+    'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1',
   {
     variants: {
       variant: {
-        default: 'border-transparent bg-primary text-primary-foreground hover:bg-primary/80',
-        secondary:
-          'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        destructive:
-          'border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80',
-        outline: 'text-foreground',
-        success:
-          'border-transparent bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
-        warning:
-          'border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+        default: 'rounded-[4px] border-transparent bg-primary text-on-primary',
+        primary: 'rounded-[4px] border border-primary/40 bg-primary/20 text-primary',
+        secondary: 'rounded-[4px] border border-secondary/40 bg-secondary/20 text-secondary',
+        outline: 'rounded-[4px] border border-outline text-on-surface',
+        success: 'rounded-[4px] border-transparent bg-green-500/20 text-green-400',
+        warning: 'rounded-[4px] border-transparent bg-amber-500/20 text-amber-400',
+        destructive: 'rounded-[4px] border-transparent bg-error/20 text-error',
+        // SQL data type badges
+        'sql-int':
+          'rounded-[4px] border border-blue-500/40 bg-blue-500/10 text-blue-300 text-[10px] px-1.5 py-0',
+        'sql-varchar':
+          'rounded-[4px] border border-green-500/40 bg-green-500/10 text-green-300 text-[10px] px-1.5 py-0',
+        'sql-numeric':
+          'rounded-[4px] border border-purple-500/40 bg-purple-500/10 text-purple-300 text-[10px] px-1.5 py-0',
+        'sql-date':
+          'rounded-[4px] border border-amber-500/40 bg-amber-500/10 text-amber-300 text-[10px] px-1.5 py-0',
+        'sql-uuid':
+          'rounded-[4px] border border-pink-500/40 bg-pink-500/10 text-pink-300 text-[10px] px-1.5 py-0',
+        'sql-bool':
+          'rounded-[4px] border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 text-[10px] px-1.5 py-0',
+        'sql-json':
+          'rounded-[4px] border border-orange-500/40 bg-orange-500/10 text-orange-300 text-[10px] px-1.5 py-0',
+        'sql-null':
+          'rounded-[4px] border border-outline text-muted-foreground italic text-[10px] px-1.5 py-0',
+      },
+      size: {
+        default: 'px-2 py-0.5 text-[11px]',
+        sm: 'px-1.5 py-0 text-[10px]',
+        lg: 'px-2.5 py-1 text-xs',
       },
     },
     defaultVariants: {
       variant: 'default',
+      size: 'default',
     },
   },
 );
@@ -29,8 +54,8 @@ const badgeVariants = cva(
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return <div className={cn(badgeVariants({ variant }), className)} {...props} />;
+function Badge({ className, variant, size, ...props }: BadgeProps) {
+  return <div className={cn(badgeVariants({ variant, size }), className)} {...props} />;
 }
 
 export { Badge, badgeVariants };

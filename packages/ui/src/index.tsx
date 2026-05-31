@@ -1,5 +1,9 @@
 export { cn } from './lib/utils';
 
+// Theme — Flux Design System
+export * from './themes/flux-tokens';
+export * from './themes/flux-css-vars';
+
 // Form
 export { Button, type ButtonProps, IconButton, type IconButtonProps } from './components/ui/button';
 export { Input, type InputProps } from './components/ui/input';
@@ -33,7 +37,7 @@ export {
 } from './components/ui/select';
 
 // Tabs
-export { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
+export { Tabs, TabsList, TabsTrigger, TabsContent, TabClose, TabDirty } from './components/ui/tabs';
 
 // Display
 export {

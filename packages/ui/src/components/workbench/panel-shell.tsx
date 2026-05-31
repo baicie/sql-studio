@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import { cn } from '../../lib/utils';
 
 export interface PanelShellProps extends React.HTMLAttributes<HTMLElement> {
@@ -9,7 +8,7 @@ export interface PanelShellProps extends React.HTMLAttributes<HTMLElement> {
 export function PanelShell({ className, children, ...props }: PanelShellProps) {
   return (
     <section
-      className={cn('flex h-full min-h-0 min-w-0 flex-col bg-background', className)}
+      className={cn('flex h-full min-h-0 min-w-0 flex-col bg-surface', className)}
       {...props}
     >
       {children}
@@ -33,16 +32,19 @@ export function PanelHeader({
 }: PanelHeaderProps) {
   return (
     <header
-      className={cn('flex h-9 shrink-0 items-center gap-2 border-b bg-muted/20 px-3', className)}
+      className={cn(
+        'flex h-8 shrink-0 items-center gap-2 border-b border-outline-variant bg-surface-container px-3',
+        className,
+      )}
       {...props}
     >
       {title ? (
         <div className="min-w-0 flex-1">
-          <div className="truncate text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <div className="truncate text-[11px] font-semibold uppercase tracking-wider text-on-surface">
             {title}
           </div>
           {description ? (
-            <div className="truncate text-[11px] text-muted-foreground">{description}</div>
+            <div className="truncate text-[11px] text-on-surface-variant">{description}</div>
           ) : null}
         </div>
       ) : null}
@@ -58,10 +60,15 @@ export interface PanelBodyProps extends React.HTMLAttributes<HTMLDivElement> {
   scrollable?: boolean;
 }
 
-export function PanelBody({ scrollable = true, className, children, ...props }: PanelBodyProps) {
+export function PanelBody({
+  scrollable: _scrollable,
+  className,
+  children,
+  ...props
+}: PanelBodyProps) {
   return (
     <div
-      className={cn('min-h-0 min-w-0 flex-1', scrollable && 'overflow-auto', className)}
+      className={cn('min-h-0 min-w-0 flex-1 overflow-auto flux-scrollbar', className)}
       {...props}
     >
       {children}
@@ -77,7 +84,7 @@ export function PanelFooter({ className, children, ...props }: PanelFooterProps)
   return (
     <footer
       className={cn(
-        'flex h-7 shrink-0 items-center border-t px-3 text-xs text-muted-foreground',
+        'flex h-7 shrink-0 items-center border-t border-outline-variant px-3 text-[11px] text-on-surface-variant',
         className,
       )}
       {...props}
